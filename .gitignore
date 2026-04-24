@@ -1,0 +1,275 @@
+# =============================================================================
+# .gitignore
+# Stack: Python + Windows (with Node fallback) — built for AI-pair workflows
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# AI coding assistants
+# -----------------------------------------------------------------------------
+# Claude Code
+#   Convention: commit shared team config (CLAUDE.md, .claude/settings.json,
+#   .claude/commands/, .claude/agents/), ignore personal/local state.
+.claude/settings.local.json
+.claude/.credentials.json
+.claude/sessions/
+.claude/cache/
+.claude/history/
+.claude/logs/
+.claude/.last_session
+# If you'd rather ignore the entire .claude/ folder, comment the lines above
+# and uncomment:
+# .claude/
+
+# Cursor
+.cursor/
+# Keep .cursorrules committed (shared team rules) — do NOT add it here.
+
+# Aider
+.aider*
+.aider.chat.history.md
+.aider.input.history
+.aider.tags.cache.v*/
+
+# Other AI tools
+.windsurf/
+.windsurfrules.local
+.continue/
+.codeium/
+.cline/
+.roo/
+.specstory/
+.tabnine/
+.copilot-*.local.*
+.github/copilot-instructions.local.md
+
+# AI-generated working artifacts
+repomix-output.*
+.ai-cache/
+.llm-cache/
+LLM_Advice/
+/_*
+
+# -----------------------------------------------------------------------------
+# Secrets & environment
+# -----------------------------------------------------------------------------
+.env
+.env.*
+!.env.example
+!.env.sample
+!.env.template
+*.pem
+*.key
+*.p12
+secrets/
+.secrets/
+
+# -----------------------------------------------------------------------------
+# Python
+# -----------------------------------------------------------------------------
+# Byte-compiled / optimized
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# PyInstaller
+*.manifest
+*.spec
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+cover/
+
+# Translations
+*.mo
+*.pot
+
+# Django
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+
+# Flask
+instance/
+.webassets-cache
+
+# Scrapy
+.scrapy
+
+# Sphinx
+docs/_build/
+
+# Jupyter / IPython
+.ipynb_checkpoints
+profile_default/
+ipython_config.py
+
+# Type checkers & linters
+.mypy_cache/
+.dmypy.json
+dmypy.json
+.pyre/
+.pytype/
+.ruff_cache/
+pyrightconfig.json
+
+# Cython debug
+cython_debug/
+
+# Package managers
+.pdm.toml
+__pypackages__/
+poetry.toml
+# Pipfile.lock         # uncomment to ignore
+# poetry.lock          # uncomment to ignore
+# pdm.lock             # uncomment to ignore
+
+# Celery
+celerybeat-schedule
+celerybeat.pid
+
+# SageMath
+*.sage.py
+
+# Virtual environments
+.venv
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# Python project settings (editor-specific)
+.spyderproject
+.spyproject
+.ropeproject
+
+# mkdocs
+/site
+
+# -----------------------------------------------------------------------------
+# Node.js (kept in case JS/TS tooling is added)
+# -----------------------------------------------------------------------------
+node_modules/
+.npm-cache/
+.npm/
+.pnp.*
+.yarn/cache
+.yarn/install-state.gz
+.next/
+.nuxt/
+out/
+.parcel-cache/
+.turbo/
+.vite/
+
+# -----------------------------------------------------------------------------
+# IDE / Editor
+# -----------------------------------------------------------------------------
+# JetBrains (PyCharm, IntelliJ, WebStorm)
+.idea/
+*.iml
+
+# VS Code — ignore personal state, keep shared config
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.code-workspace
+.history/
+
+# Vim / Emacs
+*.swp
+*.swo
+*~
+\#*\#
+.\#*
+
+# -----------------------------------------------------------------------------
+# OS files
+# -----------------------------------------------------------------------------
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+*.stackdump
+[Dd]esktop.ini
+$RECYCLE.BIN/
+*.cab
+*.msi
+*.msix
+*.msm
+*.msp
+*.lnk
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+._*
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+
+# Linux
+.fuse_hidden*
+.directory
+.Trash-*
+.nfs*
+
+# -----------------------------------------------------------------------------
+# Logs & temp
+# -----------------------------------------------------------------------------
+*.log
+logs/
+tmp/
+temp/
+.tmp/
+*.tmp
+*.bak
+
+# -----------------------------------------------------------------------------
+# Project-specific (add your own below)
+# -----------------------------------------------------------------------------
