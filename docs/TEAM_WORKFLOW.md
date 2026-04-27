@@ -23,6 +23,8 @@ PR 생성 → dev 대상 (규칙 준수)
 리뷰 1명 이상 + pytest 통과 → 머지
     ↓
 브랜치 삭제 + 이슈 close
+    ↓
+TODO.md 완료 체크박스 업데이트 + 워크로그 작성
 ```
 
 ---
@@ -266,6 +268,7 @@ TDD 순서로, 테스트 파일 먼저 작성해주세요.
 | TODO | `TODO.md` | 전체 작업 목록, 의존성, 담당 파일 |
 | 워크플로우 | `docs/TEAM_WORKFLOW.md` | 협업 규칙 (이 문서) |
 | 코드 규칙 | `AGENTS.md` | 로깅, 설정, 커밋, 테스트 코딩 규칙 |
+| 워크로그 | `docs/worklogs/` | PR 단위 작업 기록 (기술 + 비개발자 요약) |
 
 ---
 
@@ -291,4 +294,56 @@ TDD 순서로, 테스트 파일 먼저 작성해주세요.
   [ ] 브랜치 삭제
   [ ] 이슈 close 확인
   [ ] 로컬 feature 브랜치 정리
+  [ ] TODO.md 완료 항목 체크박스 업데이트
+  [ ] docs/worklogs/ 워크로그 파일 작성
 ```
+
+---
+
+## 10. 워크로그 작성 규칙
+
+**PR 머지 완료 후 반드시 작성한다.**
+
+### 파일 위치 및 네이밍
+
+```
+docs/worklogs/YYYY-MM-DD_브랜치명.md
+예시: docs/worklogs/2026-04-27_feature-T2-T3-client-prompts.md
+```
+
+### 필수 포함 항목
+
+```
+## 기본 정보
+날짜, 담당자, 브랜치, TODO 항목, PR 링크
+
+## 한 줄 요약
+누가 읽어도 이해할 수 있는 한 문장
+
+## 비개발자 요약
+- 왜 이 작업이 필요했는지
+- 어떤 파일을 왜 바꿨는지 (기술 용어 없이 설명)
+
+## 기술 상세
+- 변경 파일 목록 ([신규]/[수정]/[삭제])
+- 커밋 히스토리
+- 미완료 항목 (있는 경우)
+```
+
+### 작성 원칙
+
+- **비개발자도 읽을 수 있게**: "클라이언트를 인스턴스화했다" 대신 "AI 서비스에 연결하는 설정을 만들었다"
+- **왜를 반드시 적는다**: 무엇을 했는지보다 왜 했는지가 중요
+- **미완료도 기록한다**: 테스트 미작성 등 남은 작업을 명시
+
+### GitHub 강제 장치
+
+PR 템플릿(`.github/pull_request_template.md`)에 워크로그 체크박스가 포함되어 있어,
+PR 생성 시 자동으로 체크 여부를 확인하게 된다.
+
+추가로 **GitHub Branch Protection** 설정 권장:
+> GitHub 저장소 Settings → Branches → Branch protection rules → `dev`
+> - ✅ Require pull request before merging
+> - ✅ Require approvals (1명 이상)
+> - ✅ Require status checks (pytest CI 연결 시)
+> 이 설정을 켜면 `dev`에 직접 push가 불가능하고, 반드시 PR을 통해야만 머지할 수 있다.
