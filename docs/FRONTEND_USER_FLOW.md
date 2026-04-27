@@ -1,7 +1,7 @@
 # 프론트 유저 흐름 및 화면 구성
 
 > 목적: 기획자, 디자이너, 개발자가 같은 화면 경험을 떠올릴 수 있도록 AI 학습코치가 학생에게 어떻게 보이고 동작하는지 정리한다.
-> 기준 문서: `docs/PRD.md`, `docs/STATE_DESIGN.md`, `docs/ARCHITECTURE_REVIEW.md`, `TODO.md`
+> 기준 문서: `docs/PRD.md`, `docs/STATE_DESIGN.md`, `docs/ARCHITECTURE_REVIEW.md`, `TODO_FRONTEND.md`
 
 ---
 
@@ -255,4 +255,3 @@ AI 코치 캐릭터 얼굴
 - TP3는 작은 말풍선으로 먼저 붙잡고, 필요하면 채팅창을 열 수 있다.
 - TP5는 짧은 종료 안내면 말풍선으로, 오답 복습 안내가 길어지면 채팅창으로 제공한다.
 - 오늘의 학습 화면에서는 AI 추천 버튼과 기존 과목/태스크 카드 클릭을 모두 허용한다.
-

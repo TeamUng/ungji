@@ -227,4 +227,4 @@ app/
 | Phase 2 | T4(classify), T5(TP1), T6(TP4), T7(TP2/3/5), T8(conftest) | 🔲 Phase 1 완료 후 |
 | Phase 3 | T9(LangGraph StateGraph 조립) | 🔲 Phase 2 완료 후 |
 | Phase 4 | T10(POST /chat + SSE) | 🔲 Phase 3 완료 후 |
-| Phase 5 | T11(React+Vite 프론트엔드 AI 코치 UI) | 🔲 T10 전 mock transport로 UI 선행 가능, T10 완료 후 실제 SSE 연동 |
+| Phase 5 | React+Vite 프론트엔드 AI 코치 UI (`TODO_FRONTEND.md`) | 🔲 T10 전 mock transport로 UI 선행 가능, T10 완료 후 실제 SSE 연동 |

@@ -5,7 +5,7 @@
 
 ---
 
-## 1. 권장 스택
+## 1. 확정 스택
 
 MVP 프론트엔드는 `frontend/` 하위에 별도 앱으로 구성한다.
 
@@ -437,7 +437,7 @@ sendChat({
 
 ## 11. MVP 구현 순서
 
-### T11-A. 오늘의 학습 화면 + AI 코치 플로팅 UI
+### FE1~FE3. 앱 초기 세팅 + 오늘의 학습 화면
 
 - React + Vite + TypeScript 앱 생성
 - `TabletFrame` 구현
@@ -448,7 +448,7 @@ sendChat({
 완료 기준:
 - 오늘의 학습 화면에서 TP1/TP2 말풍선형 추천 UI를 볼 수 있다.
 
-### T11-B. 학습 화면 + 오른쪽 코치 채팅창
+### FE4~FE5. 학습 화면 + 오른쪽 코치 채팅창
 
 - `LearningActivityPage` 구현
 - `ProblemStage` 구현
@@ -458,7 +458,7 @@ sendChat({
 완료 기준:
 - 학습 화면에서 캐릭터를 클릭하면 오른쪽 채팅창이 열린다.
 
-### T11-C. 메시지 타입 렌더링
+### FE6. 메시지 타입 렌더링
 
 - `text` 말풍선
 - `choices` 버튼
@@ -469,7 +469,7 @@ sendChat({
 완료 기준:
 - PRD에서 정의한 챗봇 UI 요소 4종을 모두 렌더링한다.
 
-### T11-D. mock transport 케이스 1/2 시연
+### FE7. mock transport 케이스 1/2 시연
 
 - 케이스 1 TP1/TP4 mock 응답 작성
 - 케이스 2 TP1/TP4 mock 응답 작성
@@ -479,7 +479,7 @@ sendChat({
 완료 기준:
 - 백엔드 없이도 케이스 1/2의 주요 화면 흐름을 브라우저에서 볼 수 있다.
 
-### T11-E. 실제 POST /chat + SSE 연동
+### FE8~FE9. 실제 POST /chat + SSE 연동
 
 - T10 `POST /chat` 연결
 - `fetch()` 기반 SSE 파서 구현
@@ -505,19 +505,33 @@ sendChat({
 
 ---
 
-## 13. TODO.md 반영 제안
+## 13. TODO_FRONTEND 관리 기준
 
-현재 `TODO.md`에는 React + Vite + TypeScript on Vercel 결정과 프론트 문서 작성 완료 상태를 반영했다.
-실제 구현 이슈를 만들 때는 아래 순서로 T11을 세분화하는 것을 권장한다.
+프론트엔드 작업 목록은 백엔드 중심 `TODO.md`와 분리해 루트의 `TODO_FRONTEND.md`에서 관리한다.
+실제 구현 이슈를 만들 때는 `TODO_FRONTEND.md`의 FE1~FE12 순서를 기준으로 쪼갠다.
 
 ```md
-### T11-A. 오늘의 학습 화면 + AI 코치 플로팅 UI
+FE1. 프론트 앱 초기 세팅
 
-### T11-B. 학습 화면 + 오른쪽 코치 채팅창
+FE2. 공통 타입과 목업 데이터
 
-### T11-C. 메시지 타입 렌더링
+FE3. 태블릿 쉘과 오늘의 학습 화면
 
-### T11-D. mock transport 케이스 1/2 시연
+FE4. 학습 진행 화면
 
-### T11-E. 실제 POST /chat + SSE 연동
+FE5. AI 코치 레이어
+
+FE6. 메시지 타입 렌더링
+
+FE7. mock transport 기반 케이스 시연
+
+FE8. 실제 API 클라이언트와 SSE 연결
+
+FE9. 프론트-백엔드 연결 합의 필요 항목
+
+FE10. UX 상태와 예외 처리
+
+FE11. 접근성·반응형·시각 검수
+
+FE12. 테스트와 배포
 ```
