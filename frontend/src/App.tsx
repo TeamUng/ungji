@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
 import { CoachLayer } from "@/components/coach/CoachLayer";
-import { CaseSelector } from "@/components/dev/CaseSelector";
 import { LearningActivityPage } from "@/components/learning/LearningActivityPage";
 import { TabletFrame } from "@/components/shell/TabletFrame";
 import { TodayLearningPage } from "@/components/today/TodayLearningPage";
@@ -80,10 +79,8 @@ function App() {
   return (
     <main className="min-h-screen bg-[#eef3f8] px-4 py-5 text-slate-950 sm:px-6 lg:px-8">
       <section className="mx-auto flex min-h-[calc(100vh-2.5rem)] max-w-7xl items-center justify-center">
-        <TabletFrame>
+        <TabletFrame activeCaseId={caseId} onCaseChange={handleCaseChange}>
           <div className="relative flex min-h-0 flex-1 flex-col overflow-hidden bg-[#f9e78e]">
-            <CaseSelector activeCaseId={caseId} onCaseChange={handleCaseChange} />
-
             {view === "today" ? (
               <TodayLearningPage
                 studentCase={activeCase}

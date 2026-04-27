@@ -39,16 +39,18 @@ button {
 }
 
 .case-selector {
-  position: absolute;
-  top: 16px;
-  right: 18px;
-  z-index: 30;
   display: flex;
   gap: 8px;
   border-radius: 999px;
   background: rgb(255 255 255 / 0.72);
   padding: 5px;
   box-shadow: 0 8px 24px rgb(15 23 42 / 0.12);
+}
+
+.topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
 .case-tab {
@@ -200,12 +202,12 @@ button {
 
 .learning-header button,
 .learning-actions button {
-  min-height: 42px;
+  min-height: 38px;
   border-radius: 14px;
   background: #111827;
-  padding: 0 16px;
+  padding: 0 14px;
   color: #ffffff;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 900;
 }
 
@@ -317,6 +319,10 @@ button {
   display: flex;
   justify-content: flex-end;
   gap: 10px;
+  align-self: start;
+  border-radius: 18px;
+  background: rgb(255 255 255 / 0.52);
+  padding: 8px;
 }
 
 .learning-actions button:nth-child(1) {
@@ -325,7 +331,7 @@ button {
 }
 
 .learning-actions button:nth-child(2) {
-  background: #0284c7;
+  background: #0f172a;
 }
 
 .coach-widget {
@@ -630,9 +636,8 @@ button {
     border-radius: 24px;
   }
 
-  .case-selector {
-    top: 68px;
-    right: 14px;
+  .topbar-actions .case-selector {
+    display: none;
   }
 
   .tablet-shell .mt-5.grid {
