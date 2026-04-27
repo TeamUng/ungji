@@ -36,8 +36,6 @@ frontend/
   package.json
   vite.config.ts
   tsconfig.json
-  tailwind.config.ts
-  postcss.config.js
   vercel.json
   src/
     main.tsx

@@ -39,8 +39,6 @@ frontend/
   package.json                # React + Vite + TypeScript + Tailwind CSS 앱
   vite.config.ts              # Vite 설정
   tsconfig.json               # TypeScript 설정
-  tailwind.config.ts          # Tailwind 설정
-  postcss.config.js           # Tailwind/PostCSS 설정
   vercel.json                 # Vite SPA deep link rewrite 설정
   src/
     main.tsx                  # 프론트 앱 엔트리

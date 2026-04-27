@@ -1,0 +1,220 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", "Pretendard", "Noto Sans KR", system-ui, sans-serif;
+}
+
+html {
+  background: #eef3f8;
+}
+
+body {
+  min-width: 320px;
+  margin: 0;
+}
+
+button {
+  cursor: pointer;
+}
+
+.tablet-shell {
+  display: flex;
+  width: min(100%, 1180px);
+  aspect-ratio: 16 / 9;
+  min-height: 660px;
+  max-height: calc(100vh - 40px);
+  overflow: hidden;
+  flex-direction: column;
+  border: 12px solid #101720;
+  border-radius: 34px;
+  background: #f9e78e;
+  box-shadow:
+    0 30px 90px rgb(15 23 42 / 0.28),
+    inset 0 0 0 1px rgb(255 255 255 / 0.08);
+}
+
+.subject-button {
+  width: 100%;
+  min-height: 50px;
+  border-radius: 18px;
+  background: transparent;
+  padding: 0 16px;
+  text-align: left;
+  font-size: 15px;
+  font-weight: 800;
+  color: #475569;
+  transition:
+    background 160ms ease,
+    color 160ms ease,
+    transform 160ms ease;
+}
+
+.subject-button:hover {
+  background: #f1f5f9;
+}
+
+.subject-button-active {
+  background: #263746;
+  color: #ffffff;
+  box-shadow: 0 12px 24px rgb(15 23 42 / 0.2);
+}
+
+.day-chip {
+  display: grid;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  border-radius: 999px;
+  background: #f1f5f9;
+  color: #64748b;
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.day-chip-active {
+  background: #ff8a00;
+  color: #ffffff;
+}
+
+.hero-card {
+  position: relative;
+  min-height: 250px;
+  overflow: hidden;
+  border-radius: 30px;
+  background:
+    linear-gradient(135deg, rgb(5 132 199 / 0.92), rgb(12 180 220 / 0.92)),
+    radial-gradient(circle at 78% 78%, #16a34a 0 18%, transparent 19%);
+  padding: 44px;
+  box-shadow: 0 18px 44px rgb(14 116 144 / 0.24);
+}
+
+.task-card {
+  min-height: 188px;
+  border-radius: 22px;
+  background: rgb(255 255 255 / 0.92);
+  padding: 18px;
+  box-shadow: 0 16px 34px rgb(15 23 42 / 0.08);
+}
+
+.coach-widget {
+  position: absolute;
+  right: 28px;
+  bottom: 24px;
+  z-index: 20;
+  display: flex;
+  align-items: flex-end;
+  gap: 18px;
+}
+
+.coach-bubble {
+  max-width: 324px;
+  border-radius: 28px;
+  background: #ffffff;
+  padding: 28px 30px;
+  box-shadow: 0 18px 46px rgb(15 23 42 / 0.14);
+}
+
+.coach-bubble p {
+  margin: 0 0 16px;
+  font-size: clamp(20px, 2.3vw, 30px);
+  font-weight: 900;
+  line-height: 1.25;
+  color: #111827;
+}
+
+.coach-bubble button {
+  min-height: 48px;
+  border-radius: 16px;
+  background: #111827;
+  padding: 0 18px;
+  color: #ffffff;
+  font-size: 18px;
+  font-weight: 900;
+}
+
+.coach-face {
+  display: grid;
+  width: 96px;
+  height: 96px;
+  place-items: center;
+  border-radius: 999px;
+  background: radial-gradient(circle at 36% 28%, #fff3b0, #f6b72f 56%, #c67a09);
+  color: #3a2500;
+  font-size: 20px;
+  font-weight: 1000;
+  box-shadow: 0 18px 34px rgb(124 76 7 / 0.28);
+  animation: coach-idle 2.6s ease-in-out infinite;
+}
+
+@keyframes coach-idle {
+  0%,
+  100% {
+    transform: translateY(0) rotate(-1deg);
+  }
+
+  50% {
+    transform: translateY(-7px) rotate(1deg);
+  }
+}
+
+@media (max-width: 980px) {
+  .tablet-shell {
+    aspect-ratio: auto;
+    min-height: calc(100vh - 40px);
+    max-height: none;
+  }
+
+  .tablet-shell > div {
+    grid-template-columns: 1fr;
+  }
+
+  .tablet-shell aside:first-child {
+    display: none;
+  }
+
+  .tablet-shell section {
+    grid-template-columns: 1fr;
+    padding: 18px;
+  }
+
+  .tablet-shell .task-card {
+    min-height: 160px;
+  }
+}
+
+@media (max-width: 760px) {
+  .tablet-shell {
+    border-width: 6px;
+    border-radius: 24px;
+  }
+
+  .tablet-shell .mt-5.grid {
+    grid-template-columns: 1fr;
+  }
+
+  .hero-card {
+    min-height: 220px;
+    padding: 28px;
+  }
+
+  .coach-widget {
+    right: 16px;
+    bottom: 16px;
+    gap: 10px;
+  }
+
+  .coach-bubble {
+    max-width: min(68vw, 280px);
+    padding: 20px;
+  }
+
+  .coach-bubble button {
+    font-size: 15px;
+  }
+
+  .coach-face {
+    width: 74px;
+    height: 74px;
+    font-size: 16px;
+  }
+}

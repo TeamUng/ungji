@@ -35,6 +35,17 @@ React + Vite + TypeScript + Tailwind CSS 기반 웹 UI로 스마트올 태블릿
 
 ---
 
+## 권장 진행 흐름
+
+- [x] `ay-front` 브랜치에서 프론트 문서/스펙을 먼저 통일한다.
+- [x] FE1 최소 Vite 앱을 만들고 로컬 빌드 가능 상태를 확인한다.
+- [ ] Vercel에서 Root Directory를 `frontend`로 지정해 `ay-front` Preview 배포를 먼저 확인한다.
+- [ ] Preview URL을 보면서 FE2~FE7 mock-first UI를 순서대로 구현한다.
+- [ ] 백엔드 T10 `POST /chat` + SSE가 준비되면 FE8 실제 API 연결로 전환한다.
+- [ ] 케이스 1/2 시연이 안정화되면 `dev`로 PR을 올리고, 머지 후 Vercel 기준 브랜치를 `dev`로 전환하거나 재배포한다.
+
+---
+
 ## FE0. 프론트 기획/스펙 정리
 
 **담당 파일**: `docs/FRONTEND_USER_FLOW.md`, `docs/FRONTEND_SPEC.md`, `docs/ARCHITECTURE_REVIEW.md`, `TODO_FRONTEND.md`
@@ -54,15 +65,15 @@ React + Vite + TypeScript + Tailwind CSS 기반 웹 UI로 스마트올 태블릿
 
 **담당 파일**: `frontend/`
 
-- [ ] `frontend/` React + Vite + TypeScript 앱 생성 후 Tailwind CSS 적용
-- [ ] Tailwind CSS 설치 및 설정 (`tailwind.config.ts`, `postcss.config.js`)
-- [ ] `frontend/vercel.json` 추가 — SPA rewrite 설정
-- [ ] `frontend/.env.example` 추가 — `VITE_CHAT_API_BASE_URL`, mock 사용 플래그
-- [ ] `frontend/src/styles/app.css`에 Tailwind base/components/utilities 연결
-- [ ] 절대경로 alias 설정 검토 (`@/components`, `@/api` 등)
-- [ ] `package.json` scripts 정리 — `dev`, `build`, `preview`, `typecheck`
-- [ ] README 또는 프론트 실행 문서 추가
-- [ ] **완료 기준**: `cd frontend && npm install && npm run dev`로 빈 앱 실행 가능
+- [x] `frontend/` React + Vite + TypeScript 앱 생성 후 Tailwind CSS 적용
+- [x] Tailwind CSS 설치 및 Vite 플러그인 설정 (`tailwindcss`, `@tailwindcss/vite`)
+- [x] `frontend/vercel.json` 추가 — SPA rewrite 설정
+- [x] `frontend/.env.example` 추가 — `VITE_CHAT_API_BASE_URL`, mock 사용 플래그
+- [x] `frontend/src/styles/app.css`에 `@import "tailwindcss";` 연결
+- [x] 절대경로 alias 설정 검토 (`@/components`, `@/api` 등)
+- [x] `package.json` scripts 정리 — `dev`, `build`, `preview`, `typecheck`
+- [x] README 또는 프론트 실행 문서 추가
+- [x] **완료 기준**: `cd frontend && npm install && npm run dev`로 빈 앱 실행 가능
 
 ---
 
