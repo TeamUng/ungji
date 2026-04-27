@@ -2,6 +2,30 @@
 
 Chatbot-styled study coach for Korean elementary schoolers.
 
+---
+
+## 새 팀원이라면 — 여기서 시작하세요
+
+**Step 1. 레포 클론 + 환경 세팅** → 아래 [First-time setup](#first-time-setup) 따라 진행
+
+**Step 2. AI 에이전트 실행**
+
+    # Claude Code 사용자
+    claude
+
+    # OpenAI Codex CLI 사용자
+    codex
+
+**Step 3. 에이전트에게 한 마디**
+
+    "TODO.md 확인하고 T번호 작업 시작해줘"
+
+에이전트가 현재 상태·브랜치 규칙·커밋 형식·워크로그 작성까지 자동으로 안내합니다.
+
+> 협업 규칙 전체: `docs/TEAM_WORKFLOW.md`
+
+---
+
 ## Requirements
 
 - Python 3.12
