@@ -60,8 +60,8 @@ PRD 케이스 1·2가 처음부터 끝까지 작동하는 것.
 - [x] `app/clients/` 디렉토리 생성 및 `__init__.py` 추가
 - [x] `app/clients/upstage.py` — settings에서 키 읽어서 `ChatUpstage` 인스턴스 생성
 - [x] `app/clients/upstage.py` — LangSmith 트레이싱 활성화 설정
-- [ ] `tests/test_upstage_client.py` 작성 — 클라이언트 초기화 검증 (실제 API 호출은 mock)
-- [ ] **완료 기준**: `from app.clients.upstage import llm` import 정상, `uv run pytest tests/test_upstage_client.py` 통과
+- [x] `tests/test_upstage_client.py` 작성 — 클라이언트 초기화 검증 (실제 API 호출은 mock)
+- [x] **완료 기준**: `from app.clients.upstage import llm` import 정상, `uv run pytest tests/test_upstage_client.py` 통과
 
 ---
 
