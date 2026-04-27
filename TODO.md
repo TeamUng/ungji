@@ -90,9 +90,35 @@ PRD 케이스 1·2가 처음부터 끝까지 작동하는 것.
 
 ---
 
+## Phase 1.5 — 공통 응답 골격 + 세그먼트 정책
+
+> T5~T7을 각자 구현하기 전에, 세그먼트별 응답을 안정적으로 갈아 끼울 수 있는 공통 틀을 먼저 만든다.
+> 세부 문구와 날카로운 코칭 기획은 팀 합의 후 `docs/SEGMENT_RESPONSE_POLICY.md` 기준으로 나눠 고도화한다.
+
+---
+
+### T4.5. 응답 builder + 세그먼트 출력 정책
+
+> 메시지 타입과 선택지 구조는 코드에서 안정적으로 고정하고, 세그먼트별 문구·힌트 깊이·선택지 label은 팀 합의 후 고도화한다.
+
+**브랜치**: `feature/T4-5-response-policy`
+**담당 파일**: `docs/SEGMENT_RESPONSE_POLICY.md`, `app/services/nodes/common.py`, `tests/test_response_builders.py`
+**의존**: Phase 0, T3 | **블로킹**: T5, T6, T7
+
+- [x] `docs/SEGMENT_RESPONSE_POLICY.md` 작성 — 세그먼트별 출력 방향과 TP별 기본 정책 정리
+- [ ] `app/services/nodes/common.py` — `TextMessage`, `ChoicesMessage`, `ImageCardMessage`, `HintCardMessage` 생성 helper 구현
+- [ ] `app/services/nodes/common.py` — 선택지 `id`는 stable snake_case, 학생 노출 문구는 `label`로 분리
+- [ ] `app/services/nodes/common.py` — `segment + grade_group + current_touchpoint` 기반 기본 응답 정책 선택 helper 구현
+- [ ] `tests/test_response_builders.py` 작성 — 4개 메시지 타입 builder 검증
+- [ ] `tests/test_response_builders.py` 작성 — 내부 세그먼트명이 응답 label/content에 노출되지 않는지 검증
+- [ ] `tests/test_response_builders.py` 작성 — 케이스 1·2 기본 placeholder 응답 타입 검증
+- [ ] **완료 기준**: `uv run pytest tests/test_response_builders.py` 통과, T5~T7 노드가 공통 helper를 import해 사용할 수 있음
+
+---
+
 ## Phase 2 — 노드 구현 (T1·T2·T3 완료 후, T4~T8 병렬 진행)
 
-> T4~T8은 서로 간 의존 없음. 동시 진행 가능.
+> T4~T8은 서로 간 의존 없음. 다만 T5~T7은 T4.5 공통 응답 골격을 먼저 공유하면 세그먼트별 고도화 시 충돌을 줄일 수 있다.
 
 ---
 
@@ -129,7 +155,7 @@ PRD 케이스 1·2가 처음부터 끝까지 작동하는 것.
 - [ ] `tests/test_tp1.py` — 케이스 1과 케이스 2의 선택지 내용이 다른지 검증
 - [ ] `tp1.py` — `get_persona()` + `get_coaching_strategy()` 조합으로 시스템 프롬프트 구성
 - [ ] `tp1.py` — 학생 이름·선호 과목·AI 예상점수·오늘 태스크 컨텍스트 주입
-- [ ] `tp1.py` — 세그먼트별 선택지 생성 (PRD 1-5 기준 4개 세그먼트 × 선택지)
+- [ ] `tp1.py` — 세그먼트별 선택지 생성 (PRD 1-5 + `docs/SEGMENT_RESPONSE_POLICY.md` 기준 4개 세그먼트 × 선택지)
 - [ ] **완료 기준**: `uv run pytest tests/test_tp1.py` 통과, 응답에 `TextMessage` + `ChoicesMessage` 포함 확인
 
 ---
@@ -156,6 +182,7 @@ PRD 케이스 1·2가 처음부터 끝까지 작동하는 것.
 - [ ] `tp4.py` — 2단계: 케이스 1 국어 원인별 분기 코칭
 - [ ] `tp4.py` — 2단계: 케이스 2 수학 원인별 분기 코칭 (해설 데이터 참조)
 - [ ] `tp4.py` — 3단계: teach-back 유도 (수학, 마지막 단계에서 학생 설명 요청)
+- [ ] `tp4.py` — 내부 세그먼트명 노출 없이 `docs/SEGMENT_RESPONSE_POLICY.md`의 세그먼트별 출력 형태 반영
 - [ ] **완료 기준**: `uv run pytest tests/test_tp4.py` 통과, `HintCardMessage`·`ImageCardMessage` 타입 포함 확인
 
 ---

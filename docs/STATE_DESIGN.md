@@ -179,6 +179,7 @@ class ChatState(TypedDict):
 [TP 노드] State 전체를 읽어 LLM 프롬프트 구성
   · grade_group → 페르소나/말투 시스템 프롬프트 (personas.py)
   · segment → 코칭 전략 프롬프트 (coaching.py)
+  · segment + current_touchpoint → 출력 형태 정책 (docs/SEGMENT_RESPONSE_POLICY.md)
   · student_profile, today_tasks 등 → 개인화 컨텍스트 주입
   · chat_history → 대화 맥락 유지
         ↓
