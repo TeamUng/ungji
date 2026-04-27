@@ -9,18 +9,21 @@
 
 MVP 프론트엔드는 `frontend/` 하위에 별도 앱으로 구성한다.
 
-권장:
+확정:
 - React
 - Vite
 - TypeScript
 - CSS Modules 또는 일반 CSS
+- Vercel 정적 배포
 
 선택 이유:
 - 현재 MVP는 SEO/서버 렌더링보다 채팅 상태, 선택지 클릭, SSE 수신, 메시지 렌더링이 핵심이다.
 - FastAPI 백엔드와 독립적으로 mock transport를 붙여 먼저 UI 시연이 가능하다.
 - T10 API가 완성된 뒤 실제 `POST /chat` + SSE 연동으로 교체하기 쉽다.
+- Vercel은 Vite 정적 앱 배포를 지원하므로, 배포 플랫폼은 기존 아키텍처 방향과 동일하게 유지한다.
 
-Next.js App Router도 가능하지만, 이번 MVP 화면은 대부분 클라이언트 인터랙션이라 Vite가 더 단순하다.
+Next.js App Router는 장기적으로 로그인, 학부모/교사 리포트, 관리자 화면처럼 서버 렌더링과 복잡한 라우팅이 필요한 시점에 재검토한다.
+현재 MVP에서는 React + Vite + TypeScript를 공식 프론트 스택으로 사용한다.
 
 ---
 
@@ -31,6 +34,7 @@ frontend/
   package.json
   vite.config.ts
   tsconfig.json
+  vercel.json
   src/
     main.tsx
     App.tsx
@@ -87,6 +91,20 @@ frontend/
       story-01.png
       ratio-visual.png
       coach-avatar.png
+```
+
+`vercel.json`은 Vite SPA의 직접 URL 접근과 새로고침을 지원하기 위해 아래처럼 둔다.
+
+```json
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}
 ```
 
 ---
@@ -419,21 +437,28 @@ sendChat({
 
 ## 11. MVP 구현 순서
 
-### T11-A. 프론트 UI 목업 + mock transport
+### T11-A. 오늘의 학습 화면 + AI 코치 플로팅 UI
 
 - React + Vite + TypeScript 앱 생성
 - `TabletFrame` 구현
 - `TodayLearningPage` 구현
-- `LearningActivityPage` 구현
 - `CoachAvatarButton` 구현
 - `CoachFloatingBubble` 구현
-- `CoachDrawer` 구현
-- mock 응답으로 케이스 1/2 흐름 시연
 
 완료 기준:
-- 백엔드 없이도 케이스 1/2의 주요 화면 흐름을 브라우저에서 볼 수 있다.
+- 오늘의 학습 화면에서 TP1/TP2 말풍선형 추천 UI를 볼 수 있다.
 
-### T11-B. 메시지 타입 렌더링
+### T11-B. 학습 화면 + 오른쪽 코치 채팅창
+
+- `LearningActivityPage` 구현
+- `ProblemStage` 구현
+- `CoachDrawer` 구현
+- 오른쪽 하단 캐릭터 클릭 시 채팅창 열림/닫힘 처리
+
+완료 기준:
+- 학습 화면에서 캐릭터를 클릭하면 오른쪽 채팅창이 열린다.
+
+### T11-C. 메시지 타입 렌더링
 
 - `text` 말풍선
 - `choices` 버튼
@@ -444,7 +469,17 @@ sendChat({
 완료 기준:
 - PRD에서 정의한 챗봇 UI 요소 4종을 모두 렌더링한다.
 
-### T11-C. 실제 API/SSE 연동
+### T11-D. mock transport 케이스 1/2 시연
+
+- 케이스 1 TP1/TP4 mock 응답 작성
+- 케이스 2 TP1/TP4 mock 응답 작성
+- TP2/TP3/TP5 기본 mock 응답 작성
+- 백엔드 없이 선택지 클릭 후 다음 mock 응답 연결
+
+완료 기준:
+- 백엔드 없이도 케이스 1/2의 주요 화면 흐름을 브라우저에서 볼 수 있다.
+
+### T11-E. 실제 POST /chat + SSE 연동
 
 - T10 `POST /chat` 연결
 - `fetch()` 기반 SSE 파서 구현
@@ -472,7 +507,8 @@ sendChat({
 
 ## 13. TODO.md 반영 제안
 
-현재 `TODO.md`의 T11은 하나의 큰 항목으로 되어 있다. 실제 구현 시 아래처럼 세분화하는 것을 권장한다.
+현재 `TODO.md`에는 React + Vite + TypeScript on Vercel 결정과 프론트 문서 작성 완료 상태를 반영했다.
+실제 구현 이슈를 만들 때는 아래 순서로 T11을 세분화하는 것을 권장한다.
 
 ```md
 ### T11-A. 오늘의 학습 화면 + AI 코치 플로팅 UI
@@ -485,4 +521,3 @@ sendChat({
 
 ### T11-E. 실제 POST /chat + SSE 연동
 ```
-

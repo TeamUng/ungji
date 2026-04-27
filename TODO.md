@@ -252,23 +252,31 @@ PRD 케이스 1·2가 처음부터 끝까지 작동하는 것.
 
 ---
 
-## Phase 5 — 프론트엔드 (T10 완료 후, 스택 별도 논의)
+## Phase 5 — 프론트엔드 (React + Vite + TypeScript on Vercel)
 
 ---
 
 ### T11. 챗봇 UI
 
 **브랜치**: `feature/T11-frontend`
-**담당 파일**: 별도 결정 (Next.js App Router 또는 React+Vite)
+**담당 파일**: `frontend/` 전체, `docs/FRONTEND_USER_FLOW.md`, `docs/FRONTEND_SPEC.md`
 **의존**: T10 | **블로킹**: 없음
 
-- [ ] 스택 결정 (Next.js App Router 또는 React+Vite)
-- [ ] 태블릿 비율 챗봇 UI 레이아웃 구현
-- [ ] SSE 스트리밍 수신 및 메시지 순차 렌더링
+- [x] 스택 결정 — React + Vite + TypeScript on Vercel
+- [x] 프론트 유저 흐름 문서 작성 — `docs/FRONTEND_USER_FLOW.md`
+- [x] 프론트 구현 스펙 문서 작성 — `docs/FRONTEND_SPEC.md`
+- [ ] `frontend/` React+Vite 앱 생성
+- [ ] 태블릿 비율 오늘의 학습 화면 구현
+- [ ] 학습 진행 화면 구현
+- [ ] 오른쪽 하단 AI 코치 캐릭터 버튼 구현
+- [ ] TP1/TP2용 플로팅 말풍선 구현
+- [ ] TP3/TP4/TP5용 오른쪽 채팅창 구현
 - [ ] `text` 타입 — 말풍선 컴포넌트
 - [ ] `choices` 타입 — 선택지 버튼 컴포넌트 (클릭 시 `POST /chat` 재호출)
 - [ ] `image_card` 타입 — 이미지 카드 컴포넌트
 - [ ] `hint_card` 타입 — 단계별 힌트 카드 컴포넌트 (스텝 순서 표시)
+- [ ] mock transport로 케이스 1 / 케이스 2 흐름 시연
+- [ ] SSE 스트리밍 수신 및 메시지 순차 렌더링
 - [ ] 학생 선택 드롭다운 (student_id 전달용, mock 학생 목록)
 - [ ] 케이스 1 / 케이스 2 전환 가능하게
 - [ ] **완료 기준**: 케이스 1·2 전체 흐름 브라우저에서 처음부터 끝까지 동작 확인

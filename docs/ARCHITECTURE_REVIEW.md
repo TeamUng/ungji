@@ -8,7 +8,7 @@
 
 | 영역 | 선택 | 비고 |
 | --- | --- | --- |
-| 프론트엔드 | Next.js (App Router) on Vercel | 팀 숙련도에 따라 React+Vite도 가능 |
+| 프론트엔드 | React + Vite + TypeScript on Vercel | MVP는 태블릿 화면 UI 목업과 클라이언트 인터랙션 중심이므로 Vite SPA로 구현 |
 | 백엔드 | FastAPI + LangGraph (서버 상태 관리) | 현재 스캐폴드 그대로 활용 |
 | LLM | langchain-upstage (ChatUpstage) | Upstage Solar Pro, OpenAI-compatible |
 | 상태/DB | JSON 목업 데이터 + LangGraph InMemorySaver | DB 없이 MVP 진행, 추후 Supabase 전환 가능 |
@@ -35,6 +35,28 @@
 ## 3. 확정 디렉토리 구조
 
 ```
+frontend/
+  package.json                # React + Vite + TypeScript 앱
+  vite.config.ts              # Vite 설정
+  tsconfig.json               # TypeScript 설정
+  vercel.json                 # Vite SPA deep link rewrite 설정
+  src/
+    main.tsx                  # 프론트 앱 엔트리
+    App.tsx                   # 라우팅/케이스 전환 루트
+    types/                    # ChatRequest/Response, 학습 태스크 타입
+    api/                      # mock transport + POST /chat SSE 클라이언트
+    hooks/                    # useChatSession, useCoachLayer
+    components/
+      shell/                  # 태블릿 프레임, 스마트올 상단바
+      today/                  # 오늘의 학습 화면과 태스크 카드
+      learning/               # 학습 진행 화면 목업
+      coach/                  # 캐릭터, 플로팅 말풍선, 오른쪽 채팅창
+      messages/               # text, choices, image_card, hint_card 렌더러
+      dev/                    # 케이스/TP 전환용 개발 컨트롤
+    data/                     # 케이스 1·2 mock 응답
+    styles/                   # 전역 스타일
+  public/mock/                # 목업 이미지·캐릭터 에셋
+
 app/
   main.py                     # FastAPI 앱
   core/                       # config, constants, enums, logging ✅ 완료
@@ -92,6 +114,14 @@ app/
 ---
 
 ## 5. 논의 안건 및 결과
+
+### 5-0. 프론트엔드 스택
+
+| 안건 | 선택지 | 결과 |
+| --- | --- | --- |
+| 프론트엔드 앱 구조 | A) Next.js App Router on Vercel<br>B) React + Vite + TypeScript on Vercel | **B) React + Vite + TypeScript on Vercel** — MVP는 SEO/SSR보다 태블릿 목업, 캐릭터 레이어, 선택지 클릭, SSE 수신 같은 클라이언트 상호작용이 핵심이므로 Vite SPA로 빠르게 구현 |
+| 배포 방식 | A) Vercel<br>B) FastAPI 정적 파일 서빙 | **A) Vercel** — Vite 정적 빌드를 Vercel에 배포하고, FastAPI 백엔드는 별도 실행/배포한다 |
+| 구현 순서 | A) 실제 API 완성 후 프론트 시작<br>B) mock transport로 UI 먼저 구현 후 T10 연동 | **B) mock transport 우선** — T10 완료 전에도 케이스 1·2 화면 흐름을 브라우저에서 시연 가능하게 만든다 |
 
 ### 5-1. API 설계
 
@@ -197,4 +227,4 @@ app/
 | Phase 2 | T4(classify), T5(TP1), T6(TP4), T7(TP2/3/5), T8(conftest) | 🔲 Phase 1 완료 후 |
 | Phase 3 | T9(LangGraph StateGraph 조립) | 🔲 Phase 2 완료 후 |
 | Phase 4 | T10(POST /chat + SSE) | 🔲 Phase 3 완료 후 |
-| Phase 5 | T11(프론트엔드 챗봇 UI) | 🔲 Phase 4 완료 후 |
+| Phase 5 | T11(React+Vite 프론트엔드 AI 코치 UI) | 🔲 T10 전 mock transport로 UI 선행 가능, T10 완료 후 실제 SSE 연동 |
