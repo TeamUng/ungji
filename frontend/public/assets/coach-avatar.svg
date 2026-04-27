@@ -1,37 +1,29 @@
-<svg width="320" height="270" viewBox="0 0 320 270" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+<svg width="340" height="285" viewBox="0 0 340 285" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
   <title id="title">Ungji AI coach mascot</title>
-  <desc id="desc">A simple original orange bear-like chatbot face with closed smiling eyes.</desc>
+  <desc id="desc">A simple original orange chatbot face with separated round ears, wide closed eyes, and an open smiling mouth.</desc>
   <defs>
-    <linearGradient id="orange" x1="74" y1="33" x2="236" y2="248" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#FFB02A"/>
-      <stop offset="0.58" stop-color="#FFA51D"/>
-      <stop offset="1" stop-color="#F58A00"/>
+    <linearGradient id="orange" x1="72" y1="31" x2="260" y2="262" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFB22B"/>
+      <stop offset="0.58" stop-color="#FFA51B"/>
+      <stop offset="1" stop-color="#F58D00"/>
     </linearGradient>
-    <radialGradient id="face" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(132 108) rotate(55) scale(170 151)">
-      <stop stop-color="#FFE7B2"/>
-      <stop offset="1" stop-color="#FFD99A"/>
+    <radialGradient id="face" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(136 111) rotate(52) scale(178 155)">
+      <stop stop-color="#FFE8B5"/>
+      <stop offset="1" stop-color="#FFD89A"/>
     </radialGradient>
-    <filter id="shadow" x="13" y="14" width="294" height="248" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
-      <feFlood flood-opacity="0" result="BackgroundImageFix"/>
-      <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
-      <feOffset dy="10"/>
-      <feGaussianBlur stdDeviation="10"/>
-      <feColorMatrix type="matrix" values="0 0 0 0 0.55 0 0 0 0 0.31 0 0 0 0 0.02 0 0 0 0.18 0"/>
-      <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_104_6"/>
-      <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_104_6" result="shape"/>
-    </filter>
   </defs>
 
-  <g filter="url(#shadow)">
-    <path d="M160 53C176 38 199 28 224 28C266 28 300 63 300 105C300 124 293 142 282 156C290 174 294 194 291 213C286 244 259 252 226 246C205 253 183 257 160 257C137 257 115 253 94 246C61 252 34 244 29 213C26 194 30 174 38 156C27 142 20 124 20 105C20 63 54 28 96 28C121 28 144 38 160 53Z" fill="url(#orange)"/>
-    <path d="M41 135C39 96 61 53 96 42C122 34 145 43 160 63C175 43 198 34 224 42C259 53 281 96 279 135C276 198 226 239 160 239C94 239 44 198 41 135Z" fill="url(#orange)"/>
-    <ellipse cx="160" cy="150" rx="107" ry="82" fill="url(#face)"/>
+  <g>
+    <ellipse cx="94" cy="103" rx="80" ry="84" fill="url(#orange)"/>
+    <ellipse cx="246" cy="103" rx="80" ry="84" fill="url(#orange)"/>
+    <path d="M41 144C41 89 91 60 170 60C249 60 299 89 299 144C299 218 246 263 170 263C94 263 41 218 41 144Z" fill="url(#orange)"/>
+    <ellipse cx="170" cy="158" rx="109" ry="83" fill="url(#face)"/>
 
-    <path d="M127 124L150 145L127 166" stroke="#0D0D0D" stroke-width="9" stroke-linecap="square" stroke-linejoin="miter"/>
-    <path d="M193 124L170 145L193 166" stroke="#0D0D0D" stroke-width="9" stroke-linecap="square" stroke-linejoin="miter"/>
+    <path d="M121 128L144 149L121 170" stroke="#050505" stroke-width="9" stroke-linecap="square" stroke-linejoin="miter"/>
+    <path d="M219 128L196 149L219 170" stroke="#050505" stroke-width="9" stroke-linecap="square" stroke-linejoin="miter"/>
 
-    <path d="M130 174C146 178 174 178 190 174C196 205 179 222 160 222C141 222 124 205 130 174Z" fill="#FF9AA2"/>
-    <path d="M132 173C148 176 172 176 188 173" stroke="#FF9AA2" stroke-width="10" stroke-linecap="round"/>
-    <path d="M138 188C151 198 171 198 184 188" stroke="#FF7F8A" stroke-width="5" stroke-linecap="round" opacity="0.5"/>
+    <path d="M134 179C148 186 192 186 206 179C207 211 188 230 170 230C152 230 133 211 134 179Z" fill="#903024"/>
+    <path d="M144 203C157 215 183 215 196 203C191 220 181 230 170 230C159 230 149 220 144 203Z" fill="#FF8F9C"/>
+    <path d="M139 181C151 185 189 185 201 181C194 190 146 190 139 181Z" fill="#FFFFFF" opacity="0.9"/>
   </g>
 </svg>
