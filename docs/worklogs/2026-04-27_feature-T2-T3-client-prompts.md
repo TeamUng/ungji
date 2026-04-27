@@ -105,6 +105,14 @@
 | 9060174 | docs: CLAUDE.md 신설·AGENTS.md 최신화·TEAM_WORKFLOW 체크리스트 수정 |
 | f90b7c0 | docs: Claude Code·Codex CLI 양방향 에이전트 온보딩 체계 구축 |
 | ff0053d | docs: 새 팀원 빠른 시작 흐름 추가 |
+| 89e9bab | docs: 에이전트 온보딩 변경 워크로그 반영 |
+
+### 결과 및 확인
+
+```bash
+uv run pytest
+# 3 passed in 0.14s
+```
 
 ### 미완료 항목 (테스트 시나리오 확정 후 별도 진행)
 
