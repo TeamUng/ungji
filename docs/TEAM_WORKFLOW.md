@@ -285,17 +285,18 @@ TDD 순서로, 테스트 파일 먼저 작성해주세요.
   [ ] 구현 (TDD Green)
   [ ] uv run pytest 전체 통과 확인
 
-작업 완료
+작업 완료 (PR 생성 전, feature 브랜치에 커밋)
+  [ ] TODO.md 완료 항목 체크박스 업데이트 후 커밋
+  [ ] docs/worklogs/YYYY-MM-DD_브랜치명.md 작성 후 커밋
   [ ] 커밋 메시지 규칙 확인 (왜/무엇을/어느 파일)
-  [ ] PR 생성 (템플릿 준수, closes #이슈번호)
+  [ ] PR 생성 (템플릿 준수, closes #이슈번호, 워크로그 체크박스 확인)
   [ ] 리뷰어 지정 (1명 이상)
 
 머지 후
-  [ ] 브랜치 삭제
-  [ ] 이슈 close 확인
-  [ ] 로컬 feature 브랜치 정리
-  [ ] TODO.md 완료 항목 체크박스 업데이트
-  [ ] docs/worklogs/ 워크로그 파일 작성
+  [ ] GitHub에서 브랜치 삭제 (PR 머지 화면 "Delete branch" 클릭)
+  [ ] 이슈 close 확인 (closes # 자동 close 여부 확인)
+  [ ] 로컬 feature 브랜치 정리: git branch -d feature/T번호-설명
+  [ ] CLAUDE.md 현재 상태 섹션 업데이트 (완료된 T번호 반영)
 ```
 
 ---

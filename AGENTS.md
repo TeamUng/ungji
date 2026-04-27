@@ -23,12 +23,16 @@ Shared context for AI coding agents (Claude Code, Cursor, Gemini CLI, etc.) work
 
     app/
       main.py                   thin — wires middleware + routes only
-      core/                     cross-cutting (config, logging)
-      middleware/               FastAPI / Starlette middlewares
-      api/routes/               (future) one file per resource
-      schemas/                  (future) pydantic request/response models
-      services/                 (future) business logic — NO FastAPI imports
-      clients/                  (future) external API wrappers (Upstage, Supabase)
+      core/                     cross-cutting (config, logging, enums, constants) ✅
+      middleware/               FastAPI / Starlette middlewares ✅
+      schemas/                  ChatState, ChatRequest/Response, 응답 메시지 4종 ✅
+      services/
+        nodes/                  LangGraph 노드 (classify, tp1~tp5) — 구현 중
+        prompts/                학년별 페르소나·세그먼트별 코칭 전략 ✅
+      clients/
+        upstage.py              ChatUpstage 인스턴스 + LangSmith 트레이싱 ✅
+      data/                     JSON 목업 로더 + mock JSON — 구현 중
+      api/routes/               POST /chat 엔드포인트 — 구현 예정
 
 ## Conventions
 
@@ -92,5 +96,5 @@ The project has centrally configured logging (console + Better Stack + Discord a
 - No pre-commit hooks
 - No CI
 - No Docker
-- No streaming responses
 - No CORS (frontend comes later)
+- SSE streaming: POST /chat 응답에서 사용 예정 (T10 구현 시)
