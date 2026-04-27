@@ -9,6 +9,7 @@
 | 브랜치 | feature/T2-T3-client-prompts |
 | TODO 항목 | T2 (Upstage 클라이언트), T3 (프롬프트), docs (ARCHITECTURE_REVIEW 동기화 및 AI 에이전트 온보딩) |
 | PR 대상 | dev ← feature/T2-T3-client-prompts |
+| PR 링크 | T2/T3 구현: https://github.com/TeamUng/ungji/pull/5 / 에이전트 온보딩 문서: PR 생성 예정 |
 
 ---
 
@@ -113,6 +114,13 @@
 uv run pytest
 # 3 passed in 0.14s
 ```
+
+### TODO 반영 상태
+
+- `TODO.md`의 T2 핵심 구현 항목은 완료 체크됨
+- `TODO.md`의 T3 핵심 구현 항목은 완료 체크됨
+- `tests/test_upstage_client.py`, `tests/test_prompts.py`는 아직 미완료 항목으로 남김
+- Phase 1 메모에 "T2·T3 핵심 구현은 dev에 반영됨(#5), 테스트 보완은 미완료" 상태를 명시함
 
 ### 미완료 항목 (테스트 시나리오 확정 후 별도 진행)
 
