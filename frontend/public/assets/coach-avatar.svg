@@ -1,6 +1,6 @@
 <svg width="340" height="285" viewBox="0 0 340 285" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
   <title id="title">Ungji AI coach mascot</title>
-  <desc id="desc">A simple original orange chatbot face with separated round ears, wide closed eyes, and an open smiling mouth.</desc>
+  <desc id="desc">A simple original orange chatbot face with separated round ears, wide closed eyes, and a simple light pink smiling mouth.</desc>
   <defs>
     <linearGradient id="orange" x1="72" y1="31" x2="260" y2="262" gradientUnits="userSpaceOnUse">
       <stop stop-color="#FFB22B"/>
@@ -22,8 +22,6 @@
     <path d="M121 128L144 149L121 170" stroke="#050505" stroke-width="9" stroke-linecap="square" stroke-linejoin="miter"/>
     <path d="M219 128L196 149L219 170" stroke="#050505" stroke-width="9" stroke-linecap="square" stroke-linejoin="miter"/>
 
-    <path d="M134 179C148 186 192 186 206 179C207 211 188 230 170 230C152 230 133 211 134 179Z" fill="#903024"/>
-    <path d="M144 203C157 215 183 215 196 203C191 220 181 230 170 230C159 230 149 220 144 203Z" fill="#FF8F9C"/>
-    <path d="M139 181C151 185 189 185 201 181C194 190 146 190 139 181Z" fill="#FFFFFF" opacity="0.9"/>
+    <path d="M134 179C149 185 191 185 206 179C207 211 188 230 170 230C152 230 133 211 134 179Z" fill="#FF9FAB"/>
   </g>
 </svg>
