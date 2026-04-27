@@ -258,6 +258,6 @@ PRD 케이스 1·2가 처음부터 끝까지 작동하는 것.
 
 프론트엔드 작업은 백엔드 TODO와 분리해 `TODO_FRONTEND.md`에서 관리한다.
 
-- 스택: React + Vite + TypeScript on Vercel
+- 스택: React + Vite + TypeScript + Tailwind CSS on Vercel
 - 주요 문서: `docs/FRONTEND_USER_FLOW.md`, `docs/FRONTEND_SPEC.md`
 - 프론트 작업 목록: `TODO_FRONTEND.md`

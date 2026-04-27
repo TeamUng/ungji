@@ -13,17 +13,19 @@ MVP 프론트엔드는 `frontend/` 하위에 별도 앱으로 구성한다.
 - React
 - Vite
 - TypeScript
-- CSS Modules 또는 일반 CSS
+- Tailwind CSS
 - Vercel 정적 배포
 
 선택 이유:
+- 이 MVP는 데이터 CRUD 웹앱이 아니라 **AI 코치 UI 시연**이 핵심이다. 따라서 서버 렌더링/CRUD 프레임워크보다 화면 상태, 애니메이션, 선택지 클릭, 채팅 패널, SSE 메시지 렌더링을 빠르게 구현하는 구조가 유리하다.
 - 현재 MVP는 SEO/서버 렌더링보다 채팅 상태, 선택지 클릭, SSE 수신, 메시지 렌더링이 핵심이다.
+- Tailwind CSS는 태블릿 목업, 말풍선, 선택지 버튼, 오른쪽 채팅창처럼 스타일 변형이 많은 UI를 빠르게 잡는 데 유리하다.
 - FastAPI 백엔드와 독립적으로 mock transport를 붙여 먼저 UI 시연이 가능하다.
 - T10 API가 완성된 뒤 실제 `POST /chat` + SSE 연동으로 교체하기 쉽다.
 - Vercel은 Vite 정적 앱 배포를 지원하므로, 배포 플랫폼은 기존 아키텍처 방향과 동일하게 유지한다.
 
 Next.js App Router는 장기적으로 로그인, 학부모/교사 리포트, 관리자 화면처럼 서버 렌더링과 복잡한 라우팅이 필요한 시점에 재검토한다.
-현재 MVP에서는 React + Vite + TypeScript를 공식 프론트 스택으로 사용한다.
+현재 MVP에서는 React + Vite + TypeScript + Tailwind CSS를 공식 프론트 스택으로 사용한다.
 
 ---
 
@@ -34,6 +36,8 @@ frontend/
   package.json
   vite.config.ts
   tsconfig.json
+  tailwind.config.ts
+  postcss.config.js
   vercel.json
   src/
     main.tsx
@@ -439,7 +443,7 @@ sendChat({
 
 ### FE1~FE3. 앱 초기 세팅 + 오늘의 학습 화면
 
-- React + Vite + TypeScript 앱 생성
+- React + Vite + TypeScript 앱 생성 후 Tailwind CSS 적용
 - `TabletFrame` 구현
 - `TodayLearningPage` 구현
 - `CoachAvatarButton` 구현

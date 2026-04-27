@@ -8,7 +8,7 @@
 
 | 영역 | 선택 | 비고 |
 | --- | --- | --- |
-| 프론트엔드 | React + Vite + TypeScript on Vercel | MVP는 태블릿 화면 UI 목업과 클라이언트 인터랙션 중심이므로 Vite SPA로 구현 |
+| 프론트엔드 | React + Vite + TypeScript + Tailwind CSS on Vercel | MVP는 CRUD 웹앱이 아니라 AI 코치 UI 시연이므로 Vite SPA + Tailwind로 빠르게 구현 |
 | 백엔드 | FastAPI + LangGraph (서버 상태 관리) | 현재 스캐폴드 그대로 활용 |
 | LLM | langchain-upstage (ChatUpstage) | Upstage Solar Pro, OpenAI-compatible |
 | 상태/DB | JSON 목업 데이터 + LangGraph InMemorySaver | DB 없이 MVP 진행, 추후 Supabase 전환 가능 |
@@ -36,9 +36,11 @@
 
 ```
 frontend/
-  package.json                # React + Vite + TypeScript 앱
+  package.json                # React + Vite + TypeScript + Tailwind CSS 앱
   vite.config.ts              # Vite 설정
   tsconfig.json               # TypeScript 설정
+  tailwind.config.ts          # Tailwind 설정
+  postcss.config.js           # Tailwind/PostCSS 설정
   vercel.json                 # Vite SPA deep link rewrite 설정
   src/
     main.tsx                  # 프론트 앱 엔트리
@@ -119,7 +121,7 @@ app/
 
 | 안건 | 선택지 | 결과 |
 | --- | --- | --- |
-| 프론트엔드 앱 구조 | A) Next.js App Router on Vercel<br>B) React + Vite + TypeScript on Vercel | **B) React + Vite + TypeScript on Vercel** — MVP는 SEO/SSR보다 태블릿 목업, 캐릭터 레이어, 선택지 클릭, SSE 수신 같은 클라이언트 상호작용이 핵심이므로 Vite SPA로 빠르게 구현 |
+| 프론트엔드 앱 구조 | A) Next.js App Router on Vercel<br>B) React + Vite + TypeScript + Tailwind CSS on Vercel | **B) React + Vite + TypeScript + Tailwind CSS on Vercel** — MVP는 CRUD 웹앱이 아니라 태블릿 목업, 캐릭터 레이어, 선택지 클릭, SSE 수신 같은 AI 코치 UI 시연이 핵심이므로 Vite SPA와 Tailwind로 빠르게 구현 |
 | 배포 방식 | A) Vercel<br>B) FastAPI 정적 파일 서빙 | **A) Vercel** — Vite 정적 빌드를 Vercel에 배포하고, FastAPI 백엔드는 별도 실행/배포한다 |
 | 구현 순서 | A) 실제 API 완성 후 프론트 시작<br>B) mock transport로 UI 먼저 구현 후 T10 연동 | **B) mock transport 우선** — T10 완료 전에도 케이스 1·2 화면 흐름을 브라우저에서 시연 가능하게 만든다 |
 
@@ -227,4 +229,4 @@ app/
 | Phase 2 | T4(classify), T5(TP1), T6(TP4), T7(TP2/3/5), T8(conftest) | 🔲 Phase 1 완료 후 |
 | Phase 3 | T9(LangGraph StateGraph 조립) | 🔲 Phase 2 완료 후 |
 | Phase 4 | T10(POST /chat + SSE) | 🔲 Phase 3 완료 후 |
-| Phase 5 | React+Vite 프론트엔드 AI 코치 UI (`TODO_FRONTEND.md`) | 🔲 T10 전 mock transport로 UI 선행 가능, T10 완료 후 실제 SSE 연동 |
+| Phase 5 | React+Vite+Tailwind 프론트엔드 AI 코치 UI (`TODO_FRONTEND.md`) | 🔲 T10 전 mock transport로 UI 선행 가능, T10 완료 후 실제 SSE 연동 |

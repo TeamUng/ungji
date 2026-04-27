@@ -6,7 +6,7 @@
 
 ## 구현 목표
 
-React + Vite + TypeScript 기반 웹 UI로 스마트올 태블릿 환경의 AI 학습코치 경험을 시연한다.
+React + Vite + TypeScript + Tailwind CSS 기반 웹 UI로 스마트올 태블릿 환경의 AI 학습코치 경험을 시연한다.
 
 핵심 경험:
 - `오늘의 학습` 화면에서 AI 코치가 학생 상태에 맞는 학습을 말풍선으로 추천한다.
@@ -26,7 +26,7 @@ React + Vite + TypeScript 기반 웹 UI로 스마트올 태블릿 환경의 AI �
 
 | 항목 | 결정 |
 |------|------|
-| 프론트 스택 | React + Vite + TypeScript |
+| 프론트 스택 | React + Vite + TypeScript + Tailwind CSS |
 | 배포 | Vercel 정적 배포 |
 | 앱 위치 | `frontend/` |
 | 1차 구현 방식 | mock transport로 UI 선행 구현 |
@@ -41,7 +41,7 @@ React + Vite + TypeScript 기반 웹 UI로 스마트올 태블릿 환경의 AI �
 
 - [x] 프론트 유저 흐름 문서 작성
 - [x] 프론트 구현 스펙 문서 작성
-- [x] 프론트 스택을 React + Vite + TypeScript on Vercel로 확정
+- [x] 프론트 스택을 React + Vite + TypeScript + Tailwind CSS on Vercel로 확정
 - [x] 기존 `TODO.md`와 프론트 TODO 분리
 - [ ] 디자인 기준 확정 — 캐릭터 에셋, 색상, 말풍선 형태, 채팅창 폭
 - [ ] 태블릿 기준 해상도/비율 확정
@@ -54,10 +54,11 @@ React + Vite + TypeScript 기반 웹 UI로 스마트올 태블릿 환경의 AI �
 
 **담당 파일**: `frontend/`
 
-- [ ] `frontend/` React + Vite + TypeScript 앱 생성
+- [ ] `frontend/` React + Vite + TypeScript 앱 생성 후 Tailwind CSS 적용
+- [ ] Tailwind CSS 설치 및 설정 (`tailwind.config.ts`, `postcss.config.js`)
 - [ ] `frontend/vercel.json` 추가 — SPA rewrite 설정
 - [ ] `frontend/.env.example` 추가 — `VITE_CHAT_API_BASE_URL`, mock 사용 플래그
-- [ ] `frontend/src/styles/app.css` 전역 스타일 세팅
+- [ ] `frontend/src/styles/app.css`에 Tailwind base/components/utilities 연결
 - [ ] 절대경로 alias 설정 검토 (`@/components`, `@/api` 등)
 - [ ] `package.json` scripts 정리 — `dev`, `build`, `preview`, `typecheck`
 - [ ] README 또는 프론트 실행 문서 추가
