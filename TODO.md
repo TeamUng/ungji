@@ -83,10 +83,10 @@ PRD 케이스 1·2가 처음부터 끝까지 작동하는 것.
   - [x] `못함+성실`: 막힘 원인 진단, 단계별 설명, 격려, 쉬운 표현
   - [x] `잘함+불성실`: 짧고 명확한 시작점, 도전형 선택지
   - [x] `잘함+성실`: 칭찬+심화 문제, 사고 확장 질문
-- [ ] `tests/test_prompts.py` 작성 — 3개 학년 그룹 × 4개 세그먼트 반환값 존재 검증
-- [ ] `tests/test_prompts.py` — 케이스 1 (lower + 못함+불성실) 프롬프트 내용 검증
-- [ ] `tests/test_prompts.py` — 케이스 2 (upper + 못함+성실) 프롬프트 내용 검증
-- [ ] **완료 기준**: `uv run pytest tests/test_prompts.py` 통과
+- [x] `tests/test_prompts.py` 작성 — 3개 학년 그룹 × 4개 세그먼트 반환값 존재 검증
+- [x] `tests/test_prompts.py` — 케이스 1 (lower + 못함+불성실) 프롬프트 내용 검증
+- [x] `tests/test_prompts.py` — 케이스 2 (upper + 못함+성실) 프롬프트 내용 검증
+- [x] **완료 기준**: `uv run pytest tests/test_prompts.py` 통과
 
 ---
 
