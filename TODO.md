@@ -35,15 +35,15 @@ PRD 케이스 1·2가 처음부터 끝까지 작동하는 것.
 **담당 파일**: `app/data/__init__.py`, `app/data/loader.py`, `tests/test_loader.py`
 **의존**: 없음 | **블로킹**: T4, T5, T6, T7, T8
 
-- [ ] `app/data/` 디렉토리 생성 및 `__init__.py` 추가
-- [ ] `mock_students.json` JSON 스키마 정의 (StudentProfile + LearningHistory + LearningPattern + WrongAnswerPattern 구조 기반, 데이터는 빈 배열로)
-- [ ] `mock_problems.json` JSON 스키마 정의 (문제·해설·힌트·단계별풀이 구조, 데이터는 빈 배열로)
-- [ ] `loader.py` — `load_student(student_id: str)` 구현 (StudentProfile 등 반환)
-- [ ] `loader.py` — `load_problem(problem_id: str)` 구현
-- [ ] `loader.py` — 존재하지 않는 ID 입력 시 명확한 예외(`KeyError` 또는 커스텀) 처리
-- [ ] `tests/test_loader.py` 작성 — 정상 조회 케이스
-- [ ] `tests/test_loader.py` 작성 — 존재하지 않는 ID 예외 케이스
-- [ ] **완료 기준**: `uv run pytest tests/test_loader.py` 통과
+- [x] `app/data/` 디렉토리 생성 및 `__init__.py` 추가
+- [x] `mock_students.json` JSON 스키마 정의 (StudentProfile + LearningHistory + LearningPattern + WrongAnswerPattern 구조 기반, 데이터는 빈 배열로)
+- [x] `mock_problems.json` JSON 스키마 정의 (문제·해설·힌트·단계별풀이 구조, 데이터는 빈 배열로)
+- [x] `loader.py` — `load_student(student_id: str)` 구현 (StudentProfile 등 반환)
+- [x] `loader.py` — `load_problem(problem_id: str)` 구현
+- [x] `loader.py` — 존재하지 않는 ID 입력 시 명확한 예외(`KeyError` 또는 커스텀) 처리
+- [x] `tests/test_loader.py` 작성 — 정상 조회 케이스
+- [x] `tests/test_loader.py` 작성 — 존재하지 않는 ID 예외 케이스
+- [x] **완료 기준**: `uv run pytest tests/test_loader.py` 통과
 
 ---
 
