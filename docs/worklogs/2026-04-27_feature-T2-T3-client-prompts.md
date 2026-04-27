@@ -7,14 +7,14 @@
 | 날짜 | 2026-04-27 |
 | 담당자 | ayeonlee99 |
 | 브랜치 | feature/T2-T3-client-prompts |
-| TODO 항목 | T2 (Upstage 클라이언트), T3 (프롬프트), docs (ARCHITECTURE_REVIEW 동기화) |
+| TODO 항목 | T2 (Upstage 클라이언트), T3 (프롬프트), docs (ARCHITECTURE_REVIEW 동기화 및 AI 에이전트 온보딩) |
 | PR 대상 | dev ← feature/T2-T3-client-prompts |
 
 ---
 
 ## 한 줄 요약
 
-> 챗봇이 AI 서비스(Upstage)와 연결되는 설정을 만들고, 학생 유형별 말투·코칭 전략 대본을 작성했습니다. 또한 팀 설계 문서를 최신 결정 내용으로 동기화했습니다.
+> 챗봇이 AI 서비스(Upstage)와 연결되는 설정을 만들고, 학생 유형별 말투·코칭 전략 대본을 작성했습니다. 또한 팀 설계 문서와 AI 에이전트 온보딩 문서를 최신 협업 방식에 맞게 정리했습니다.
 
 ---
 
@@ -54,6 +54,19 @@
 `ARCHITECTURE_REVIEW.md`에 구버전 노드 이름(`home_coach.py`, `diagnose.py`)과 구버전 API 필드(`entry_point`)가 남아있어 팀원이 헷갈릴 수 있었습니다.
 `STATE_DESIGN.md`와 `TODO.md`에서 확정된 최신 내용(`tp1~tp5`, `use_case + current_touchpoint`)으로 정리했습니다.
 
+### docs — AI 에이전트 온보딩 정리
+
+**왜 했나요?**
+팀원이 Claude Code나 OpenAI Codex CLI 중 어떤 도구를 쓰더라도 같은 프로젝트 규칙을 읽고 같은 흐름으로 작업을 시작해야 합니다.
+새 팀원이 레포를 받은 뒤 어디서부터 시작해야 하는지도 README에서 바로 확인할 수 있어야 했습니다.
+
+**무엇을 바꿨나요?**
+- `AGENTS.md`: Codex CLI와 다른 AI 코딩 에이전트가 읽을 공통 기술 규칙, 현재 상태, 협업 규칙 요약을 추가
+- `CLAUDE.md`: Claude Code가 먼저 읽는 진입 문서로 구성하고 `AGENTS.md`, `TEAM_WORKFLOW.md`로 연결
+- `README.md`: 새 팀원이 따라 할 3단계 빠른 시작 흐름과 Claude/Codex 실행 방법 추가
+- `.github/ISSUE_TEMPLATE/task.md`, `.github/pull_request_template.md`: 이슈/PR 작성 시 담당 파일, 워크로그, TODO 체크를 확인하도록 보강
+- `docs/TEAM_WORKFLOW.md`: PR 전 체크리스트, 워크로그 작성 규칙, 머지 후 정리 절차 보강
+
 ---
 
 ## 기술 상세
@@ -72,6 +85,14 @@
 | `app/services/prompts/coaching.py` | 신규 | `get_coaching_strategy(segment)` — 4개 세그먼트 전략 |
 | `docs/ARCHITECTURE_REVIEW.md` | 수정 | 디렉토리·그래프·API 구조 동기화, 미결→결정 반영 |
 | `docs/ay.md` | 삭제 | 개인 메모 파일 정리 |
+| `.github/ISSUE_TEMPLATE/task.md` | 신규 | TODO 항목별 이슈 작성 템플릿 |
+| `.github/pull_request_template.md` | 수정 | PR 본문에 워크로그/TODO 체크 항목 추가 |
+| `AGENTS.md` | 수정 | AI 코딩 에이전트 공통 컨텍스트와 기술 규칙 최신화 |
+| `CLAUDE.md` | 신규 | Claude Code 세션 시작용 진입 문서 |
+| `README.md` | 수정 | 새 팀원 빠른 시작 3단계와 AI 에이전트 사용법 추가 |
+| `TODO.md` | 수정 | T2/T3 완료된 구현 항목 체크 반영 |
+| `docs/TEAM_WORKFLOW.md` | 수정 | 워크로그 작성 규칙과 PR 전/후 체크리스트 보강 |
+| `docs/worklogs/2026-04-27_feature-T2-T3-client-prompts.md` | 신규 | 이번 브랜치 작업 기록 |
 
 ### 커밋 히스토리
 
@@ -80,6 +101,10 @@
 | bfea7b9 | docs: ARCHITECTURE_REVIEW — STATE_DESIGN·TODO 기반 구조 전면 반영 |
 | d3f08cd | feat: T2 Upstage 클라이언트 초기화 및 LangSmith 트레이싱 설정 추가 |
 | fcb10be | feat: T3 학년별 페르소나·세그먼트별 코칭 전략 프롬프트 구현 |
+| fca2ae1 | docs: 워크로그 시스템·GitHub 템플릿·TODO 체크박스 업데이트 |
+| 9060174 | docs: CLAUDE.md 신설·AGENTS.md 최신화·TEAM_WORKFLOW 체크리스트 수정 |
+| f90b7c0 | docs: Claude Code·Codex CLI 양방향 에이전트 온보딩 체계 구축 |
+| ff0053d | docs: 새 팀원 빠른 시작 흐름 추가 |
 
 ### 미완료 항목 (테스트 시나리오 확정 후 별도 진행)
 
