@@ -70,6 +70,7 @@ class LLMJudge:
         payload = {
             "model": self.model,
             "temperature": 0,
+            "response_format": {"type": "json_object"},
             "messages": [
                 {"role": "system",  "content": system_prompt},
                 {"role": "user",    "content": content},
@@ -96,12 +97,7 @@ class LLMJudge:
 
         raw = response.json()
         try:
-            text = raw["choices"][0]["message"]["content"].strip()
-            # Strip markdown code fences if the model wraps the JSON
-            if text.startswith("```"):
-                text = text.split("```")[1]
-                if text.startswith("json"):
-                    text = text[4:]
+            text = raw["choices"][0]["message"]["content"]
             return json.loads(text)
         except (KeyError, IndexError, json.JSONDecodeError) as exc:
             logger.warning("LLM judge returned unparseable output: %s", raw)

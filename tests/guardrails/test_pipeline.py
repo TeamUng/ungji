@@ -17,8 +17,8 @@ import pytest
 
 from app.guardrails.models import GuardrailContext, Severity
 from app.guardrails.pipeline import GuardrailPipeline
-from app.guardrails.guards.input.safety_check import SafetyCheck
-from app.guardrails.guards.output.response_evaluator import ResponseEvaluator
+from app.guardrails.guards.safety_check import SafetyCheck
+from app.guardrails.guards.response_evaluator import ResponseEvaluator
 
 
 # ---------------------------------------------------------------------------
