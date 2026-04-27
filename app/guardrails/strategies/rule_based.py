@@ -147,15 +147,3 @@ def quick_topic_verdict(text: str) -> TopicVerdict:
         return "off_topic"
 
     return "unknown"
-
-
-# ---------------------------------------------------------------------------
-# Output length heuristics
-# ---------------------------------------------------------------------------
-
-def is_response_too_short(text: str, min_chars: int = 20) -> bool:
-    return len(text.strip()) < min_chars
-
-
-def is_response_too_long(text: str, max_chars: int = 1_500) -> bool:
-    return len(text.strip()) > max_chars
