@@ -5,10 +5,71 @@ Shared context for AI coding agents (Claude Code, Cursor, Gemini CLI, etc.) work
 ## Project
 
 - **What**: chatbot-styled study coach for Korean elementary schoolers
-- **Stack**: Python 3.12, FastAPI, pydantic, uv, pytest
-- **LLM**: Upstage Solar Pro (OpenAI-compatible API) — wired up in a later phase
+- **Stack**: Python 3.12, FastAPI, LangGraph, Upstage Solar Pro, pytest, uv
 - **DB/Auth**: Supabase — wired up in a later phase
 - **Logging**: Better Stack (all levels) + Discord webhook (ERROR+ only)
+
+---
+
+## 현재 상태
+
+| Phase | 완료 | 진행 중 | 다음 |
+|-------|------|---------|------|
+| Phase 1 | Phase 0 (enums·schemas), T2 (Upstage 클라이언트), T3 (프롬프트) | T1 (데이터 로더) | T4~T8 (노드 구현) |
+
+> **이 섹션은 T번호 완료·머지 시마다 업데이트합니다.**
+
+---
+
+## 세션 시작 시 반드시 할 것
+
+1. `TODO.md` 확인 → 현재 작업·완료 항목 파악
+2. `git status` + `git branch` → 브랜치·변경사항 확인
+3. 작업할 T번호의 **담당 파일 범위** 확인 (`TODO.md` 해당 항목의 **담당 파일** 목록)
+4. 다른 T번호 담당 파일은 절대 수정 금지
+
+---
+
+## 협업 규칙 요약
+
+> 상세 규칙 전체: `docs/TEAM_WORKFLOW.md`
+
+### 새 작업 시작
+```bash
+git fetch origin
+git checkout dev && git pull origin dev   # 반드시 원격 dev 최신화
+git checkout -b feature/T번호-간단설명    # 예: feature/T1-data-loader
+```
+
+### 커밋
+- 형식: `type: 한 줄 요약 (무엇을 + 왜)`
+- 본문 필수: 배경(왜) · 방법(어떻게) · 주요 변경 파일
+- type: `feat` / `fix` / `docs` / `chore` / `refactor` / `test`
+
+### PR 올리기 전 (feature 브랜치에 커밋)
+- `TODO.md` 완료 항목 체크박스 업데이트
+- `docs/worklogs/YYYY-MM-DD_브랜치명.md` 작성
+
+### 절대 하면 안 되는 것
+- `dev` 브랜치에 직접 커밋·push
+- 자신의 T번호 이외 파일 수정
+- `git push` 사용자 확인 없이 단독 실행
+- PR 없이 dev 머지
+
+---
+
+## 참고 문서
+
+| 목적 | 파일 |
+|------|------|
+| 협업 워크플로우 전체 (브랜치·커밋·PR·워크로그) | `docs/TEAM_WORKFLOW.md` |
+| 기능 요구사항 (케이스 1·2 시나리오) | `docs/PRD.md` |
+| State 설계 (ChatState·세그먼트·TP 정의) | `docs/STATE_DESIGN.md` |
+| 아키텍처 (기술 스택·디렉토리·그래프 흐름) | `docs/ARCHITECTURE_REVIEW.md` |
+| 전체 작업 목록 | `TODO.md` |
+| 작업 이력 | `docs/worklogs/` |
+
+---
 
 ## How to run
 
@@ -23,12 +84,16 @@ Shared context for AI coding agents (Claude Code, Cursor, Gemini CLI, etc.) work
 
     app/
       main.py                   thin — wires middleware + routes only
-      core/                     cross-cutting (config, logging)
-      middleware/               FastAPI / Starlette middlewares
-      api/routes/               (future) one file per resource
-      schemas/                  (future) pydantic request/response models
-      services/                 (future) business logic — NO FastAPI imports
-      clients/                  (future) external API wrappers (Upstage, Supabase)
+      core/                     cross-cutting (config, logging, enums, constants) ✅
+      middleware/               FastAPI / Starlette middlewares ✅
+      schemas/                  ChatState, ChatRequest/Response, 응답 메시지 4종 ✅
+      services/
+        nodes/                  LangGraph 노드 (classify, tp1~tp5) — 구현 중
+        prompts/                학년별 페르소나·세그먼트별 코칭 전략 ✅
+      clients/
+        upstage.py              ChatUpstage 인스턴스 + LangSmith 트레이싱 ✅
+      data/                     JSON 목업 로더 + mock JSON — 구현 중
+      api/routes/               POST /chat 엔드포인트 — 구현 예정
 
 ## Conventions
 
@@ -92,5 +157,5 @@ The project has centrally configured logging (console + Better Stack + Discord a
 - No pre-commit hooks
 - No CI
 - No Docker
-- No streaming responses
 - No CORS (frontend comes later)
+- SSE streaming: POST /chat 응답에서 사용 예정 (T10 구현 시)

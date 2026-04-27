@@ -55,11 +55,11 @@ PRD 케이스 1·2가 처음부터 끝까지 작동하는 것.
 **담당 파일**: `app/clients/__init__.py`, `app/clients/upstage.py`, `app/core/config.py`, `.env.example`
 **의존**: 없음 | **블로킹**: T5, T6, T7
 
-- [ ] `app/core/config.py` 수정 — `LANGSMITH_API_KEY: str = ""`, `LANGSMITH_PROJECT: str = ""` 추가
-- [ ] `.env.example` 수정 — 신규 키 항목 추가
-- [ ] `app/clients/` 디렉토리 생성 및 `__init__.py` 추가
-- [ ] `app/clients/upstage.py` — settings에서 키 읽어서 `ChatUpstage` 인스턴스 생성
-- [ ] `app/clients/upstage.py` — LangSmith 트레이싱 활성화 설정
+- [x] `app/core/config.py` 수정 — `LANGSMITH_API_KEY: str = ""`, `LANGSMITH_PROJECT: str = ""` 추가
+- [x] `.env.example` 수정 — 신규 키 항목 추가
+- [x] `app/clients/` 디렉토리 생성 및 `__init__.py` 추가
+- [x] `app/clients/upstage.py` — settings에서 키 읽어서 `ChatUpstage` 인스턴스 생성
+- [x] `app/clients/upstage.py` — LangSmith 트레이싱 활성화 설정
 - [ ] `tests/test_upstage_client.py` 작성 — 클라이언트 초기화 검증 (실제 API 호출은 mock)
 - [ ] **완료 기준**: `from app.clients.upstage import llm` import 정상, `uv run pytest tests/test_upstage_client.py` 통과
 
@@ -73,16 +73,16 @@ PRD 케이스 1·2가 처음부터 끝까지 작동하는 것.
 **담당 파일**: `app/services/__init__.py`, `app/services/prompts/__init__.py`, `app/services/prompts/personas.py`, `app/services/prompts/coaching.py`, `tests/test_prompts.py`
 **의존**: 없음 | **블로킹**: T5, T6, T7
 
-- [ ] `app/services/` 및 `app/services/prompts/` 디렉토리 생성, `__init__.py` 추가
-- [ ] `personas.py` — `get_persona(grade_group: GradeGroup) -> str` 구현
-  - [ ] `lower` (1~2학년): 짧은 문장, 쉬운 단어, 이모처럼 다정하게, 한 번에 하나만
-  - [ ] `middle` (3~4학년): 친근한 친구/형, 선택지로 이유 말하게 유도
-  - [ ] `upper` (5~6학년): 존댓말 혼합, 차분한 코치형, 논리·존중 중심
-- [ ] `coaching.py` — `get_coaching_strategy(segment: Segment) -> str` 구현
-  - [ ] `못함+불성실`: 초소형 목표, 즉시 성공 경험, 짧은 대화, 흥미 기반
-  - [ ] `못함+성실`: 막힘 원인 진단, 단계별 설명, 격려, 쉬운 표현
-  - [ ] `잘함+불성실`: 짧고 명확한 시작점, 도전형 선택지
-  - [ ] `잘함+성실`: 칭찬+심화 문제, 사고 확장 질문
+- [x] `app/services/` 및 `app/services/prompts/` 디렉토리 생성, `__init__.py` 추가
+- [x] `personas.py` — `get_persona(grade_group: GradeGroup) -> str` 구현
+  - [x] `lower` (1~2학년): 짧은 문장, 쉬운 단어, 이모처럼 다정하게, 한 번에 하나만
+  - [x] `middle` (3~4학년): 친근한 친구/형, 선택지로 이유 말하게 유도
+  - [x] `upper` (5~6학년): 존댓말 혼합, 차분한 코치형, 논리·존중 중심
+- [x] `coaching.py` — `get_coaching_strategy(segment: Segment) -> str` 구현
+  - [x] `못함+불성실`: 초소형 목표, 즉시 성공 경험, 짧은 대화, 흥미 기반
+  - [x] `못함+성실`: 막힘 원인 진단, 단계별 설명, 격려, 쉬운 표현
+  - [x] `잘함+불성실`: 짧고 명확한 시작점, 도전형 선택지
+  - [x] `잘함+성실`: 칭찬+심화 문제, 사고 확장 질문
 - [ ] `tests/test_prompts.py` 작성 — 3개 학년 그룹 × 4개 세그먼트 반환값 존재 검증
 - [ ] `tests/test_prompts.py` — 케이스 1 (lower + 못함+불성실) 프롬프트 내용 검증
 - [ ] `tests/test_prompts.py` — 케이스 2 (upper + 못함+성실) 프롬프트 내용 검증
