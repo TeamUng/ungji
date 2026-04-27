@@ -1,0 +1,64 @@
+<svg width="260" height="300" viewBox="0 0 260 300" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">Ungji AI coach mascot</title>
+  <desc id="desc">A cheerful original orange and yellow upper-body chatbot character.</desc>
+  <defs>
+    <radialGradient id="bodyGradient" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(90 52) rotate(67) scale(232 213)">
+      <stop stop-color="#FFE888"/>
+      <stop offset="0.52" stop-color="#FFB11B"/>
+      <stop offset="1" stop-color="#F07A00"/>
+    </radialGradient>
+    <radialGradient id="faceGradient" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(101 92) rotate(55) scale(120 112)">
+      <stop stop-color="#FFF9C8"/>
+      <stop offset="1" stop-color="#FFE46D"/>
+    </radialGradient>
+    <linearGradient id="armGradient" x1="31" y1="137" x2="229" y2="202" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FF9C12"/>
+      <stop offset="1" stop-color="#FFCD38"/>
+    </linearGradient>
+    <filter id="softShadow" x="17" y="19" width="226" height="271" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feFlood flood-opacity="0" result="BackgroundImageFix"/>
+      <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+      <feOffset dy="12"/>
+      <feGaussianBlur stdDeviation="13"/>
+      <feColorMatrix type="matrix" values="0 0 0 0 0.51 0 0 0 0 0.29 0 0 0 0 0.04 0 0 0 0.24 0"/>
+      <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_101_2"/>
+      <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_101_2" result="shape"/>
+    </filter>
+  </defs>
+
+  <g filter="url(#softShadow)">
+    <path d="M32 172C26 151 31 129 48 116C58 108 70 107 78 116C86 125 81 140 69 148C61 153 60 162 67 171C75 181 93 185 111 179L118 205C79 218 42 206 32 172Z" fill="url(#armGradient)"/>
+    <path d="M228 172C234 151 229 129 212 116C202 108 190 107 182 116C174 125 179 140 191 148C199 153 200 162 193 171C185 181 167 185 149 179L142 205C181 218 218 206 228 172Z" fill="url(#armGradient)"/>
+
+    <path d="M69 163C71 112 91 70 130 70C169 70 189 112 191 163C193 221 169 256 130 256C91 256 67 221 69 163Z" fill="url(#bodyGradient)"/>
+    <path d="M87 183C88 150 104 126 130 126C156 126 172 150 173 183C174 223 157 246 130 246C103 246 86 223 87 183Z" fill="#FFC43B" opacity="0.9"/>
+
+    <circle cx="130" cy="93" r="72" fill="url(#bodyGradient)"/>
+    <ellipse cx="130" cy="101" rx="52" ry="50" fill="url(#faceGradient)"/>
+
+    <path d="M118 28C124 15 142 16 146 30C151 45 134 51 130 62C126 51 111 44 118 28Z" fill="#FFB11B"/>
+    <path d="M133 57C150 48 154 36 145 25C160 27 172 39 172 53C172 72 151 80 134 73" stroke="#D97706" stroke-width="8" stroke-linecap="round"/>
+
+    <path d="M96 67C91 55 91 45 96 37C107 43 111 54 109 67" fill="#FF8A00"/>
+    <path d="M164 67C169 55 169 45 164 37C153 43 149 54 151 67" fill="#FF8A00"/>
+
+    <path d="M105 96L116 107L105 116" stroke="#3E2B23" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M155 96L144 107L155 116" stroke="#3E2B23" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+
+    <path d="M107 133C117 151 144 151 154 133C147 129 137 127 130 127C123 127 114 129 107 133Z" fill="#823119"/>
+    <path d="M116 138C123 145 137 146 145 138C138 134 123 134 116 138Z" fill="#FFFFFF"/>
+    <path d="M119 146C125 153 137 153 143 146C139 151 124 151 119 146Z" fill="#FF7262"/>
+
+    <circle cx="86" cy="114" r="10" fill="#F98A20" opacity="0.72"/>
+    <circle cx="174" cy="114" r="10" fill="#F98A20" opacity="0.72"/>
+
+    <path d="M88 167C95 184 107 195 123 198" stroke="#E97700" stroke-width="7" stroke-linecap="round" opacity="0.72"/>
+    <path d="M172 167C165 184 153 195 137 198" stroke="#E97700" stroke-width="7" stroke-linecap="round" opacity="0.72"/>
+    <path d="M85 221C101 236 157 236 175 221" stroke="#E97700" stroke-width="9" stroke-linecap="round" opacity="0.5"/>
+
+    <circle cx="68" cy="151" r="7" fill="#FFE173"/>
+    <circle cx="197" cy="151" r="7" fill="#FFE173"/>
+    <circle cx="54" cy="140" r="6" fill="#FFE173"/>
+    <circle cx="211" cy="140" r="6" fill="#FFE173"/>
+  </g>
+</svg>

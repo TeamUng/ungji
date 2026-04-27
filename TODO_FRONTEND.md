@@ -54,6 +54,7 @@ React + Vite + TypeScript + Tailwind CSS 기반 웹 UI로 스마트올 태블릿
 - [x] 프론트 구현 스펙 문서 작성
 - [x] 프론트 스택을 React + Vite + TypeScript + Tailwind CSS on Vercel로 확정
 - [x] 기존 `TODO.md`와 프론트 TODO 분리
+- [x] AI 코치 캐릭터 초안 에셋 추가 — `frontend/public/assets/coach-avatar.svg`
 - [ ] 디자인 기준 확정 — 캐릭터 에셋, 색상, 말풍선 형태, 채팅창 폭
 - [ ] 태블릿 기준 해상도/비율 확정
 - [ ] 케이스 1/2에서 사용할 목업 이미지 에셋 확정

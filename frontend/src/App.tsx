@@ -147,7 +147,7 @@ function App() {
                 <button type="button">수학으로 이동하기</button>
               </div>
               <button className="coach-face" type="button" aria-label="AI 코치 열기">
-                코치
+                <img src="/assets/coach-avatar.svg" alt="" aria-hidden="true" />
               </button>
             </div>
           </div>

@@ -98,12 +98,12 @@ button {
 
 .coach-widget {
   position: absolute;
-  right: 28px;
-  bottom: 24px;
+  right: 26px;
+  bottom: 16px;
   z-index: 20;
   display: flex;
   align-items: flex-end;
-  gap: 18px;
+  gap: 12px;
 }
 
 .coach-bubble {
@@ -133,17 +133,20 @@ button {
 }
 
 .coach-face {
-  display: grid;
-  width: 96px;
-  height: 96px;
-  place-items: center;
-  border-radius: 999px;
-  background: radial-gradient(circle at 36% 28%, #fff3b0, #f6b72f 56%, #c67a09);
-  color: #3a2500;
-  font-size: 20px;
-  font-weight: 1000;
-  box-shadow: 0 18px 34px rgb(124 76 7 / 0.28);
+  width: 132px;
+  height: 150px;
+  border: 0;
+  background: transparent;
+  padding: 0;
+  filter: drop-shadow(0 18px 22px rgb(124 76 7 / 0.24));
   animation: coach-idle 2.6s ease-in-out infinite;
+}
+
+.coach-face img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
 }
 
 @keyframes coach-idle {
@@ -213,8 +216,7 @@ button {
   }
 
   .coach-face {
-    width: 74px;
-    height: 74px;
-    font-size: 16px;
+    width: 88px;
+    height: 102px;
   }
 }
