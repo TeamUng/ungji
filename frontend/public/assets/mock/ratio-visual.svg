@@ -1,0 +1,23 @@
+<svg width="520" height="320" viewBox="0 0 520 320" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="야구공이 상자에 모이는 그림">
+  <rect width="520" height="320" rx="34" fill="#DDF4FF"/>
+  <rect x="66" y="79" width="144" height="174" rx="24" fill="#6BC7E8"/>
+  <rect x="89" y="103" width="98" height="35" rx="17.5" fill="#FFFFFF" opacity="0.65"/>
+  <path d="M282 188H445L420 264H256L282 188Z" fill="#D79B43"/>
+  <path d="M282 188H445L412 159H313L282 188Z" fill="#F2C06E"/>
+  <path d="M256 264H420V287H256V264Z" fill="#B8732F"/>
+  <g fill="#FFFFFF" stroke="#D1D5DB" stroke-width="3">
+    <circle cx="300" cy="168" r="17"/>
+    <circle cx="340" cy="168" r="17"/>
+    <circle cx="380" cy="168" r="17"/>
+    <circle cx="321" cy="203" r="17"/>
+    <circle cx="361" cy="203" r="17"/>
+    <circle cx="401" cy="203" r="17"/>
+    <circle cx="300" cy="236" r="17"/>
+    <circle cx="340" cy="236" r="17"/>
+    <circle cx="380" cy="236" r="17"/>
+  </g>
+  <path d="M140 142C187 137 214 146 250 168" stroke="#1D4ED8" stroke-width="14" stroke-linecap="round"/>
+  <circle cx="140" cy="165" r="35" fill="#FFFFFF" stroke="#0EA5E9" stroke-width="7"/>
+  <path d="M120 165H160M140 145V185" stroke="#0EA5E9" stroke-width="5" stroke-linecap="round" opacity="0.5"/>
+  <path d="M74 268H455" stroke="#93C5FD" stroke-width="12" stroke-linecap="round"/>
+</svg>

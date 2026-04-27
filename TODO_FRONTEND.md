@@ -82,16 +82,16 @@ React + Vite + TypeScript + Tailwind CSS 기반 웹 UI로 스마트올 태블릿
 
 **담당 파일**: `frontend/src/types/`, `frontend/src/data/`
 
-- [ ] `ChatRequest`, `ChatResponse`, `ResponseMessage` 타입 정의
-- [ ] `Touchpoint`, `UseCase`, `IncomingMessageType` 타입 정의
-- [ ] `TodayTask`, `StudentCase`, `LearningProblem` 타입 정의
-- [ ] 케이스 1 학생 mock 데이터 작성
-- [ ] 케이스 2 학생 mock 데이터 작성
-- [ ] 오늘의 학습 태스크 2~4개 mock 데이터 작성
-- [ ] 국어 짧은 글 읽기 문제 mock 데이터 작성
-- [ ] 수학 비율/비례식 문제 mock 데이터 작성
-- [ ] TP1~TP5 mock 응답 데이터 작성
-- [ ] **완료 기준**: 백엔드 없이도 케이스 1/2 화면에 필요한 데이터가 모두 준비됨
+- [x] `ChatRequest`, `ChatResponse`, `ResponseMessage` 타입 정의
+- [x] `Touchpoint`, `UseCase`, `IncomingMessageType` 타입 정의
+- [x] `TodayTask`, `StudentCase`, `LearningProblem` 타입 정의
+- [x] 케이스 1 학생 mock 데이터 작성
+- [x] 케이스 2 학생 mock 데이터 작성
+- [x] 오늘의 학습 태스크 2~4개 mock 데이터 작성
+- [x] 국어 짧은 글 읽기 문제 mock 데이터 작성
+- [x] 수학 비율/비례식 문제 mock 데이터 작성
+- [x] TP1~TP5 mock 응답 데이터 작성
+- [x] **완료 기준**: 백엔드 없이도 케이스 1/2 화면에 필요한 데이터가 모두 준비됨
 
 ---
 
@@ -99,15 +99,15 @@ React + Vite + TypeScript + Tailwind CSS 기반 웹 UI로 스마트올 태블릿
 
 **담당 파일**: `frontend/src/components/shell/`, `frontend/src/components/today/`
 
-- [ ] `TabletFrame` 구현 — 태블릿 비율 고정/반응형 컨테이너
-- [ ] `SmartAllTopBar` 구현 — 목업 상단 내비게이션
-- [ ] `TodayLearningPage` 구현
-- [ ] `SubjectSidebar` 구현 — 과목 목록/선택 상태
-- [ ] `TodayTaskBoard` 구현 — 오늘 배정 태스크 2~4개 표시
-- [ ] `TodayTaskCard` 구현 — 과목, 단원, 예상 시간, 진행 상태 표시
-- [ ] 케이스 1/2 전환 시 오늘의 학습 내용 변경
-- [ ] 태스크 카드 클릭 시 학습 화면으로 이동
-- [ ] **완료 기준**: 오늘의 학습 화면에서 과목별 태스크와 기본 학습 이동 흐름 확인 가능
+- [x] `TabletFrame` 구현 — 태블릿 비율 고정/반응형 컨테이너
+- [x] `SmartAllTopBar` 구현 — 목업 상단 내비게이션
+- [x] `TodayLearningPage` 구현
+- [x] `SubjectSidebar` 구현 — 과목 목록/선택 상태
+- [x] `TodayTaskBoard` 구현 — 오늘 배정 태스크 2~4개 표시
+- [x] `TodayTaskCard` 구현 — 과목, 단원, 예상 시간, 진행 상태 표시
+- [x] 케이스 1/2 전환 시 오늘의 학습 내용 변경
+- [x] 태스크 카드 클릭 시 학습 화면으로 이동
+- [x] **완료 기준**: 오늘의 학습 화면에서 과목별 태스크와 기본 학습 이동 흐름 확인 가능
 
 ---
 
@@ -115,15 +115,15 @@ React + Vite + TypeScript + Tailwind CSS 기반 웹 UI로 스마트올 태블릿
 
 **담당 파일**: `frontend/src/components/learning/`
 
-- [ ] `LearningActivityPage` 구현
-- [ ] `LearningContentShell` 구현 — 문제 영역 + 코치 레이어가 공존하는 레이아웃
-- [ ] `ProblemStage` 구현 — 문제 지문/이미지/보기 표시
-- [ ] `ProblemContent` 구현 — 케이스별 콘텐츠 렌더링
-- [ ] `AnswerArea` 구현 — 선택/입력/제출 목업
-- [ ] 문제 풀이 중 이탈 시도 트리거 목업 구현
-- [ ] 단위 학습 완료 트리거 목업 구현
-- [ ] 오늘 학습 종료 트리거 목업 구현
-- [ ] **완료 기준**: 학습 화면에서 TP3/TP4/TP5를 수동으로 발생시킬 수 있음
+- [x] `LearningActivityPage` 구현
+- [x] `LearningContentShell` 구현 — 문제 영역 + 코치 레이어가 공존하는 레이아웃
+- [x] `ProblemStage` 구현 — 문제 지문/이미지/보기 표시
+- [x] `ProblemContent` 구현 — 케이스별 콘텐츠 렌더링
+- [x] `AnswerArea` 구현 — 선택/입력/제출 목업
+- [x] 문제 풀이 중 이탈 시도 트리거 목업 구현
+- [x] 단위 학습 완료 트리거 목업 구현
+- [x] 오늘 학습 종료 트리거 목업 구현
+- [x] **완료 기준**: 학습 화면에서 TP3/TP4/TP5를 수동으로 발생시킬 수 있음
 
 ---
 
@@ -131,18 +131,18 @@ React + Vite + TypeScript + Tailwind CSS 기반 웹 UI로 스마트올 태블릿
 
 **담당 파일**: `frontend/src/components/coach/`, `frontend/src/hooks/useCoachLayer.ts`
 
-- [ ] `CoachLayer` 구현 — 모든 화면 위에 공통으로 얹히는 AI 코치 레이어
-- [ ] `CoachAvatarButton` 구현 — 오른쪽 하단 캐릭터 버튼
-- [ ] 캐릭터 idle animation 구현 — 작고 방해되지 않는 움직임
-- [ ] `CoachFloatingBubble` 구현 — TP1/TP2/TP3/TP5 짧은 말풍선
-- [ ] `CoachDrawer` 구현 — 오른쪽 사이드 채팅창
-- [ ] `CoachDrawerHeader` 구현 — 제목, 닫기 버튼, 상태 표시
-- [ ] `CoachMessageList` 구현 — 메시지 목록 스크롤
-- [ ] `CoachComposer` 구현 — teach-back 또는 자유 입력용
-- [ ] `CoachChoiceList` 구현 — 선택지 버튼 묶음
-- [ ] `useCoachLayer` 구현 — drawer 열림/닫힘, surface 전환
-- [ ] TP별 기본 surface 매핑 구현
-- [ ] **완료 기준**: 캐릭터 버튼, 플로팅 말풍선, 오른쪽 채팅창이 같은 `CoachLayer`에서 동작
+- [x] `CoachLayer` 구현 — 모든 화면 위에 공통으로 얹히는 AI 코치 레이어
+- [x] `CoachAvatarButton` 구현 — 오른쪽 하단 캐릭터 버튼
+- [x] 캐릭터 idle animation 구현 — 작고 방해되지 않는 움직임
+- [x] `CoachFloatingBubble` 구현 — TP1/TP2/TP3/TP5 짧은 말풍선
+- [x] `CoachDrawer` 구현 — 오른쪽 사이드 채팅창
+- [x] `CoachDrawerHeader` 구현 — 제목, 닫기 버튼, 상태 표시
+- [x] `CoachMessageList` 구현 — 메시지 목록 스크롤
+- [x] `CoachComposer` 구현 — teach-back 또는 자유 입력용
+- [x] `CoachChoiceList` 구현 — 선택지 버튼 묶음
+- [x] `useCoachLayer` 구현 — drawer 열림/닫힘, surface 전환
+- [x] TP별 기본 surface 매핑 구현
+- [x] **완료 기준**: 캐릭터 버튼, 플로팅 말풍선, 오른쪽 채팅창이 같은 `CoachLayer`에서 동작
 
 ---
 
@@ -150,15 +150,15 @@ React + Vite + TypeScript + Tailwind CSS 기반 웹 UI로 스마트올 태블릿
 
 **담당 파일**: `frontend/src/components/messages/`
 
-- [ ] `MessageRenderer` 구현 — `message.type` 기준 분기
-- [ ] `TextMessage` 구현 — AI 말풍선
-- [ ] `ChoicesMessage` 구현 — 선택지 버튼
-- [ ] `ImageCardMessage` 구현 — 이미지 카드 + 캡션
-- [ ] `HintCardMessage` 구현 — 단계별 힌트 카드
-- [ ] 사용자 선택/입력 메시지 렌더링 방식 정의
-- [ ] 선택지 클릭 시 사용자 선택 메시지 추가
-- [ ] 긴 문장/긴 선택지 태블릿 폭에서 줄바꿈 검증
-- [ ] **완료 기준**: PRD의 챗봇 UI 요소 4종을 모두 렌더링 가능
+- [x] `MessageRenderer` 구현 — `message.type` 기준 분기
+- [x] `TextMessage` 구현 — AI 말풍선
+- [x] `ChoicesMessage` 구현 — 선택지 버튼
+- [x] `ImageCardMessage` 구현 — 이미지 카드 + 캡션
+- [x] `HintCardMessage` 구현 — 단계별 힌트 카드
+- [x] 사용자 선택/입력 메시지 렌더링 방식 정의
+- [x] 선택지 클릭 시 사용자 선택 메시지 추가
+- [x] 긴 문장/긴 선택지 태블릿 폭에서 줄바꿈 검증
+- [x] **완료 기준**: PRD의 챗봇 UI 요소 4종을 모두 렌더링 가능
 
 ---
 
@@ -166,14 +166,14 @@ React + Vite + TypeScript + Tailwind CSS 기반 웹 UI로 스마트올 태블릿
 
 **담당 파일**: `frontend/src/api/mockChatClient.ts`, `frontend/src/data/mockResponses.ts`
 
-- [ ] mock chat client 인터페이스 정의 — 실제 API client와 동일한 함수 시그니처
-- [ ] TP1 케이스 1 응답 작성 — 저학년 국어 짧은 시작 추천
-- [ ] TP1 케이스 2 응답 작성 — 고학년 수학 비율 약점 보완 추천
-- [ ] TP2 응답 작성 — 단위 학습 완료 후 다음 학습 추천
-- [ ] TP3 응답 작성 — 이탈 방지 말풍선/채팅 흐름
-- [ ] TP4 케이스 1 응답 작성 — 국어 막힘 원인 4종
-- [ ] TP4 케이스 2 응답 작성 — 수학 막힘 원인 4종
-- [ ] TP5 응답 작성 — 오답 없음/오답 있음/복습 미완료 분기
+- [x] mock chat client 인터페이스 정의 — 실제 API client와 동일한 함수 시그니처
+- [x] TP1 케이스 1 응답 작성 — 저학년 국어 짧은 시작 추천
+- [x] TP1 케이스 2 응답 작성 — 고학년 수학 비율 약점 보완 추천
+- [x] TP2 응답 작성 — 단위 학습 완료 후 다음 학습 추천
+- [x] TP3 응답 작성 — 이탈 방지 말풍선/채팅 흐름
+- [x] TP4 케이스 1 응답 작성 — 국어 막힘 원인 4종
+- [x] TP4 케이스 2 응답 작성 — 수학 막힘 원인 4종
+- [x] TP5 응답 작성 — 오답 없음/오답 있음/복습 미완료 분기
 - [ ] 케이스 1 전체 흐름 수동 시연
 - [ ] 케이스 2 전체 흐름 수동 시연
 - [ ] **완료 기준**: 백엔드 없이 브라우저에서 PRD 케이스 1·2의 핵심 흐름 시연 가능

@@ -1,0 +1,16 @@
+<svg width="520" height="320" viewBox="0 0 520 320" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="친구를 도와주는 그림">
+  <rect width="520" height="320" rx="34" fill="#E7F7FF"/>
+  <path d="M0 232C80 201 151 204 230 237C320 275 419 272 520 230V320H0V232Z" fill="#82D16D"/>
+  <circle cx="91" cy="70" r="34" fill="#FFD15C"/>
+  <path d="M170 201C170 161 197 129 230 129C263 129 290 161 290 201" stroke="#F59E0B" stroke-width="18" stroke-linecap="round"/>
+  <circle cx="230" cy="108" r="38" fill="#FFE1B5"/>
+  <path d="M211 108C217 115 224 115 230 108" stroke="#1F2937" stroke-width="6" stroke-linecap="round"/>
+  <path d="M247 108C253 115 260 115 266 108" stroke="#1F2937" stroke-width="6" stroke-linecap="round"/>
+  <path d="M218 130C226 138 239 138 247 130" stroke="#EF6F6C" stroke-width="7" stroke-linecap="round"/>
+  <path d="M315 219C315 184 338 157 366 157C394 157 417 184 417 219" stroke="#60A5FA" stroke-width="16" stroke-linecap="round"/>
+  <circle cx="366" cy="139" r="31" fill="#FFE1B5"/>
+  <path d="M350 139C356 145 362 145 368 139" stroke="#1F2937" stroke-width="5" stroke-linecap="round"/>
+  <path d="M382 139C388 145 394 145 400 139" stroke="#1F2937" stroke-width="5" stroke-linecap="round"/>
+  <path d="M285 202C303 191 322 188 342 193" stroke="#FBBF24" stroke-width="14" stroke-linecap="round"/>
+  <path d="M128 258H446" stroke="#4ADE80" stroke-width="10" stroke-linecap="round"/>
+</svg>
