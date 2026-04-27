@@ -4,11 +4,14 @@ Fast, synchronous rule-based checks using regex and keyword matching.
 These run before any LLM call to catch obvious violations cheaply (~0 ms).
 All functions are pure and stateless — no I/O, no async.
 
-Production note
----------------
-The word lists below are intentionally minimal placeholders.
-Replace / extend them with a curated moderation corpus maintained separately
-(e.g. loaded from a config file or a private package).
+Design note — topic verdict
+---------------------------
+quick_topic_verdict intentionally does NOT try to pass messages as "on_topic"
+based on keyword matching.  A student could mention a study word while asking
+for something completely off-topic (e.g. "tell me a game cheat code, I already
+did my 수학 homework").  Keyword presence is therefore used only as a signal
+for "off_topic" (two or more clearly off-topic terms), never as a positive
+pass.  Everything ambiguous is deferred to the LLM judge.
 """
 
 from __future__ import annotations
@@ -96,17 +99,8 @@ def has_prompt_injection(text: str) -> tuple[bool, str | None]:
 
 
 # ---------------------------------------------------------------------------
-# Quick topic heuristic (no LLM needed for obvious cases)
+# Quick topic heuristic — only blocks obvious off-topic, defers the rest
 # ---------------------------------------------------------------------------
-
-_STUDY_KEYWORDS = frozenset([
-    "공부", "수학", "국어", "과학", "사회", "영어", "도덕", "체육",
-    "문제", "답", "모르겠", "어려", "학습", "숙제", "시험", "점수",
-    "개념", "설명", "도움", "힌트", "문장", "계산", "읽기", "쓰기",
-    "풀기", "이해", "단원", "분수", "덧셈", "뺄셈", "곱셈", "나눗셈",
-    "비율", "비례", "방정식", "도형", "넓이", "부피", "그래프",
-    "주인공", "이야기", "독서", "받아쓰기", "일기", "소수", "배수",
-])
 
 _CLEARLY_OFF_TOPIC = frozenset([
     "게임", "유튜브", "틱톡", "인스타", "연예인", "아이돌",
@@ -126,22 +120,22 @@ def quick_topic_verdict(text: str) -> TopicVerdict:
     """
     Cheap heuristic: 'on_topic', 'off_topic', or 'unknown'.
     'unknown' means defer to the LLM judge.
+
+    Intentionally does NOT use study-keyword matching to return 'on_topic'
+    because a message can contain a study word while being entirely off-topic.
+    Positive topic decisions are left to the LLM.
     """
     stripped = text.strip().lower()
 
-    # Single-token / very short responses (≤3 chars) pass without LLM check.
-    # Threshold is 3 because Korean chars each count as 1 in len(), so
-    # "유튜브 보고 싶다" (9 chars) must NOT be short-circuited here.
+    # Single-token / very short responses pass without LLM check
     if len(stripped) <= 3:
         return "on_topic"
 
-    # Exact greeting strings — only match if the whole message is a greeting
+    # Exact standalone greeting → pass
     if stripped in _GREETINGS:
         return "on_topic"
 
-    if any(kw in stripped for kw in _STUDY_KEYWORDS):
-        return "on_topic"
-
+    # Two or more clearly off-topic keywords → flag as off_topic
     off_count = sum(1 for kw in _CLEARLY_OFF_TOPIC if kw in stripped)
     if off_count >= 2:
         return "off_topic"

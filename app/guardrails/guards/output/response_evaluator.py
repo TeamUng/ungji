@@ -10,18 +10,14 @@ Runs one Solar Pro call that checks three dimensions simultaneously:
   • quality            — relevant to the touchpoint; appropriate length;
                           provides a clear next step
 
-Severity: always WARN (per plan).
-The LLM response is always delivered to the student; failures are logged
-for prompt-improvement monitoring.
-
-Content safety is intentionally NOT checked here — it belongs in SafetyCheck
-(input guard) which evaluates the conversation context before the LLM call.
+Severity: always WARN — the response is always delivered to the student.
+Content safety is NOT checked here; it belongs in SafetyCheck (input guard).
 
 Fail-safe policy
 ----------------
 If the LLM judge call fails, the guard logs a warning and marks the result
-as passed=True (WARN).  We never withhold a potentially good response from
-a child due to an infrastructure issue.
+as passed=True. We never withhold a response from a child due to an
+infrastructure issue.
 """
 
 from __future__ import annotations
@@ -35,21 +31,19 @@ from app.guardrails.strategies.llm_judge import LLMJudge, LLMJudgeError
 logger = logging.getLogger(__name__)
 
 # ---------------------------------------------------------------------------
-# LLM system prompt — single call, three dimensions
+# LLM system prompt (Korean — conversations with students are in Korean)
 # ---------------------------------------------------------------------------
 
 _SYSTEM_PROMPT_TEMPLATE = """\
-You are a response quality evaluator for an AI study coach chatbot serving \
-Korean elementary school students.
+당신은 초등학생을 위한 AI 학습 코치 챗봇의 응답 품질 평가자입니다.
 
-Context
--------
-Touchpoint : {touchpoint}
-Grade group: {grade_group} ({grade_range_label})
-Student type: {student_type}
+평가 맥락
+---------
+터치포인트: {touchpoint}
+학년 그룹 : {grade_group} ({grade_range_label})
+학생 유형 : {segment}
 
-Evaluate the chatbot's response on three dimensions and reply with JSON only \
-(no markdown, no extra text):
+챗봇의 응답을 아래 세 가지 기준으로 평가하고, JSON만으로 응답하세요 (마크다운·추가 텍스트 없이):
 
 {{
   "age_appropriateness": {{"passed": true, "reason": null}},
@@ -57,40 +51,35 @@ Evaluate the chatbot's response on three dimensions and reply with JSON only \
   "quality":             {{"passed": true, "reason": null}}
 }}
 
-Definitions
------------
+평가 기준
+---------
 age_appropriateness:
-  PASS if vocabulary, sentence length, and concept complexity are appropriate
-  for the grade group.
-    lower  (1–2): very short sentences, concrete words, playful tone.
-    middle (3–4): slightly longer, some domain vocabulary is fine.
-    upper  (5–6): more structured, abstract concepts allowed if explained.
-  FAIL if the language is clearly too advanced or too infantile for the group.
+  학년 그룹에 맞는 어휘·문장 길이·개념 난이도인지 평가합니다.
+    lower  (1~2학년): 매우 짧고 쉬운 문장, 구체적인 단어, 놀이처럼 친근한 표현.
+    middle (3~4학년): 조금 더 긴 문장, 교과 어휘 일부 허용.
+    upper  (5~6학년): 논리적 구조 허용, 추상적 개념도 설명이 있으면 가능.
+  실패: 학년에 비해 명백히 너무 어렵거나 너무 유아적인 경우.
 
 tone:
-  PASS if the response is encouraging, warm, and supportive.
-  FAIL if it is discouraging, cold, condescending, or gives the direct
-  answer to a study problem instead of guiding the student.
+  실패: 학생을 낙담시키거나, 무시하거나, 직접 정답을 알려주거나,
+        차갑고 기계적인 표현을 사용한 경우.
+  통과: 격려하고, 친절하며, 단계적으로 안내하는 경우.
 
 quality:
-  PASS if the response is relevant to the touchpoint below, is not
-  excessively long (rough guide: ≤ 200 characters for lower grades,
-  ≤ 400 for middle/upper), and ends with a clear next step or question.
-  FAIL if it is off-topic, empty, or leaves the student with nothing to do.
+  아래 터치포인트별 기준에 맞는지 평가합니다.
+    home_screen     : 동기부여 환영 메시지 + 다음 학습 단계 제안.
+    during_study    : 막힘 원인 진단 + 단계별 안내 (정답 직접 제공 금지).
+    after_task      : 결과 인정 + 오답 복습 동기부여 + 다음 과제 제안.
+    after_all_tasks : 완료 축하 + 선택적 심화 활동 제안.
+    exit            : 다시 돌아오도록 격려.
+  실패: 터치포인트와 무관하거나, 내용이 없거나, 다음 행동 안내가 없는 경우.
+        lower 학년 기준 200자, middle/upper 기준 400자를 크게 초과하는 경우.
 
-Touchpoint guide
-----------------
-home_screen      : motivational welcome, suggest next study step.
-during_study     : diagnose the blockage, guide step-by-step (no direct answers).
-after_task       : acknowledge result, motivate to review errors, suggest next task.
-after_all_tasks  : celebrate completion, suggest optional extension activities.
-exit             : encourage the student to come back and keep studying.
-
-Rules
------
-- Respond with JSON only.
-- Use English for reason strings (internal logging, never shown to student).
-- Set reason to null when passed is true.
+규칙
+----
+- JSON만 응답하세요.
+- reason은 영어로 작성하세요 (내부 로깅용이며 학생에게 노출되지 않습니다).
+- passed가 true이면 reason을 null로 설정하세요.
 """
 
 
@@ -105,7 +94,7 @@ class ResponseEvaluator(AbstractOutputGuard):
             touchpoint=context.touchpoint,
             grade_group=context.grade_group,
             grade_range_label=context.grade_range_label,
-            student_type=context.student_type or "unknown",
+            segment=context.segment or "unknown",
         )
 
         try:
@@ -134,8 +123,8 @@ class ResponseEvaluator(AbstractOutputGuard):
 
         if failures:
             logger.warning(
-                "ResponseEvaluator WARN session=%s dimensions=%s reasons=%s",
-                context.session_id, failures, reasons,
+                "ResponseEvaluator WARN session=%s dimensions=%s",
+                context.session_id, failures,
             )
             return GuardResult(
                 passed=False,

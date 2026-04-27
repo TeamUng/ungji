@@ -1,7 +1,6 @@
 """
 Unit tests for rule-based guardrail strategies.
-
-These tests require no API key and run entirely offline.
+No API key needed — runs entirely offline.
 """
 
 import pytest
@@ -25,7 +24,7 @@ class TestHasProfanity:
         assert token is not None
 
     def test_korean_profanity_detected(self):
-        found, token = has_profanity("진짜 병신같은 문제네")
+        found, _ = has_profanity("진짜 병신같은 문제네")
         assert found
 
     def test_empty_string_passes(self):
@@ -75,28 +74,29 @@ class TestHasPromptInjection:
 
 
 class TestQuickTopicVerdict:
-    def test_clear_study_topic(self):
-        assert quick_topic_verdict("수학 문제 도와줘") == "on_topic"
-
     def test_greeting_is_on_topic(self):
         assert quick_topic_verdict("안녕") == "on_topic"
 
-    def test_short_message_is_on_topic(self):
+    def test_short_single_token_is_on_topic(self):
         assert quick_topic_verdict("응") == "on_topic"
 
-    def test_clearly_off_topic(self):
-        result = quick_topic_verdict("유튜브랑 게임 얘기 해줘")
-        assert result == "off_topic"
+    def test_clearly_off_topic_two_keywords(self):
+        assert quick_topic_verdict("유튜브랑 게임 얘기 해줘") == "off_topic"
 
     def test_single_off_topic_keyword_is_unknown(self):
-        # Only one off-topic keyword, no study keyword → unknown (not conclusive)
+        # Only one off-topic keyword → not conclusive → defer to LLM
         result = quick_topic_verdict("유튜브 보고 싶다")
         assert result in ("off_topic", "unknown")
 
-    def test_ambiguous_returns_unknown(self):
-        # No study keywords, not clearly off-topic → unknown (defer to LLM)
-        result = quick_topic_verdict("오늘 날씨가 너무 좋다")
+    def test_study_keyword_alone_is_now_unknown(self):
+        # Study keywords no longer grant an on_topic pass — deferred to LLM
+        result = quick_topic_verdict("수학 문제 도와줘")
         assert result == "unknown"
 
-    def test_math_keyword(self):
-        assert quick_topic_verdict("분수 개념이 뭐야?") == "on_topic"
+    def test_ambiguous_is_unknown(self):
+        assert quick_topic_verdict("오늘 날씨가 너무 좋다") == "unknown"
+
+    def test_mixed_study_and_off_topic_is_unknown(self):
+        # Study word present but combined with off-topic → not automatically passed
+        result = quick_topic_verdict("수학 끝났으니까 이제 유튜브 보자")
+        assert result == "unknown"
