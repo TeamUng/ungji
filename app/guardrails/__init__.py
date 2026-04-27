@@ -5,7 +5,7 @@ Public API
 ----------
     from app.guardrails import GuardrailContext, build_pipeline
 
-    context = GuardrailContext(touchpoint="home_screen", student_grade=2)
+    context = GuardrailContext(touchpoint="home_screen", use_case="talk")
     pipeline = build_pipeline(context)
 
     input_result = await pipeline.check_input(user_message, context)
@@ -18,7 +18,7 @@ Public API
     # output always passes through (WARN only) — just use llm_response directly
 """
 
-from app.guardrails.config import build_pipeline
+from app.guardrails.guardrails_config import build_pipeline
 from app.guardrails.models import (
     GuardrailContext,
     GuardResult,
