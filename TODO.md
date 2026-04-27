@@ -190,14 +190,14 @@ PRD 케이스 1·2가 처음부터 끝까지 작동하는 것.
 **담당 파일**: `tests/conftest.py`
 **의존**: T1 (데이터 구조 확정 후) | **블로킹**: T4~T7 테스트 정상 실행
 
-- [ ] 케이스 1 학생 fixture (못함+불성실, 1학년, 국어 태스크)
-- [ ] 케이스 2 학생 fixture (못함+성실, 5학년, 수학 태스크)
-- [ ] 잘함+성실 학생 fixture
-- [ ] 잘함+불성실 학생 fixture
-- [ ] `ChatState` 초기값 생성 헬퍼 함수
-- [ ] `FastAPI TestClient` fixture
-- [ ] Upstage LLM mock fixture (실제 API 호출 차단)
-- [ ] **완료 기준**: T4~T7 테스트 파일에서 fixture import 정상, `uv run pytest` 전체 통과
+- [x] 케이스 1 학생 fixture (못함+불성실, 1학년, 국어 태스크)
+- [x] 케이스 2 학생 fixture (못함+성실, 5학년, 수학 태스크)
+- [x] 잘함+성실 학생 fixture
+- [x] 잘함+불성실 학생 fixture
+- [x] `ChatState` 초기값 생성 헬퍼 함수
+- [x] `FastAPI TestClient` fixture
+- [x] Upstage LLM mock fixture (실제 API 호출 차단)
+- [x] **완료 기준**: T4~T7 테스트 파일에서 fixture import 정상, `uv run pytest` 전체 통과
 
 ---
 
