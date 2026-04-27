@@ -106,13 +106,13 @@ PRD 케이스 1·2가 처음부터 끝까지 작동하는 것.
 **의존**: Phase 0, T3 | **블로킹**: T5, T6, T7
 
 - [x] `docs/SEGMENT_RESPONSE_POLICY.md` 작성 — 세그먼트별 출력 방향과 TP별 기본 정책 정리
-- [ ] `app/services/nodes/common.py` — `TextMessage`, `ChoicesMessage`, `ImageCardMessage`, `HintCardMessage` 생성 helper 구현
-- [ ] `app/services/nodes/common.py` — 선택지 `id`는 stable snake_case, 학생 노출 문구는 `label`로 분리
-- [ ] `app/services/nodes/common.py` — `segment + grade_group + current_touchpoint` 기반 기본 응답 정책 선택 helper 구현
-- [ ] `tests/test_response_builders.py` 작성 — 4개 메시지 타입 builder 검증
-- [ ] `tests/test_response_builders.py` 작성 — 내부 세그먼트명이 응답 label/content에 노출되지 않는지 검증
-- [ ] `tests/test_response_builders.py` 작성 — 케이스 1·2 기본 placeholder 응답 타입 검증
-- [ ] **완료 기준**: `uv run pytest tests/test_response_builders.py` 통과, T5~T7 노드가 공통 helper를 import해 사용할 수 있음
+- [x] `app/services/nodes/common.py` — `TextMessage`, `ChoicesMessage`, `ImageCardMessage`, `HintCardMessage` 생성 helper 구현
+- [x] `app/services/nodes/common.py` — 선택지 `id`는 stable snake_case, 학생 노출 문구는 `label`로 분리
+- [x] `app/services/nodes/common.py` — `segment + grade_group + current_touchpoint` 기반 기본 응답 정책 선택 helper 구현
+- [x] `tests/test_response_builders.py` 작성 — 4개 메시지 타입 builder 검증
+- [x] `tests/test_response_builders.py` 작성 — 내부 세그먼트명이 응답 label/content에 노출되지 않는지 검증
+- [x] `tests/test_response_builders.py` 작성 — 케이스 1·2 기본 placeholder 응답 타입 검증
+- [x] **완료 기준**: `uv run pytest tests/test_response_builders.py` 통과, T5~T7 노드가 공통 helper를 import해 사용할 수 있음
 
 ---
 

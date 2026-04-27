@@ -196,7 +196,7 @@ app/
 | --- | --- | --- |
 | Phase 0 | enums, constants, schemas (ChatState, 응답 4종), pyproject.toml | ✅ 완료 |
 | Phase 1 | T1(데이터 로더), T2(Upstage 클라이언트), T3(프롬프트) | 🔲 진행 예정 |
-| Phase 1.5 | T4.5(응답 builder + 세그먼트 출력 정책) | 🔲 진행 예정 |
+| Phase 1.5 | T4.5(응답 builder + 세그먼트 출력 정책) | ✅ 완료 |
 | Phase 2 | T4(classify), T5(TP1), T6(TP4), T7(TP2/3/5), T8(conftest) | 🔲 Phase 1 완료 후 |
 | Phase 3 | T9(LangGraph StateGraph 조립) | 🔲 Phase 2 완료 후 |
 | Phase 4 | T10(POST /chat + SSE) | 🔲 Phase 3 완료 후 |

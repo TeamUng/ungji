@@ -14,14 +14,21 @@
   - 응답 builder, 선택지 id 규칙, 세그먼트 출력 정책 helper, 테스트 항목 정의
 - `docs/ARCHITECTURE_REVIEW.md`에 `nodes/common.py`와 정책 문서 참조 추가
 - `docs/STATE_DESIGN.md` 데이터 흐름에 세그먼트 출력 정책 단계를 추가
+- `app/services/nodes/common.py` 신규 작성
+  - 4개 응답 메시지 타입 builder 구현
+  - stable snake_case 선택지 id 검증
+  - `segment + grade_group + current_touchpoint` 기반 `ResponsePolicy` 선택 helper 구현
+  - 케이스 1·2용 기본 placeholder 응답 구현
+- `tests/test_response_builders.py` 신규 작성
+  - 메시지 builder 검증
+  - 내부 세그먼트명 비노출 검증
+  - 케이스 1·2 placeholder 응답 타입 검증
 
 ## 확인
 
-- 문서 변경 중심 작업으로 애플리케이션 테스트는 실행하지 않음
-- 커밋 전 `git diff --check`로 공백 오류 확인 예정
+- `uv run pytest tests/test_response_builders.py` 통과
+- 커밋 전 `git diff --check`로 공백 오류 확인
 
 ## 다음 작업
 
-- `app/services/nodes/common.py` 응답 builder 구현
-- `tests/test_response_builders.py` 작성
 - T5~T7 노드에서 공통 helper 사용
