@@ -195,17 +195,17 @@ PRD 케이스 1·2가 처음부터 끝까지 작동하는 것.
 **담당 파일**: `app/services/nodes/tp2.py`, `tp3.py`, `tp5.py`, `tests/test_tp2.py`, `tests/test_tp3.py`, `tests/test_tp5.py`
 **의존**: T1, T2, T3 | **블로킹**: T9
 
-- [ ] `tests/test_tp2.py` 작성 — 완료 태스크 수 기반 진행률 멘트 검증
-- [ ] `tp2.py` — 완료 축하 + `completed_tasks` 수 활용 진행률 안내 + 다음 태스크 추천
-- [ ] `tests/test_tp3.py` 작성 — `current_task` 기반 리텐션 메시지 검증
-- [ ] `tp3.py` — "이 문제만 끝내고 가자" 리텐션 + 남은 양 최소화 표현
-- [ ] `tests/test_tp5.py` 작성 — 오답 없음 분기 검증
-- [ ] `tests/test_tp5.py` 작성 — 오답 있음 + 복습 완료 분기 검증
-- [ ] `tests/test_tp5.py` 작성 — 오답 있음 + 복습 미완료 분기 검증
-- [ ] `tp5.py` — 오답 없음 → "오늘 다 맞았어!" 구현
-- [ ] `tp5.py` — 오답 있음 + 복습 완료 → "오답 N개 다 복습했어!" 구현
-- [ ] `tp5.py` — 오답 있음 + 복습 미완료 → "오답 N개 중 M개 남았어!" 구현 (`wrong_content_total` / `wrong_content_done` 수치 활용)
-- [ ] **완료 기준**: `uv run pytest tests/test_tp2.py tests/test_tp3.py tests/test_tp5.py` 통과
+- [x] `tests/test_tp2.py` 작성 — 완료 태스크 수 기반 진행률 멘트 검증
+- [x] `tp2.py` — 완료 축하 + `completed_tasks` 수 활용 진행률 안내 + 다음 태스크 추천
+- [x] `tests/test_tp3.py` 작성 — `current_task` 기반 리텐션 메시지 검증
+- [x] `tp3.py` — "이 문제만 끝내고 가자" 리텐션 + 남은 양 최소화 표현
+- [x] `tests/test_tp5.py` 작성 — 오답 없음 분기 검증
+- [x] `tests/test_tp5.py` 작성 — 오답 있음 + 복습 완료 분기 검증
+- [x] `tests/test_tp5.py` 작성 — 오답 있음 + 복습 미완료 분기 검증
+- [x] `tp5.py` — 오답 없음 → "오늘 다 맞았어!" 구현
+- [x] `tp5.py` — 오답 있음 + 복습 완료 → "오답 N개 다 복습했어!" 구현
+- [x] `tp5.py` — 오답 있음 + 복습 미완료 → "오답 N개 중 M개 남았어!" 구현 (`wrong_content_total` / `wrong_content_done` 수치 활용)
+- [x] **완료 기준**: `uv run pytest tests/test_tp2.py tests/test_tp3.py tests/test_tp5.py` 통과
 
 ---
 
