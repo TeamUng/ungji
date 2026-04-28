@@ -279,6 +279,32 @@ PRD 케이스 1·2가 처음부터 끝까지 작동하는 것.
 
 ---
 
+## Phase 4.5 — TP4 문제/해설 기반 동적 코칭 고도화
+
+> 현재 TP4는 막힘 원인 선택지와 일부 힌트 스텝이 고정되어 있다.
+> 해설지가 제공된다는 가정하에, 문제·해설·학생 유형을 LLM이 함께 보고 해당 문제에 맞는 선택지와 힌트 스텝을 생성하도록 고도화한다.
+
+### T12. TP4 문제/해설 기반 동적 코칭
+
+**GitHub Issue**: #19
+**브랜치**: `feature/T12-tp4-dynamic-coaching`
+**담당 파일**: `app/services/nodes/tp4.py`, `app/data/mock_problems.json`, `app/data/loader.py`, `tests/test_tp4.py`, `tests/test_tp4_problem_examples.py`, `docs/experiments/tp4_problem_examples.md`
+**의존**: T1, T2, T3, T6, T10 | **블로킹**: TP4 실제 품질 검증, 프론트 API 연동 시나리오 고도화
+
+- [x] `mock_problems.json`에 문제·정답·해설 중심의 실험용 문제 데이터를 추가한다.
+- [x] TP4가 `problem_id` 또는 현재 태스크 컨텍스트로 문제 데이터를 참조할 수 있게 한다.
+- [x] LLM 프롬프트에 `question`, `answer`, `explanation`, `grade_group`, `segment`, `selected_cause`를 전달한다.
+- [x] 첫 진입 시 문제/해설 기반 막힘 원인 선택지를 동적으로 생성한다.
+- [x] 선택지 클릭 후, 선택한 막힘 원인에 맞는 `TextMessage`와 `HintCardMessage` 스텝을 동적으로 생성한다.
+- [x] 저학년은 타이핑보다 선택지 중심으로, 고학년은 단계별 설명과 teach-back 중심으로 응답한다.
+- [x] 정답을 바로 노출하지 않고, 해설지를 근거로 작은 단위 힌트 → 풀이 유도 → 최종 확인 순서로 진행한다.
+- [x] LLM 응답이 깨질 경우 사용할 안전한 fallback 선택지·힌트 스텝을 둔다.
+- [x] `tests/test_tp4_problem_examples.py` 작성 — 소금물 비율 문제에서 문제/해설 기반 선택지와 힌트 스텝 생성 검증
+- [x] `docs/experiments/tp4_problem_examples.md` 작성 — 케이스별 모의 대화와 관찰 결과 기록
+- [x] **완료 기준**: `uv run pytest tests/test_tp4.py tests/test_tp4_problem_examples.py` 통과, 케이스 1·2 TP4 모의 대화가 문제/해설 기반으로 설명 가능
+
+---
+
 ## Phase 5 — 프론트엔드 (T10 완료 후, 스택 별도 논의)
 
 ---

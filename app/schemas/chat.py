@@ -28,6 +28,7 @@ from langchain_core.messages import BaseMessage
 class Task(TypedDict):
     subject: str             # Subject enum 값 (예: "수학")
     unit: str                # 단원명 (예: "비율과 비례식")
+    problem_id: str | None   # TP4에서 참조할 문제 ID (없으면 문제 데이터 없이 기본 코칭)
     problem_count: int       # 문제 수
     estimated_time: int      # 예상 소요시간 (분)
     difficulty: str          # Difficulty enum 값 ("상" | "중" | "하")
