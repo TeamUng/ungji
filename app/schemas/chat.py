@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Annotated, Literal, TypedDict, Union
+from typing import Annotated, Literal, TypedDict, Union
 
 from pydantic import BaseModel, Field
 
@@ -19,9 +19,8 @@ from app.schemas.student import (
     WrongAnswerPattern,
 )
 
-if TYPE_CHECKING:
-    # langchain-core는 'uv add langgraph langchain-upstage langsmith' 이후 사용 가능
-    from langchain_core.messages import BaseMessage
+# LangGraph가 런타임에 get_type_hints()를 호출하므로 TYPE_CHECKING 블록 밖에서 import
+from langchain_core.messages import BaseMessage
 
 
 # ─── LangGraph State (TypedDict) ─────────────────────────────────────────────
@@ -62,6 +61,9 @@ class ChatState(TypedDict):
 
     # ─── 노드 라우팅용 ───
     current_touchpoint: Touchpoint
+
+    # ─── 노드 출력 ───
+    response: ChatResponse | None  # 각 TP 노드가 생성한 최종 응답
 
 
 # ─── API Request / Response (Pydantic) ───────────────────────────────────────
