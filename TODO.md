@@ -168,22 +168,22 @@ PRD 케이스 1·2가 처음부터 끝까지 작동하는 것.
 **담당 파일**: `app/services/nodes/tp4.py`, `tests/test_tp4.py`
 **의존**: T1, T2, T3 | **블로킹**: T9
 
-- [ ] `tests/test_tp4.py` 작성 — 케이스 1 국어: 막힘 원인 선택지 4종 응답 검증
-  - [ ] "글이 너무 길어" → `TextMessage` (문장 분리)
-  - [ ] "무슨 상황인지 모르겠어" → `ImageCardMessage` 포함
-  - [ ] "주인공 마음을 모르겠어" → `ChoicesMessage` (선택지 좁히기)
-  - [ ] "그냥 하기 싫어" → `TextMessage` (초소형 목표)
-- [ ] `tests/test_tp4.py` 작성 — 케이스 2 수학: 막힘 원인 선택지 4종 응답 검증
-  - [ ] "비율 뜻이 헷갈려" → `TextMessage` (비유 설명)
-  - [ ] "어떤 수끼리 비교해야 할지 모르겠어" → `TextMessage` (기준량/비교량 유도)
-  - [ ] "식을 어떻게 세우는지 모르겠어" → `HintCardMessage` 포함
-  - [ ] "계산하다가 틀렸어" → `TextMessage` (검산 유도)
-- [ ] `tp4.py` — 1단계: 막힘 원인 선택지 제공 (케이스별 4종)
-- [ ] `tp4.py` — 2단계: 케이스 1 국어 원인별 분기 코칭
-- [ ] `tp4.py` — 2단계: 케이스 2 수학 원인별 분기 코칭 (해설 데이터 참조)
-- [ ] `tp4.py` — 3단계: teach-back 유도 (수학, 마지막 단계에서 학생 설명 요청)
-- [ ] `tp4.py` — 내부 세그먼트명 노출 없이 `docs/SEGMENT_RESPONSE_POLICY.md`의 세그먼트별 출력 형태 반영
-- [ ] **완료 기준**: `uv run pytest tests/test_tp4.py` 통과, `HintCardMessage`·`ImageCardMessage` 타입 포함 확인
+- [x] `tests/test_tp4.py` 작성 — 케이스 1 국어: 막힘 원인 선택지 4종 응답 검증
+  - [x] "글이 너무 길어" → `TextMessage` (문장 분리)
+  - [x] "무슨 상황인지 모르겠어" → `ImageCardMessage` 포함
+  - [x] "주인공 마음을 모르겠어" → `ChoicesMessage` (선택지 좁히기)
+  - [x] "그냥 하기 싫어" → `TextMessage` (초소형 목표)
+- [x] `tests/test_tp4.py` 작성 — 케이스 2 수학: 막힘 원인 선택지 4종 응답 검증
+  - [x] "비율 뜻이 헷갈려" → `TextMessage` (비유 설명)
+  - [x] "어떤 수끼리 비교해야 할지 모르겠어" → `TextMessage` (기준량/비교량 유도)
+  - [x] "식을 어떻게 세우는지 모르겠어" → `HintCardMessage` 포함
+  - [x] "계산하다가 틀렸어" → `TextMessage` (검산 유도)
+- [x] `tp4.py` — 1단계: 막힘 원인 선택지 제공 (케이스별 4종)
+- [x] `tp4.py` — 2단계: 케이스 1 국어 원인별 분기 코칭
+- [x] `tp4.py` — 2단계: 케이스 2 수학 원인별 분기 코칭 (해설 데이터 참조)
+- [x] `tp4.py` — 3단계: teach-back 유도 (수학, 마지막 단계에서 학생 설명 요청)
+- [x] `tp4.py` — 내부 세그먼트명 노출 없이 `docs/SEGMENT_RESPONSE_POLICY.md`의 세그먼트별 출력 형태 반영
+- [x] **완료 기준**: `uv run pytest tests/test_tp4.py` 통과, `HintCardMessage`·`ImageCardMessage` 타입 포함 확인
 
 ---
 
