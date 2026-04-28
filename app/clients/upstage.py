@@ -11,5 +11,5 @@ if settings.LANGSMITH_API_KEY:
 
 llm = ChatUpstage(
     api_key=settings.UPSTAGE_API_KEY,
-    model="solar-pro",
+    model="solar-pro-2",
 )
