@@ -149,6 +149,7 @@ class TestTp4Case2Math:
     def test_build_expression_hint_card_has_steps(
         self, make_chat_state, case2_student, mock_llm
     ):
+        # mock_llm은 단일 줄 응답 → fallback 힌트 사용 → 2개 이상 보장
         state = self._make_state(make_chat_state, case2_student, "build_expression")
         result = tp4(state)
         messages = result["tp4_response"]
@@ -156,6 +157,41 @@ class TestTp4Case2Math:
         hint_cards = [m for m in messages if isinstance(m, HintCardMessage)]
         assert hint_cards, "HintCardMessage가 없음"
         assert len(hint_cards[0].steps) >= 2, "힌트 단계가 2개 이상이어야 함"
+
+    def test_build_expression_uses_llm_steps_when_multiline(
+        self, make_chat_state, case2_student, monkeypatch
+    ):
+        # LLM이 다중 줄을 반환하면 그 내용이 힌트 단계로 사용된다
+        import sys
+        import types
+
+        from tests.conftest import FakeLLM
+
+        multiline_llm = FakeLLM(response_content="기준량을 확인해요.\n비교량을 찾아요.\n식을 써요.")
+        fake_mod = types.ModuleType("app.clients.upstage")
+        fake_mod.llm = multiline_llm
+        monkeypatch.setitem(sys.modules, "app.clients.upstage", fake_mod)
+
+        state = self._make_state(make_chat_state, case2_student, "build_expression")
+        result = tp4(state)
+        messages = result["tp4_response"]
+
+        hint_cards = [m for m in messages if isinstance(m, HintCardMessage)]
+        assert hint_cards, "HintCardMessage가 없음"
+        step_contents = [s.content for s in hint_cards[0].steps]
+        assert "기준량을 확인해요." in step_contents
+
+    def test_build_expression_fallback_when_llm_singleline(
+        self, make_chat_state, case2_student, mock_llm
+    ):
+        # LLM이 단일 줄을 반환하면 fallback 힌트가 적용된다
+        state = self._make_state(make_chat_state, case2_student, "build_expression")
+        result = tp4(state)
+        messages = result["tp4_response"]
+
+        hint_cards = [m for m in messages if isinstance(m, HintCardMessage)]
+        # fallback은 _HINT_FALLBACK 3개 항목
+        assert len(hint_cards[0].steps) == 3
 
 
 # ─── 세그먼트명 노출 방지 ─────────────────────────────────────────────────────

@@ -110,6 +110,49 @@ def _invoke_llm(system_prompt: str, cause: str) -> str:
     return response.content
 
 
+_HINT_FALLBACK = [
+    "문제에서 전체(기준)가 되는 양을 찾아요.",
+    "비교하는 양이 전체 중 얼마인지 확인해요.",
+    "비율 = 비교하는 양 ÷ 기준량 식을 써요.",
+]
+
+
+def _generate_hint_steps(state: ChatState) -> list[str]:
+    """현재 태스크 맥락을 LLM에 전달해 단계별 힌트를 생성한다.
+
+    LLM 응답이 2줄 미만이거나 오류가 발생하면 _HINT_FALLBACK으로 대체한다.
+    """
+    from app.clients.upstage import llm
+    from langchain_core.messages import HumanMessage, SystemMessage
+
+    current_task = state.get("current_task")
+    task_line = (
+        f"과목: {current_task['subject']}, 단원: {current_task['unit']}"
+        if current_task
+        else "수학 식 세우기"
+    )
+
+    system = _build_system_prompt(state["segment"], state["grade_group"], "build_expression")
+    user = (
+        f"{task_line}\n"
+        "이 단원에서 식을 세우는 방법을 3~4단계로 나눠줘. "
+        "각 단계는 한 문장으로, 번호 없이 줄바꿈으로 구분해."
+    )
+
+    try:
+        response = llm.invoke([SystemMessage(content=system), HumanMessage(content=user)])
+        steps = [s.strip() for s in response.content.splitlines() if s.strip()]
+        if len(steps) >= 2:
+            return steps
+    except Exception:
+        logger.warning(
+            "hint step LLM 생성 실패, fallback 사용",
+            extra={"task": task_line},
+        )
+
+    return _HINT_FALLBACK
+
+
 def _assemble_messages(cause: str, llm_text: str, state: ChatState) -> list[ResponseMessage]:
     """원인별로 고정된 메시지 타입 구조에 LLM 텍스트를 채운다."""
 
@@ -150,12 +193,8 @@ def _assemble_messages(cause: str, llm_text: str, state: ChatState) -> list[Resp
         return [make_text(llm_text)]
 
     if cause == "build_expression":
-        # 식 세우기 막힘 → TextMessage + HintCardMessage
-        hint_steps = [
-            "무엇을 전체(기준)로 볼지 먼저 정해요.",
-            "비교하는 양이 전체 중 얼마인지 찾아요.",
-            "비율 = 비교하는 양 ÷ 기준량 식을 써요.",
-        ]
+        # 식 세우기 막힘 → TextMessage + HintCardMessage (단계는 LLM 생성, 실패 시 fallback)
+        hint_steps = _generate_hint_steps(state)
         return [make_text(llm_text), make_hint_card(hint_steps)]
 
     if cause == "check_calculation":
