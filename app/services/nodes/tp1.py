@@ -36,9 +36,7 @@ _TP1_CHOICES: dict[Segment, tuple[tuple[str, str], ...]] = {
 
 
 def tp1(state: ChatState) -> ChatResponse:
-    # Lazy import so monkeypatch in tests can replace app.clients.upstage.llm
-    import sys
-    llm = sys.modules["app.clients.upstage"].llm
+    from app.clients.upstage import llm
 
     segment = state["segment"]
     grade_group = state["grade_group"]

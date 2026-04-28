@@ -1,1 +1,66 @@
-[]
+[
+  {
+    "student_id": "lower-low-lazy",
+    "profile": {"name": "민준", "grade": 1, "preferred_subject": "국어", "strong_subject": "국어", "recent_avg_score": 65, "avg_completion_rate": 35},
+    "learning_history": {"subject_avg_scores": {"국어": 65}, "subject_completion_rates": {"국어": 35}},
+    "learning_pattern": {"wrong_content_rate": 20, "wrong_content_total": 2, "wrong_content_done": 0, "skipping_habit": true, "guessing_habit": false, "careless_habit": true},
+    "wrong_answer_pattern": {"frequent_wrong_type": "짧은 글 읽기", "repeated_wrong_subjects": ["국어"], "wrong_cause": "개념 부족"},
+    "today_tasks": [{"subject": "국어", "unit": "짧은 글 읽기", "problem_count": 3, "estimated_time": 5, "difficulty": "하", "ai_predicted_score": 65}]
+  },
+  {
+    "student_id": "lower-low-diligent",
+    "profile": {"name": "지아", "grade": 2, "preferred_subject": "국어", "strong_subject": "국어", "recent_avg_score": 72, "avg_completion_rate": 85},
+    "learning_history": {"subject_avg_scores": {"국어": 72}, "subject_completion_rates": {"국어": 85}},
+    "learning_pattern": {"wrong_content_rate": 60, "wrong_content_total": 3, "wrong_content_done": 1, "skipping_habit": false, "guessing_habit": false, "careless_habit": false},
+    "wrong_answer_pattern": {"frequent_wrong_type": "낱말의 뜻", "repeated_wrong_subjects": ["국어"], "wrong_cause": "개념 부족"},
+    "today_tasks": [{"subject": "국어", "unit": "낱말의 뜻 알기", "problem_count": 4, "estimated_time": 7, "difficulty": "하", "ai_predicted_score": 70}]
+  },
+  {
+    "student_id": "lower-high-lazy",
+    "profile": {"name": "도윤", "grade": 2, "preferred_subject": "수학", "strong_subject": "수학", "recent_avg_score": 93, "avg_completion_rate": 42},
+    "learning_history": {"subject_avg_scores": {"수학": 93}, "subject_completion_rates": {"수학": 42}},
+    "learning_pattern": {"wrong_content_rate": 30, "wrong_content_total": 2, "wrong_content_done": 0, "skipping_habit": true, "guessing_habit": false, "careless_habit": true},
+    "wrong_answer_pattern": {"frequent_wrong_type": "덧셈과 뺄셈", "repeated_wrong_subjects": ["수학"], "wrong_cause": "실수"},
+    "today_tasks": [{"subject": "수학", "unit": "덧셈과 뺄셈", "problem_count": 3, "estimated_time": 5, "difficulty": "중", "ai_predicted_score": 91}]
+  },
+  {
+    "student_id": "lower-high-diligent",
+    "profile": {"name": "하윤", "grade": 1, "preferred_subject": "수학", "strong_subject": "수학", "recent_avg_score": 95, "avg_completion_rate": 92},
+    "learning_history": {"subject_avg_scores": {"수학": 95}, "subject_completion_rates": {"수학": 92}},
+    "learning_pattern": {"wrong_content_rate": null, "wrong_content_total": 0, "wrong_content_done": 0, "skipping_habit": false, "guessing_habit": false, "careless_habit": false},
+    "wrong_answer_pattern": {"frequent_wrong_type": "", "repeated_wrong_subjects": [], "wrong_cause": "실수"},
+    "today_tasks": [{"subject": "수학", "unit": "100까지의 수", "problem_count": 5, "estimated_time": 8, "difficulty": "상", "ai_predicted_score": 94}]
+  },
+  {
+    "student_id": "upper-low-lazy",
+    "profile": {"name": "준서", "grade": 5, "preferred_subject": "국어", "strong_subject": "사회", "recent_avg_score": 68, "avg_completion_rate": 45},
+    "learning_history": {"subject_avg_scores": {"국어": 68}, "subject_completion_rates": {"국어": 45}},
+    "learning_pattern": {"wrong_content_rate": 30, "wrong_content_total": 3, "wrong_content_done": 0, "skipping_habit": true, "guessing_habit": true, "careless_habit": false},
+    "wrong_answer_pattern": {"frequent_wrong_type": "논설문 읽기", "repeated_wrong_subjects": ["국어"], "wrong_cause": "개념 부족"},
+    "today_tasks": [{"subject": "국어", "unit": "논설문의 주장과 근거", "problem_count": 4, "estimated_time": 10, "difficulty": "중", "ai_predicted_score": 68}]
+  },
+  {
+    "student_id": "upper-low-diligent",
+    "profile": {"name": "서연", "grade": 5, "preferred_subject": "수학", "strong_subject": "과학", "recent_avg_score": 72, "avg_completion_rate": 88},
+    "learning_history": {"subject_avg_scores": {"수학": 72}, "subject_completion_rates": {"수학": 88}},
+    "learning_pattern": {"wrong_content_rate": 75, "wrong_content_total": 3, "wrong_content_done": 1, "skipping_habit": false, "guessing_habit": false, "careless_habit": false},
+    "wrong_answer_pattern": {"frequent_wrong_type": "비율과 비례식", "repeated_wrong_subjects": ["수학"], "wrong_cause": "개념 부족"},
+    "today_tasks": [{"subject": "수학", "unit": "비율과 비례식", "problem_count": 4, "estimated_time": 12, "difficulty": "중", "ai_predicted_score": 74}]
+  },
+  {
+    "student_id": "upper-high-lazy",
+    "profile": {"name": "시우", "grade": 6, "preferred_subject": "수학", "strong_subject": "수학", "recent_avg_score": 93, "avg_completion_rate": 42},
+    "learning_history": {"subject_avg_scores": {"수학": 93}, "subject_completion_rates": {"수학": 42}},
+    "learning_pattern": {"wrong_content_rate": 25, "wrong_content_total": 2, "wrong_content_done": 0, "skipping_habit": true, "guessing_habit": false, "careless_habit": true},
+    "wrong_answer_pattern": {"frequent_wrong_type": "원의 넓이", "repeated_wrong_subjects": ["수학"], "wrong_cause": "실수"},
+    "today_tasks": [{"subject": "수학", "unit": "원의 넓이", "problem_count": 3, "estimated_time": 8, "difficulty": "상", "ai_predicted_score": 91}]
+  },
+  {
+    "student_id": "upper-high-diligent",
+    "profile": {"name": "채원", "grade": 6, "preferred_subject": "과학", "strong_subject": "수학", "recent_avg_score": 96, "avg_completion_rate": 94},
+    "learning_history": {"subject_avg_scores": {"수학": 96, "과학": 97}, "subject_completion_rates": {"수학": 94, "과학": 95}},
+    "learning_pattern": {"wrong_content_rate": null, "wrong_content_total": 0, "wrong_content_done": 0, "skipping_habit": false, "guessing_habit": false, "careless_habit": false},
+    "wrong_answer_pattern": {"frequent_wrong_type": "", "repeated_wrong_subjects": [], "wrong_cause": "실수"},
+    "today_tasks": [{"subject": "수학", "unit": "비와 비율 심화", "problem_count": 5, "estimated_time": 12, "difficulty": "상", "ai_predicted_score": 95}]
+  }
+]
