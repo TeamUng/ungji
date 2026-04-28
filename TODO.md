@@ -130,15 +130,15 @@ PRD 케이스 1·2가 처음부터 끝까지 작동하는 것.
 **담당 파일**: `app/services/nodes/__init__.py`, `app/services/nodes/classify.py`, `tests/test_classify.py`
 **의존**: T1 | **블로킹**: T9
 
-- [ ] `app/services/nodes/` 디렉토리 생성 및 `__init__.py` 추가
-- [ ] `tests/test_classify.py` 작성 — 케이스 1 학생 → `segment=못함+불성실`, `grade_group=lower` 검증
-- [ ] `tests/test_classify.py` 작성 — 케이스 2 학생 → `segment=못함+성실`, `grade_group=upper` 검증
-- [ ] `tests/test_classify.py` — 오답 없는 학생(wrong_content_rate=None) → 성실도 불이익 없음 검증
-- [ ] `tests/test_classify.py` — 학년 경계값 (2→lower, 3→middle, 4→middle, 5→upper)
-- [ ] `classify.py` — `load_student()`로 데이터 로드 후 `ChatState` 초기화
-- [ ] `classify.py` — `constants.py` 임계값 기준 `segment` 판별 로직
-- [ ] `classify.py` — `grade` → `grade_group` 변환 로직
-- [ ] **완료 기준**: `uv run pytest tests/test_classify.py` 통과
+- [x] `app/services/nodes/` 디렉토리 생성 및 `__init__.py` 추가
+- [x] `tests/test_classify.py` 작성 — 케이스 1 학생 → `segment=못함+불성실`, `grade_group=lower` 검증
+- [x] `tests/test_classify.py` 작성 — 케이스 2 학생 → `segment=못함+성실`, `grade_group=upper` 검증
+- [x] `tests/test_classify.py` — 오답 없는 학생(wrong_content_rate=None) → 성실도 불이익 없음 검증
+- [x] `tests/test_classify.py` — 학년 경계값 (2→lower, 3→middle, 4→middle, 5→upper)
+- [x] `classify.py` — `load_student()`로 데이터 로드 후 `ChatState` 초기화
+- [x] `classify.py` — `constants.py` 임계값 기준 `segment` 판별 로직
+- [x] `classify.py` — `grade` → `grade_group` 변환 로직
+- [x] **완료 기준**: `uv run pytest tests/test_classify.py` 통과
 
 ---
 
