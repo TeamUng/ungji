@@ -48,6 +48,7 @@ app/
   services/
     graph.py                  # LangGraph StateGraph + 조건부 라우팅 (T9)
     nodes/
+      common.py               # 응답 builder + 세그먼트 출력 정책 helper (T4.5)
       classify.py             # 학생 데이터 로드 + segment/grade_group 판별 + State 초기화 (T4)
       tp1.py                  # 홈화면 진입 — 환영 메시지 + 세그먼트별 선택지 (T5)
       tp2.py                  # 단위 학습 완료 — 진행률 축하 + 다음 학습 제안 (T7)
@@ -185,6 +186,7 @@ app/
 | 7-2 | 케이스 1/2의 mock_problems.json 데이터 형태 구체화 | 🔲 미결 | 테스트 시나리오 확정 후 작성 (STATE_DESIGN 8-2) |
 | 7-3 | 두 케이스 간 공유 로직 범위 (어디까지 공통, 어디부터 과목/학년 특화) | ✅ 결정 | **classify 노드 공통**, TP1~TP5 노드는 과목 무관하게 동일 로직 — 과목·학년 특화는 프롬프트와 mock 데이터로 처리 |
 | 7-4 | `config.py`에 `LANGSMITH_API_KEY`, `LANGSMITH_PROJECT` 추가 | ✅ 결정 | T2 구현 시 처리 |
+| 7-5 | 세그먼트별 응답 형태를 어디서 관리할지 | ✅ 결정 | PRD는 요구사항 원천으로 유지하고, 실제 출력 형태와 팀 고도화 기준은 `docs/SEGMENT_RESPONSE_POLICY.md` + `nodes/common.py` helper에서 관리 |
 
 ---
 
@@ -194,6 +196,7 @@ app/
 | --- | --- | --- |
 | Phase 0 | enums, constants, schemas (ChatState, 응답 4종), pyproject.toml | ✅ 완료 |
 | Phase 1 | T1(데이터 로더), T2(Upstage 클라이언트), T3(프롬프트) | 🔲 진행 예정 |
+| Phase 1.5 | T4.5(응답 builder + 세그먼트 출력 정책) | ✅ 완료 |
 | Phase 2 | T4(classify), T5(TP1), T6(TP4), T7(TP2/3/5), T8(conftest) | 🔲 Phase 1 완료 후 |
 | Phase 3 | T9(LangGraph StateGraph 조립) | 🔲 Phase 2 완료 후 |
 | Phase 4 | T10(POST /chat + SSE) | 🔲 Phase 3 완료 후 |
