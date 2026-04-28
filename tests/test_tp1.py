@@ -17,7 +17,6 @@ def test_case1_response_shape(case1_student, make_chat_state, mock_llm):
 
     types = [m.type for m in response.messages]
     assert "text" in types
-    assert "choices" in types
 
 
 def test_case1_system_prompt_uses_lower_persona(case1_student, make_chat_state, mock_llm):
@@ -44,7 +43,6 @@ def test_case2_response_shape(case2_student, make_chat_state, mock_llm):
 
     types = [m.type for m in response.messages]
     assert "text" in types
-    assert "choices" in types
 
 
 def test_case2_system_prompt_uses_upper_persona(case2_student, make_chat_state, mock_llm):
@@ -60,26 +58,15 @@ def test_case2_system_prompt_uses_upper_persona(case2_student, make_chat_state, 
     assert "코치" in system_content
 
 
-def test_choices_differ_between_cases(case1_student, case2_student, make_chat_state, mock_llm):
-    state1 = make_chat_state(
+def test_task_info_in_user_message(case1_student, make_chat_state, mock_llm):
+    state = make_chat_state(
         case1_student,
         segment=Segment.LOW_LAZY,
         grade_group=GradeGroup.LOWER,
         touchpoint=Touchpoint.TP1,
     )
-    state2 = make_chat_state(
-        case2_student,
-        segment=Segment.LOW_DILIGENT,
-        grade_group=GradeGroup.UPPER,
-        touchpoint=Touchpoint.TP1,
-    )
+    tp1(state)
 
-    response1 = tp1(state1)
-    response2 = tp1(state2)
-
-    choices1 = next(m for m in response1.messages if m.type == "choices")
-    choices2 = next(m for m in response2.messages if m.type == "choices")
-
-    labels1 = {item.label for item in choices1.items}
-    labels2 = {item.label for item in choices2.items}
-    assert labels1 != labels2
+    user_content = mock_llm.calls[0]["messages"][1].content
+    assert "민준" in user_content
+    assert "짧은 글 읽기" in user_content

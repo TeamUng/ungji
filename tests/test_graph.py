@@ -32,7 +32,6 @@ def test_case1_talk_tp1_routes_to_tp1(case1_student, mock_llm):
     assert result["response"] is not None
     types = [m.type for m in result["response"].messages]
     assert "text" in types
-    assert "choices" in types
 
 
 def test_case1_learning_tp4_routes_to_tp4(case1_student, mock_llm):
@@ -47,7 +46,6 @@ def test_case2_talk_tp1_routes_to_tp1(case2_student, mock_llm):
     assert result["response"] is not None
     types = [m.type for m in result["response"].messages]
     assert "text" in types
-    assert "choices" in types
 
 
 def test_case2_learning_tp4_routes_to_tp4(case2_student, mock_llm):

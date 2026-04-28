@@ -1,80 +1,82 @@
 from __future__ import annotations
 
-from app.core.enums import Segment
+from langchain_core.messages import HumanMessage, SystemMessage
+
 from app.core.logging import get_logger
 from app.schemas.chat import ChatResponse, ChatState
-from app.services.nodes.common import make_chat_response, make_choices, make_text
+from app.services.nodes.common import make_chat_response, make_text
 from app.services.prompts.coaching import get_coaching_strategy
 from app.services.prompts.personas import get_persona
 
 logger = get_logger(__name__)
 
-_TP3_CHOICES: dict[Segment, tuple[tuple[str, str], ...]] = {
-    Segment.HIGH_DILIGENT: (
-        ("finish_current", "지금 문제 마무리하기"),
-        ("check_condition", "조건 하나만 확인하기"),
-        ("pause_after_this", "이 문제 후 쉬기"),
-    ),
-    Segment.HIGH_LAZY: (
-        ("finish_one", "딱 1문제만 끝내기"),
-        ("quick_hint", "힌트만 보고 풀기"),
-        ("pause_after_this", "이 문제 후 쉬기"),
-    ),
-    Segment.LOW_DILIGENT: (
-        ("one_small_step", "한 단계만 같이 보기"),
-        ("show_hint", "힌트 보기"),
-        ("pause_after_this", "이 문제 후 쉬기"),
-    ),
-    Segment.LOW_LAZY: (
-        ("one_tiny_step", "아주 작은 단계만 하기"),
-        ("easy_hint", "쉬운 힌트 보기"),
-        ("pause_after_this", "이 문제 후 쉬기"),
-    ),
-}
-
 
 def tp3(state: ChatState) -> ChatResponse:
     from app.clients.upstage import llm
-    from langchain_core.messages import HumanMessage, SystemMessage
 
     segment = state["segment"]
     grade_group = state["grade_group"]
     profile = state["student_profile"]
-    current_task = state["current_task"]
+    today_tasks = state["today_tasks"]
+    completed_tasks = state["completed_tasks"]
+    current_task = state.get("current_task")
 
-    system_prompt = f"{get_persona(grade_group)}\n\n{get_coaching_strategy(segment)}"
+    completed_count = len(completed_tasks)
+    total_count = len(today_tasks)
+    all_done = completed_count >= total_count
 
-    task_info = ""
+    system_prompt = (
+        f"{get_persona(grade_group)}\n\n"
+        f"{get_coaching_strategy(segment)}\n\n"
+        "당신은 스마트올 AI 학습 코치입니다. 학생이 앱을 나가려 하고 있습니다.\n"
+        "다음 원칙으로 대응하세요:\n"
+        "1. 모든 과제를 완료한 경우: 수고했다고 격려하고 편하게 보내주세요.\n"
+        "2. 과제가 남은 경우: 학생의 마음을 이해하면서 부드럽게 붙잡으세요. "
+        "강요하지 말고, 아주 작은 것 하나만 더 하자고 제안하세요.\n"
+        "   - 지금 하던 과제가 너무 어려우면 더 쉬운 과제를 추천하세요.\n"
+        "   - 피곤하거나 쉬고 싶으면 '잠깐 게임 코너에서 쉬고 오는 건 어때?'처럼 "
+        "앱 안에서 쉬도록 유도할 수 있어요.\n"
+        "3. 대화를 자연스럽게 이어가며 학생의 상태를 파악하세요.\n"
+        "4. 응답은 2~3문장으로 간결하게 작성하세요."
+    )
+
+    remaining_tasks = [t for t in today_tasks if t not in completed_tasks]
+    remaining_lines = [
+        f"- {t['subject']}: {t['unit']} (난이도: {t['difficulty']})"
+        for t in remaining_tasks
+    ]
+
+    current_line = ""
     if current_task:
-        task_info = (
-            f"지금 하던 학습: {current_task['subject']} - {current_task['unit']} "
-            f"({current_task['problem_count']}문제)"
+        current_line = f"\n현재 진행 중인 과제: {current_task['subject']} - {current_task['unit']}"
+
+    if all_done:
+        situation = "모든 과제를 완료했습니다."
+    else:
+        situation = (
+            f"진행 상황: {completed_count}/{total_count}개 완료\n"
+            f"남은 과제:\n" + "\n".join(remaining_lines)
         )
 
     user_message = (
-        f"학생 이름: {profile['name']}\n"
-        f"학년: {profile['grade']}학년\n"
-        f"{task_info}\n\n"
-        "학생이 학습을 중간에 나가려고 합니다. "
-        "'이 문제만 끝내고 가자'는 방향으로 남은 양을 최소화해서 짧게 설득해주세요."
+        f"학생: {profile['name']} ({profile['grade']}학년)"
+        f"{current_line}\n"
+        f"{situation}\n\n"
+        "학생이 앱을 나가려 합니다. 상황에 맞게 대응해주세요."
     )
 
     logger.info(
         "TP3 node invoked",
         extra={
             "student_id": state["student_id"],
-            "segment": segment.value,
-            "current_task": current_task,
+            "completed_count": completed_count,
+            "total_count": total_count,
+            "all_done": all_done,
         },
     )
 
     response = llm.invoke([SystemMessage(content=system_prompt), HumanMessage(content=user_message)])
 
-    messages = [make_text(response.content), make_choices(_TP3_CHOICES[segment])]
+    logger.info("TP3 node completed", extra={"student_id": state["student_id"]})
 
-    logger.info(
-        "TP3 node completed",
-        extra={"student_id": state["student_id"], "message_count": len(messages)},
-    )
-
-    return make_chat_response(state["thread_id"], messages)
+    return make_chat_response(state["thread_id"], [make_text(response.content)])

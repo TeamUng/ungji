@@ -64,7 +64,6 @@ def test_response_shape(case2_student, make_chat_state, mock_llm):
 
     types = [m.type for m in response.messages]
     assert "text" in types
-    assert "choices" in types
 
 
 def test_wrong_summary_in_user_message_no_wrong(high_diligent_student, make_chat_state, mock_llm):

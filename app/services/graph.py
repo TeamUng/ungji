@@ -8,6 +8,7 @@ from app.core.logging import get_logger
 from app.schemas.chat import ChatState
 from app.services.nodes.classify import classify
 from app.services.nodes.common import make_chat_response
+from app.services.nodes.general_chat import general_chat
 from app.services.nodes.tp1 import tp1
 from app.services.nodes.tp2 import tp2
 from app.services.nodes.tp3 import tp3
@@ -17,8 +18,6 @@ from app.services.nodes.tp5 import tp5
 logger = get_logger(__name__)
 
 # ─── LangGraph 노드 래퍼 ──────────────────────────────────────────────────────
-# TP 노드들은 ChatResponse 또는 dict를 반환하므로,
-# LangGraph state update dict 형식으로 통일한다.
 
 def _tp1_node(state: ChatState) -> dict:
     return {"response": tp1(state)}
@@ -35,11 +34,18 @@ def _tp3_node(state: ChatState) -> dict:
 def _tp4_node(state: ChatState) -> dict:
     result = tp4(state)
     messages = result["tp4_response"]
-    return {"response": make_chat_response(state["thread_id"], messages)}
+    extra = {"response": make_chat_response(state["thread_id"], messages)}
+    if "current_problem" in result:
+        extra["current_problem"] = result["current_problem"]
+    return extra
 
 
 def _tp5_node(state: ChatState) -> dict:
     return {"response": tp5(state)}
+
+
+def _general_chat_node(state: ChatState) -> dict:
+    return {"response": general_chat(state)}
 
 
 # ─── 라우팅 함수 ──────────────────────────────────────────────────────────────
@@ -47,6 +53,9 @@ def _tp5_node(state: ChatState) -> dict:
 def _route(state: ChatState) -> str:
     use_case = state["use_case"]
     touchpoint = state["current_touchpoint"]
+
+    if use_case == UseCase.CHAT:
+        return "general_chat"
 
     if use_case == UseCase.LEARNING:
         if touchpoint != Touchpoint.TP4:
@@ -73,7 +82,7 @@ def _route(state: ChatState) -> str:
 # ─── 진입 라우팅 ─────────────────────────────────────────────────────────────
 
 def _entry_route(state: ChatState) -> str:
-    """첫 턴(student_profile 없음)이면 classify, 이후 턴이면 바로 TP 노드로."""
+    """첫 턴(student_profile 없음)이면 classify, 이후 턴이면 바로 노드로."""
     if state.get("student_profile") is None:
         return "classify"
     return _route(state)
@@ -89,9 +98,8 @@ _builder.add_node("tp2", _tp2_node)
 _builder.add_node("tp3", _tp3_node)
 _builder.add_node("tp4", _tp4_node)
 _builder.add_node("tp5", _tp5_node)
+_builder.add_node("general_chat", _general_chat_node)
 
-# 첫 턴: START → classify → _route → TP 노드
-# 이후 턴: START → _route(state) → TP 노드 (classify 생략)
 _builder.add_conditional_edges(START, _entry_route)
 _builder.add_conditional_edges("classify", _route)
 

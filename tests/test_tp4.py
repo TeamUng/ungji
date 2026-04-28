@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import pytest
 from langchain_core.messages import HumanMessage
 
 from app.core.enums import GradeGroup, Segment, Touchpoint, UseCase
@@ -19,7 +18,8 @@ def _has_type(messages, msg_type) -> bool:
     return any(isinstance(m, msg_type) for m in messages)
 
 
-def _state_with_cause(make_chat_state, student, segment, grade_group, cause: str | None):
+def _make_turn1_state(make_chat_state, student, segment, grade_group, problem_id: str | None = None):
+    """Turn 1 상태: current_problem 미설정, chat_history에 선택적 problem_id."""
     state = make_chat_state(
         student,
         segment=segment,
@@ -27,168 +27,242 @@ def _state_with_cause(make_chat_state, student, segment, grade_group, cause: str
         use_case=UseCase.LEARNING,
         touchpoint=Touchpoint.TP4,
     )
-    if cause:
-        state["chat_history"] = [HumanMessage(content=cause)]
+    if problem_id:
+        state["chat_history"] = [HumanMessage(content=problem_id)]
     return state
 
 
-# ─── 케이스 1 (국어, LOW_LAZY, LOWER) ────────────────────────────────────────
+def _make_turn2_state(make_chat_state, student, segment, grade_group, cause: str, problem: dict):
+    """Turn 2 상태: current_problem 설정, chat_history에 선택한 원인."""
+    state = make_chat_state(
+        student,
+        segment=segment,
+        grade_group=grade_group,
+        use_case=UseCase.LEARNING,
+        touchpoint=Touchpoint.TP4,
+    )
+    state["current_problem"] = problem
+    state["chat_history"] = [HumanMessage(content=cause)]
+    return state
 
-class TestTp4Case1Korean:
-    """케이스 1: 저학년 국어, 못함+불성실 세그먼트"""
 
-    def _make_state(self, make_chat_state, case1_student, cause: str | None):
-        return _state_with_cause(
-            make_chat_state, case1_student, Segment.LOW_LAZY, GradeGroup.LOWER, cause
+_DUMMY_PROBLEM = {
+    "problem_id": "test_001",
+    "subject": "수학",
+    "unit": "분수",
+    "question": "1/2 + 1/4 = ?",
+    "answer": "3/4",
+    "explanation": "분모를 통분합니다.",
+    "hints": ["분모를 같게 만들어요."],
+    "steps": ["1/2 = 2/4로 통분해요.", "2/4 + 1/4 = 3/4를 계산해요."],
+}
+
+_CAUSES_TOOL_CALL = [
+    {
+        "name": "send_causes",
+        "args": {
+            "items": [
+                {"id": "no_concept", "label": "개념을 모르겠어요"},
+                {"id": "hard_calc", "label": "계산이 어려워요"},
+                {"id": "confused_question", "label": "문제가 이해 안 돼요"},
+            ]
+        },
+    }
+]
+
+
+# ─── Turn 1: 원인 선택지 생성 ─────────────────────────────────────────────────
+
+class TestTp4Turn1:
+    """Turn 1: current_problem이 없는 상태에서 원인 선택지를 생성한다."""
+
+    def test_send_causes_tool_produces_choices_message(
+        self, make_chat_state, case1_student, mock_llm
+    ):
+        mock_llm.next_tool_calls = _CAUSES_TOOL_CALL
+        state = _make_turn1_state(
+            make_chat_state, case1_student, Segment.LOW_LAZY, GradeGroup.LOWER
         )
-
-    def test_no_cause_returns_choices(self, make_chat_state, case1_student, mock_llm):
-        state = self._make_state(make_chat_state, case1_student, None)
         result = tp4(state)
-        messages = result["tp4_response"]
 
-        assert _has_type(messages, TextMessage)
-        assert _has_type(messages, ChoicesMessage)
+        assert _has_type(result["tp4_response"], ChoicesMessage)
 
-    def test_too_long_returns_text(self, make_chat_state, case1_student, mock_llm):
-        state = self._make_state(make_chat_state, case1_student, "too_long")
-        result = tp4(state)
-        messages = result["tp4_response"]
-
-        assert _has_type(messages, TextMessage)
-
-    def test_dont_get_situation_returns_image_card(self, make_chat_state, case1_student, mock_llm):
-        state = self._make_state(make_chat_state, case1_student, "dont_get_situation")
-        result = tp4(state)
-        messages = result["tp4_response"]
-
-        assert _has_type(messages, ImageCardMessage)
-
-    def test_dont_get_feeling_returns_choices(self, make_chat_state, case1_student, mock_llm):
-        state = self._make_state(make_chat_state, case1_student, "dont_get_feeling")
-        result = tp4(state)
-        messages = result["tp4_response"]
-
-        assert _has_type(messages, ChoicesMessage)
-
-    def test_dont_want_now_returns_text(self, make_chat_state, case1_student, mock_llm):
-        state = self._make_state(make_chat_state, case1_student, "dont_want_now")
-        result = tp4(state)
-        messages = result["tp4_response"]
-
-        assert _has_type(messages, TextMessage)
-
-    def test_no_teach_back_for_case1(self, make_chat_state, case1_student, mock_llm):
-        # 국어(LOW_LAZY)는 teach-back을 추가하지 않는다
-        state = self._make_state(make_chat_state, case1_student, "too_long")
-        result = tp4(state)
-        messages = result["tp4_response"]
-
-        # LOW_LAZY는 teach-back 없음 → TextMessage 1개만
-        assert len(messages) == 1
-
-
-# ─── 케이스 2 (수학, LOW_DILIGENT, UPPER) ────────────────────────────────────
-
-class TestTp4Case2Math:
-    """케이스 2: 고학년 수학, 못함+성실 세그먼트"""
-
-    def _make_state(self, make_chat_state, case2_student, cause: str | None):
-        return _state_with_cause(
-            make_chat_state, case2_student, Segment.LOW_DILIGENT, GradeGroup.UPPER, cause
+    def test_choices_have_correct_ids(
+        self, make_chat_state, case1_student, mock_llm
+    ):
+        mock_llm.next_tool_calls = _CAUSES_TOOL_CALL
+        state = _make_turn1_state(
+            make_chat_state, case1_student, Segment.LOW_LAZY, GradeGroup.LOWER
         )
-
-    def test_no_cause_returns_choices(self, make_chat_state, case2_student, mock_llm):
-        state = self._make_state(make_chat_state, case2_student, None)
         result = tp4(state)
-        messages = result["tp4_response"]
 
+        choices = next(m for m in result["tp4_response"] if isinstance(m, ChoicesMessage))
+        ids = [item.id for item in choices.items]
+        assert "no_concept" in ids
+        assert "hard_calc" in ids
+        assert "confused_question" in ids
+
+    def test_fallback_text_when_no_tool_call(
+        self, make_chat_state, case1_student, mock_llm
+    ):
+        mock_llm.next_tool_calls = []
+        state = _make_turn1_state(
+            make_chat_state, case1_student, Segment.LOW_LAZY, GradeGroup.LOWER
+        )
+        result = tp4(state)
+
+        assert _has_type(result["tp4_response"], TextMessage)
+
+    def test_result_includes_current_problem_key(
+        self, make_chat_state, case2_student, mock_llm
+    ):
+        mock_llm.next_tool_calls = _CAUSES_TOOL_CALL
+        state = _make_turn1_state(
+            make_chat_state, case2_student, Segment.LOW_DILIGENT, GradeGroup.UPPER,
+            problem_id="math_ratio_saltwater_001",
+        )
+        result = tp4(state)
+
+        assert "current_problem" in result
+
+    def test_result_has_problem_data_for_known_problem_id(
+        self, make_chat_state, case2_student, mock_llm
+    ):
+        mock_llm.next_tool_calls = _CAUSES_TOOL_CALL
+        state = _make_turn1_state(
+            make_chat_state, case2_student, Segment.LOW_DILIGENT, GradeGroup.UPPER,
+            problem_id="math_ratio_saltwater_001",
+        )
+        result = tp4(state)
+
+        problem = result.get("current_problem")
+        assert problem is not None
+        assert problem.get("problem_id") == "math_ratio_saltwater_001"
+
+    def test_unknown_problem_id_still_generates_causes(
+        self, make_chat_state, case1_student, mock_llm
+    ):
+        mock_llm.next_tool_calls = _CAUSES_TOOL_CALL
+        state = _make_turn1_state(
+            make_chat_state, case1_student, Segment.LOW_LAZY, GradeGroup.LOWER,
+            problem_id="nonexistent_id",
+        )
+        result = tp4(state)
+
+        # 문제를 못 찾아도 원인 선택지는 생성된다
+        assert "tp4_response" in result
+        assert len(result["tp4_response"]) > 0
+
+
+# ─── Turn 2: 원인에 맞는 코칭 ─────────────────────────────────────────────────
+
+class TestTp4Turn2:
+    """Turn 2: current_problem이 있는 상태에서 선택한 원인에 맞게 코칭한다."""
+
+    def test_send_text_produces_text_message(
+        self, make_chat_state, case1_student, mock_llm
+    ):
+        mock_llm.next_tool_calls = [
+            {"name": "send_text", "args": {"content": "개념부터 같이 복습해봐요!"}}
+        ]
+        state = _make_turn2_state(
+            make_chat_state, case1_student, Segment.LOW_LAZY, GradeGroup.LOWER,
+            cause="no_concept", problem=_DUMMY_PROBLEM,
+        )
+        result = tp4(state)
+
+        assert _has_type(result["tp4_response"], TextMessage)
+
+    def test_send_hint_card_produces_hint_card_message(
+        self, make_chat_state, case2_student, mock_llm
+    ):
+        mock_llm.next_tool_calls = [
+            {"name": "send_hint_card", "args": {"steps": ["1단계", "2단계", "3단계"]}}
+        ]
+        state = _make_turn2_state(
+            make_chat_state, case2_student, Segment.LOW_DILIGENT, GradeGroup.UPPER,
+            cause="hard_calc", problem=_DUMMY_PROBLEM,
+        )
+        result = tp4(state)
+
+        assert _has_type(result["tp4_response"], HintCardMessage)
+
+    def test_send_image_card_produces_image_card_message(
+        self, make_chat_state, case1_student, mock_llm
+    ):
+        mock_llm.next_tool_calls = [
+            {"name": "send_image_card", "args": {"caption": "분수 그림 설명"}}
+        ]
+        state = _make_turn2_state(
+            make_chat_state, case1_student, Segment.LOW_LAZY, GradeGroup.LOWER,
+            cause="confused_question", problem=_DUMMY_PROBLEM,
+        )
+        result = tp4(state)
+
+        assert _has_type(result["tp4_response"], ImageCardMessage)
+
+    def test_multiple_tools_produces_multiple_messages(
+        self, make_chat_state, case2_student, mock_llm
+    ):
+        mock_llm.next_tool_calls = [
+            {"name": "send_text", "args": {"content": "같이 풀어봐요."}},
+            {"name": "send_hint_card", "args": {"steps": ["1단계", "2단계"]}},
+        ]
+        state = _make_turn2_state(
+            make_chat_state, case2_student, Segment.LOW_DILIGENT, GradeGroup.UPPER,
+            cause="no_concept", problem=_DUMMY_PROBLEM,
+        )
+        result = tp4(state)
+
+        messages = result["tp4_response"]
         assert _has_type(messages, TextMessage)
-        assert _has_type(messages, ChoicesMessage)
-
-    def test_confused_concept_returns_text(self, make_chat_state, case2_student, mock_llm):
-        state = self._make_state(make_chat_state, case2_student, "confused_concept")
-        result = tp4(state)
-        messages = result["tp4_response"]
-
-        assert _has_type(messages, TextMessage)
-
-    def test_find_compare_numbers_returns_text(self, make_chat_state, case2_student, mock_llm):
-        state = self._make_state(make_chat_state, case2_student, "find_compare_numbers")
-        result = tp4(state)
-        messages = result["tp4_response"]
-
-        assert _has_type(messages, TextMessage)
-
-    def test_build_expression_returns_hint_card(self, make_chat_state, case2_student, mock_llm):
-        state = self._make_state(make_chat_state, case2_student, "build_expression")
-        result = tp4(state)
-        messages = result["tp4_response"]
-
         assert _has_type(messages, HintCardMessage)
 
-    def test_check_calculation_returns_text(self, make_chat_state, case2_student, mock_llm):
-        state = self._make_state(make_chat_state, case2_student, "check_calculation")
-        result = tp4(state)
-        messages = result["tp4_response"]
-
-        assert _has_type(messages, TextMessage)
-
-    def test_teach_back_appended_for_math_low_diligent(
-        self, make_chat_state, case2_student, mock_llm
+    def test_fallback_text_when_no_tool_call(
+        self, make_chat_state, case1_student, mock_llm
     ):
-        # 수학 LOW_DILIGENT는 마지막에 teach-back TextMessage를 추가한다
-        for cause in ("confused_concept", "find_compare_numbers", "build_expression", "check_calculation"):
-            state = self._make_state(make_chat_state, case2_student, cause)
-            result = tp4(state)
-            messages = result["tp4_response"]
-
-            last = messages[-1]
-            assert isinstance(last, TextMessage), f"cause={cause}: 마지막 메시지가 TextMessage여야 함"
-
-    def test_build_expression_hint_card_has_steps(
-        self, make_chat_state, case2_student, mock_llm
-    ):
-        # mock_llm 기본 응답은 단일 줄이므로 fallback 힌트가 사용된다
-        state = self._make_state(make_chat_state, case2_student, "build_expression")
+        mock_llm.next_tool_calls = []
+        mock_llm.response_content = "함께 풀어봐요!"
+        state = _make_turn2_state(
+            make_chat_state, case1_student, Segment.LOW_LAZY, GradeGroup.LOWER,
+            cause="no_concept", problem=_DUMMY_PROBLEM,
+        )
         result = tp4(state)
-        messages = result["tp4_response"]
 
-        hint_cards = [m for m in messages if isinstance(m, HintCardMessage)]
-        assert hint_cards, "HintCardMessage가 없음"
-        assert len(hint_cards[0].steps) >= 2, "힌트 단계가 2개 이상이어야 함"
+        assert _has_type(result["tp4_response"], TextMessage)
 
-    def test_build_expression_uses_llm_steps_when_multiline(
-        self, make_chat_state, case2_student, mock_llm
+    def test_turn2_does_not_include_current_problem_in_result(
+        self, make_chat_state, case1_student, mock_llm
     ):
-        mock_llm.response_content = "기준량을 확인해요.\n비교량을 찾아요.\n식을 써요."
-        state = self._make_state(make_chat_state, case2_student, "build_expression")
-
-        result = tp4(state)
-        messages = result["tp4_response"]
-
-        hint_cards = [m for m in messages if isinstance(m, HintCardMessage)]
-        assert hint_cards, "HintCardMessage가 없음"
-        step_contents = [step.content for step in hint_cards[0].steps]
-        assert "기준량을 확인해요." in step_contents
-
-    def test_build_expression_fallback_when_llm_singleline(
-        self, make_chat_state, case2_student, mock_llm
-    ):
-        mock_llm.response_content = "테스트용 AI 코치 응답입니다."
-        state = self._make_state(make_chat_state, case2_student, "build_expression")
-
-        result = tp4(state)
-        messages = result["tp4_response"]
-
-        hint_cards = [m for m in messages if isinstance(m, HintCardMessage)]
-        assert hint_cards, "HintCardMessage가 없음"
-        step_contents = [step.content for step in hint_cards[0].steps]
-        assert step_contents == [
-            "문제에서 전체(기준)가 되는 양을 찾아요.",
-            "비교하는 양이 전체 중 얼마인지 확인해요.",
-            "비율 = 비교하는 양 ÷ 기준량 식을 써요.",
+        """Turn 2 결과에는 current_problem이 포함되지 않는다 (이미 state에 저장됨)."""
+        mock_llm.next_tool_calls = [
+            {"name": "send_text", "args": {"content": "잘 하고 있어요!"}}
         ]
+        state = _make_turn2_state(
+            make_chat_state, case1_student, Segment.LOW_LAZY, GradeGroup.LOWER,
+            cause="no_concept", problem=_DUMMY_PROBLEM,
+        )
+        result = tp4(state)
+
+        assert "current_problem" not in result
+
+    def test_hint_card_steps_content(
+        self, make_chat_state, case2_student, mock_llm
+    ):
+        steps = ["기준량을 확인해요.", "비교량을 찾아요.", "식을 써요."]
+        mock_llm.next_tool_calls = [
+            {"name": "send_hint_card", "args": {"steps": steps}}
+        ]
+        state = _make_turn2_state(
+            make_chat_state, case2_student, Segment.LOW_DILIGENT, GradeGroup.UPPER,
+            cause="hard_calc", problem=_DUMMY_PROBLEM,
+        )
+        result = tp4(state)
+
+        hint_card = next(m for m in result["tp4_response"] if isinstance(m, HintCardMessage))
+        contents = [s.content for s in hint_card.steps]
+        assert "기준량을 확인해요." in contents
+        assert "식을 써요." in contents
 
 
 # ─── 세그먼트명 노출 방지 ─────────────────────────────────────────────────────
@@ -199,30 +273,39 @@ class TestTp4SegmentNotExposed:
     INTERNAL_NAMES = ["LOW_LAZY", "LOW_DILIGENT", "HIGH_LAZY", "HIGH_DILIGENT",
                       "못함+불성실", "못함+성실", "잘함+불성실", "잘함+성실"]
 
-    def _check_no_segment_in_messages(self, messages):
+    def _check_no_segment(self, messages):
         for m in messages:
             for name in self.INTERNAL_NAMES:
                 if isinstance(m, TextMessage):
-                    assert name not in m.content, f"세그먼트명 '{name}'이 TextMessage에 노출됨"
+                    assert name not in m.content
                 elif isinstance(m, ChoicesMessage):
                     for item in m.items:
-                        assert name not in item.label, f"세그먼트명 '{name}'이 선택지 label에 노출됨"
+                        assert name not in item.label
                 elif isinstance(m, ImageCardMessage):
                     assert name not in m.caption
                 elif isinstance(m, HintCardMessage):
                     for step in m.steps:
                         assert name not in step.content
 
-    def test_case1_no_cause(self, make_chat_state, case1_student, mock_llm):
-        state = _state_with_cause(
-            make_chat_state, case1_student, Segment.LOW_LAZY, GradeGroup.LOWER, None
+    def test_turn1_causes_no_segment_exposed(
+        self, make_chat_state, case1_student, mock_llm
+    ):
+        mock_llm.next_tool_calls = _CAUSES_TOOL_CALL
+        state = _make_turn1_state(
+            make_chat_state, case1_student, Segment.LOW_LAZY, GradeGroup.LOWER
         )
         result = tp4(state)
-        self._check_no_segment_in_messages(result["tp4_response"])
+        self._check_no_segment(result["tp4_response"])
 
-    def test_case2_build_expression(self, make_chat_state, case2_student, mock_llm):
-        state = _state_with_cause(
-            make_chat_state, case2_student, Segment.LOW_DILIGENT, GradeGroup.UPPER, "build_expression"
+    def test_turn2_coaching_no_segment_exposed(
+        self, make_chat_state, case2_student, mock_llm
+    ):
+        mock_llm.next_tool_calls = [
+            {"name": "send_text", "args": {"content": "잘 하고 있어요!"}}
+        ]
+        state = _make_turn2_state(
+            make_chat_state, case2_student, Segment.LOW_DILIGENT, GradeGroup.UPPER,
+            cause="no_concept", problem=_DUMMY_PROBLEM,
         )
         result = tp4(state)
-        self._check_no_segment_in_messages(result["tp4_response"])
+        self._check_no_segment(result["tp4_response"])
