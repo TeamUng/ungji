@@ -1,13 +1,13 @@
 """
-E2E 시나리오 러너 — 모든 학생 × 터치포인트 조합을 Solar Pro 2와 Gemini로 실행하고
-결과를 비교 CSV로 저장한다.
+E2E 시나리오 러너 — 모든 학생 × 터치포인트 조합을 Solar Pro2로 실행하고
+결과를 CSV로 저장한다.
 
 사용법:
     uv run python scripts/run_scenarios.py
 
 출력:
     - 터미널: 각 시나리오 결과 실시간 출력
-    - scripts/results/scenario_results_YYYYMMDD_HHMMSS.csv  (llm 컬럼 포함)
+    - scripts/results/scenario_results_YYYYMMDD_HHMMSS.csv
 """
 
 from __future__ import annotations
@@ -16,7 +16,6 @@ import csv
 import io
 import json
 import sys
-import types
 import uuid
 from datetime import datetime
 from pathlib import Path
@@ -28,9 +27,7 @@ sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="repla
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from fastapi.testclient import TestClient
-from langchain_google_genai import ChatGoogleGenerativeAI
 
-from app.core.config import settings
 from app.data.loader import load_student
 from app.main import app
 
@@ -61,50 +58,12 @@ TP4_CAUSE_BY_SUBJECT = {
     "수학": "confused_concept",
 }
 
-# ─── LLM 정의 ─────────────────────────────────────────────────────────────────
-
-def _make_llm_configs() -> list[tuple[str, object]]:
-    """(llm_name, llm_instance) 목록 반환. API 키 없으면 해당 LLM 스킵."""
-    configs = []
-
-    # Solar Pro 2 (Upstage)
-    if settings.UPSTAGE_API_KEY:
-        from langchain_upstage import ChatUpstage
-        configs.append((
-            "solar-pro-2",
-            ChatUpstage(api_key=settings.UPSTAGE_API_KEY, model="solar-pro-2"),
-        ))
-    else:
-        print("[WARN] UPSTAGE_API_KEY 없음 — solar-pro-2 스킵")
-
-    # Gemini 2.0 Flash
-    if settings.GOOGLE_API_KEY:
-        configs.append((
-            "gemini-2.0-flash",
-            ChatGoogleGenerativeAI(
-                api_key=settings.GOOGLE_API_KEY,
-                model="gemini-2.0-flash",
-            ),
-        ))
-    else:
-        print("[WARN] GOOGLE_API_KEY 없음 — gemini-2.0-flash 스킵")
-
-    return configs
-
-
-def _patch_llm(llm_instance: object) -> None:
-    """app.clients.upstage.llm을 런타임에 교체한다."""
-    fake_module = types.ModuleType("app.clients.upstage")
-    fake_module.llm = llm_instance  # type: ignore[attr-defined]
-    sys.modules["app.clients.upstage"] = fake_module
-
 # ─── 결과 저장 경로 ───────────────────────────────────────────────────────────
 
 RESULTS_DIR = Path(__file__).parent / "results"
 RESULTS_DIR.mkdir(exist_ok=True)
 
 CSV_COLUMNS = [
-    "llm",
     "student_id", "name", "grade", "grade_group", "segment",
     "preferred_subject", "strong_subject",
     "recent_avg_score", "avg_completion_rate",
@@ -163,12 +122,19 @@ def _derive_labels(record: dict) -> tuple[str, str]:
     return get_segment(profile, pattern).value, get_grade_group(profile["grade"]).value
 
 
-# ─── 단일 LLM 실행 ────────────────────────────────────────────────────────────
+# ─── 메인 실행 ────────────────────────────────────────────────────────────────
 
-def _run_for_llm(llm_name: str, rows: list[dict]) -> None:
-    print(f"\n{'─'*70}")
-    print(f"  LLM: {llm_name}")
-    print(f"{'─'*70}")
+def main() -> None:
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    csv_path = RESULTS_DIR / f"scenario_results_{timestamp}.csv"
+
+    print(f"\n{'='*70}")
+    print(f"  E2E 시나리오 러너 (Solar Pro2)")
+    print(f"  학생 {len(STUDENT_IDS)}명 × 터치포인트 {len(TP_SCENARIOS)}종")
+    print(f"  결과 저장: {csv_path}")
+    print(f"{'='*70}")
+
+    all_rows: list[dict] = []
 
     with TestClient(app) as client:
         for student_id in STUDENT_IDS:
@@ -186,7 +152,7 @@ def _run_for_llm(llm_name: str, rows: list[dict]) -> None:
 
             subject = task.get("subject", "")
             tp4_cause = TP4_CAUSE_BY_SUBJECT.get(subject, "too_long")
-            tp4_thread_id = f"tp4-{llm_name}-{student_id}-{uuid.uuid4()}"
+            tp4_thread_id = f"tp4-{student_id}-{uuid.uuid4()}"
             thread_ids: dict[str, str] = {}
 
             print(f"\n  [{student_id}] {profile['name']} / {grade_group_val} / {segment_val}")
@@ -197,7 +163,7 @@ def _run_for_llm(llm_name: str, rows: list[dict]) -> None:
                 else:
                     key = touchpoint
                     if key not in thread_ids:
-                        thread_ids[key] = f"{touchpoint}-{llm_name}-{student_id}-{uuid.uuid4()}"
+                        thread_ids[key] = f"{touchpoint}-{student_id}-{uuid.uuid4()}"
                     thread_id = thread_ids[key]
 
                 actual_content = tp4_cause if message_content == "__cause__" else message_content
@@ -236,8 +202,7 @@ def _run_for_llm(llm_name: str, rows: list[dict]) -> None:
                 if error:
                     print(f"      오류: {error}")
 
-                rows.append({
-                    "llm": llm_name,
+                all_rows.append({
                     "student_id": student_id,
                     "name": profile["name"],
                     "grade": profile["grade"],
@@ -272,31 +237,6 @@ def _run_for_llm(llm_name: str, rows: list[dict]) -> None:
                     "error": error,
                 })
 
-
-# ─── 메인 ─────────────────────────────────────────────────────────────────────
-
-def main() -> None:
-    llm_configs = _make_llm_configs()
-    if not llm_configs:
-        print("[ERROR] 사용 가능한 LLM이 없습니다. .env 파일에 API 키를 확인하세요.")
-        sys.exit(1)
-
-    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    csv_path = RESULTS_DIR / f"scenario_results_{timestamp}.csv"
-
-    print(f"\n{'='*70}")
-    print(f"  E2E 시나리오 러너")
-    print(f"  LLM: {', '.join(name for name, _ in llm_configs)}")
-    print(f"  학생 {len(STUDENT_IDS)}명 × 터치포인트 {len(TP_SCENARIOS)}종 × LLM {len(llm_configs)}개")
-    print(f"  결과 저장: {csv_path}")
-    print(f"{'='*70}")
-
-    all_rows: list[dict] = []
-
-    for llm_name, llm_instance in llm_configs:
-        _patch_llm(llm_instance)
-        _run_for_llm(llm_name, all_rows)
-
     # CSV 저장
     with csv_path.open("w", newline="", encoding="utf-8-sig") as f:
         writer = csv.DictWriter(f, fieldnames=CSV_COLUMNS)
@@ -308,7 +248,6 @@ def main() -> None:
     print(f"\n{'='*70}")
     print(f"  완료: {total}개 시나리오, 오류: {errors}개")
     print(f"  CSV 저장됨: {csv_path}")
-    print(f"  (Excel에서 'llm' 컬럼으로 필터하면 LLM별 비교 가능)")
     print(f"{'='*70}\n")
 
 
