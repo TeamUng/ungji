@@ -240,17 +240,17 @@ PRD 케이스 1·2가 처음부터 끝까지 작동하는 것.
 **담당 파일**: `app/services/graph.py`, `tests/test_graph.py`
 **의존**: T4, T5, T6, T7, T8 | **블로킹**: T10
 
-- [ ] `tests/test_graph.py` 작성 — 케이스 1: `use_case=talk, tp1` → TP1 노드 라우팅 검증
-- [ ] `tests/test_graph.py` 작성 — 케이스 1: `use_case=learning, tp4` → TP4 노드 라우팅 검증
-- [ ] `tests/test_graph.py` 작성 — 케이스 2: 동일 두 케이스
-- [ ] `tests/test_graph.py` 작성 — `tp2`, `tp3`, `tp5` 라우팅 검증
-- [ ] `tests/test_graph.py` 작성 — 잘못된 `touchpoint` 입력 예외 처리 검증
-- [ ] `graph.py` — `StateGraph(ChatState)` 정의 및 노드 6개 등록 (classify + tp1~tp5)
-- [ ] `graph.py` — `entry → classify` 항상 통과 설정
-- [ ] `graph.py` — `use_case + current_touchpoint` 기준 조건부 라우팅 함수
-- [ ] `graph.py` — `InMemorySaver` 연결 (thread_id 기반 세션 유지)
-- [ ] `graph.py` — 그래프 컴파일 및 `stream()` 인터페이스 노출
-- [ ] **완료 기준**: `uv run pytest tests/test_graph.py` 통과, 케이스 1·2 전체 흐름 수동 확인
+- [x] `tests/test_graph.py` 작성 — 케이스 1: `use_case=talk, tp1` → TP1 노드 라우팅 검증
+- [x] `tests/test_graph.py` 작성 — 케이스 1: `use_case=learning, tp4` → TP4 노드 라우팅 검증
+- [x] `tests/test_graph.py` 작성 — 케이스 2: 동일 두 케이스
+- [x] `tests/test_graph.py` 작성 — `tp2`, `tp3`, `tp5` 라우팅 검증
+- [x] `tests/test_graph.py` 작성 — 잘못된 `touchpoint` 입력 예외 처리 검증
+- [x] `graph.py` — `StateGraph(ChatState)` 정의 및 노드 6개 등록 (classify + tp1~tp5)
+- [x] `graph.py` — `entry → classify` 항상 통과 설정
+- [x] `graph.py` — `use_case + current_touchpoint` 기준 조건부 라우팅 함수
+- [x] `graph.py` — `InMemorySaver` 연결 (thread_id 기반 세션 유지)
+- [x] `graph.py` — 그래프 컴파일 및 `stream()` 인터페이스 노출
+- [x] **완료 기준**: `uv run pytest tests/test_graph.py` 통과, 케이스 1·2 전체 흐름 수동 확인
 
 ---
 
