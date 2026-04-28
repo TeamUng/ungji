@@ -150,13 +150,13 @@ PRD 케이스 1·2가 처음부터 끝까지 작동하는 것.
 **담당 파일**: `app/services/nodes/tp1.py`, `tests/test_tp1.py`
 **의존**: T1, T2, T3 | **블로킹**: T9
 
-- [ ] `tests/test_tp1.py` 작성 — 케이스 1 (lower + 못함+불성실) → 응답에 `choices` 포함, 짧고 쉬운 말투 검증
-- [ ] `tests/test_tp1.py` 작성 — 케이스 2 (upper + 못함+성실) → 응답에 `choices` 포함, 코치형 말투 검증
-- [ ] `tests/test_tp1.py` — 케이스 1과 케이스 2의 선택지 내용이 다른지 검증
-- [ ] `tp1.py` — `get_persona()` + `get_coaching_strategy()` 조합으로 시스템 프롬프트 구성
-- [ ] `tp1.py` — 학생 이름·선호 과목·AI 예상점수·오늘 태스크 컨텍스트 주입
-- [ ] `tp1.py` — 세그먼트별 선택지 생성 (PRD 1-5 + `docs/SEGMENT_RESPONSE_POLICY.md` 기준 4개 세그먼트 × 선택지)
-- [ ] **완료 기준**: `uv run pytest tests/test_tp1.py` 통과, 응답에 `TextMessage` + `ChoicesMessage` 포함 확인
+- [x] `tests/test_tp1.py` 작성 — 케이스 1 (lower + 못함+불성실) → 응답에 `choices` 포함, 짧고 쉬운 말투 검증
+- [x] `tests/test_tp1.py` 작성 — 케이스 2 (upper + 못함+성실) → 응답에 `choices` 포함, 코치형 말투 검증
+- [x] `tests/test_tp1.py` — 케이스 1과 케이스 2의 선택지 내용이 다른지 검증
+- [x] `tp1.py` — `get_persona()` + `get_coaching_strategy()` 조합으로 시스템 프롬프트 구성
+- [x] `tp1.py` — 학생 이름·선호 과목·AI 예상점수·오늘 태스크 컨텍스트 주입
+- [x] `tp1.py` — 세그먼트별 선택지 생성 (PRD 1-5 + `docs/SEGMENT_RESPONSE_POLICY.md` 기준 4개 세그먼트 × 선택지)
+- [x] **완료 기준**: `uv run pytest tests/test_tp1.py` 통과, 응답에 `TextMessage` + `ChoicesMessage` 포함 확인
 
 ---
 
