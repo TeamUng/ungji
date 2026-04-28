@@ -149,6 +149,7 @@ class TestTp4Case2Math:
     def test_build_expression_hint_card_has_steps(
         self, make_chat_state, case2_student, mock_llm
     ):
+        # mock_llm 기본 응답은 단일 줄이므로 fallback 힌트가 사용된다
         state = self._make_state(make_chat_state, case2_student, "build_expression")
         result = tp4(state)
         messages = result["tp4_response"]
@@ -156,6 +157,38 @@ class TestTp4Case2Math:
         hint_cards = [m for m in messages if isinstance(m, HintCardMessage)]
         assert hint_cards, "HintCardMessage가 없음"
         assert len(hint_cards[0].steps) >= 2, "힌트 단계가 2개 이상이어야 함"
+
+    def test_build_expression_uses_llm_steps_when_multiline(
+        self, make_chat_state, case2_student, mock_llm
+    ):
+        mock_llm.response_content = "기준량을 확인해요.\n비교량을 찾아요.\n식을 써요."
+        state = self._make_state(make_chat_state, case2_student, "build_expression")
+
+        result = tp4(state)
+        messages = result["tp4_response"]
+
+        hint_cards = [m for m in messages if isinstance(m, HintCardMessage)]
+        assert hint_cards, "HintCardMessage가 없음"
+        step_contents = [step.content for step in hint_cards[0].steps]
+        assert "기준량을 확인해요." in step_contents
+
+    def test_build_expression_fallback_when_llm_singleline(
+        self, make_chat_state, case2_student, mock_llm
+    ):
+        mock_llm.response_content = "테스트용 AI 코치 응답입니다."
+        state = self._make_state(make_chat_state, case2_student, "build_expression")
+
+        result = tp4(state)
+        messages = result["tp4_response"]
+
+        hint_cards = [m for m in messages if isinstance(m, HintCardMessage)]
+        assert hint_cards, "HintCardMessage가 없음"
+        step_contents = [step.content for step in hint_cards[0].steps]
+        assert step_contents == [
+            "문제에서 전체(기준)가 되는 양을 찾아요.",
+            "비교하는 양이 전체 중 얼마인지 확인해요.",
+            "비율 = 비교하는 양 ÷ 기준량 식을 써요.",
+        ]
 
 
 # ─── 세그먼트명 노출 방지 ─────────────────────────────────────────────────────
