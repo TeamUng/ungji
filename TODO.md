@@ -266,16 +266,16 @@ PRD 케이스 1·2가 처음부터 끝까지 작동하는 것.
 **담당 파일**: `app/api/__init__.py`, `app/api/routes/__init__.py`, `app/api/routes/chat.py`, `app/main.py`, `tests/test_chat_api.py`
 **의존**: T9 | **블로킹**: T11
 
-- [ ] `tests/test_chat_api.py` 작성 — 케이스 1 홈화면 진입 API e2e 검증
-- [ ] `tests/test_chat_api.py` 작성 — 케이스 2 학습 중 도움 API e2e 검증
-- [ ] `tests/test_chat_api.py` 작성 — 존재하지 않는 `student_id` → 4xx 반환 검증
-- [ ] `app/api/` 디렉토리 생성, `__init__.py` 및 `routes/__init__.py` 추가
-- [ ] `app/api/routes/chat.py` — `POST /chat` 엔드포인트 구현
-- [ ] `app/api/routes/chat.py` — `ChatRequest` 유효성 검증 → `graph.stream()` 호출
-- [ ] `app/api/routes/chat.py` — `StreamingResponse(SSE)` 로 `ChatResponse` 반환
-- [ ] `app/api/routes/chat.py` — 에러 핸들링 (student_id 미존재, LLM 오류)
-- [ ] `app/main.py` 수정 — 라우터 등록
-- [ ] **완료 기준**: `uv run pytest tests/test_chat_api.py` 통과, SSE 스트리밍 동작 브라우저 확인
+- [x] `tests/test_chat_api.py` 작성 — 케이스 1 홈화면 진입 API e2e 검증
+- [x] `tests/test_chat_api.py` 작성 — 케이스 2 학습 중 도움 API e2e 검증
+- [x] `tests/test_chat_api.py` 작성 — 존재하지 않는 `student_id` → 4xx 반환 검증
+- [x] `app/api/` 디렉토리 생성, `__init__.py` 및 `routes/__init__.py` 추가
+- [x] `app/api/routes/chat.py` — `POST /chat` 엔드포인트 구현
+- [x] `app/api/routes/chat.py` — `ChatRequest` 유효성 검증 → `graph.stream()` 호출
+- [x] `app/api/routes/chat.py` — `StreamingResponse(SSE)` 로 `ChatResponse` 반환
+- [x] `app/api/routes/chat.py` — 에러 핸들링 (student_id 미존재, LLM 오류)
+- [x] `app/main.py` 수정 — 라우터 등록
+- [x] **완료 기준**: `uv run pytest tests/test_chat_api.py` 통과, SSE 스트리밍 동작 브라우저 확인
 
 ---
 
