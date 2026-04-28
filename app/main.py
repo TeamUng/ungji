@@ -4,6 +4,7 @@ from fastapi import FastAPI
 from fastapi.responses import RedirectResponse
 from pydantic import BaseModel
 
+from app.api.routes.chat import router as chat_router
 from app.core.logging import setup_logging
 from app.middleware.request_logger import RequestLoggerMiddleware
 
@@ -12,6 +13,7 @@ setup_logging()
 app = FastAPI(title="ungji API", version="0.1.0")
 
 app.add_middleware(RequestLoggerMiddleware)
+app.include_router(chat_router)
 
 
 class HealthResponse(BaseModel):
