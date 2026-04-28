@@ -5,26 +5,22 @@ from langchain_core.tools import tool
 
 from app.core.logging import get_logger
 from app.data.loader import load_problem
-from app.schemas.chat import ChatResponse, ChatState, ResponseMessage
+from app.schemas.chat import ChatState, ResponseMessage
 from app.services.nodes.common import (
-    make_chat_response,
     make_choices,
     make_hint_card,
     make_image_card,
     make_text,
 )
-from app.services.prompts.coaching import get_coaching_strategy
-from app.services.prompts.personas import get_persona
+from app.services.prompts.agents import HELPER_ROLE, build_system_prompt
 
 logger = get_logger(__name__)
 
 
-# ─── 출력 도구 정의 ───────────────────────────────────────────────────────────
-
 @tool
 def send_causes(items: list[dict]) -> str:
-    """학생에게 막힌 원인 선택지를 제시합니다.
-    각 item은 반드시 {"id": "snake_case_영문_id", "label": "한글 설명"} 형식이어야 합니다.
+    """학생에게 막힘 원인 선택지를 제시합니다.
+    각 item은 반드시 {"id": "snake_case_english_id", "label": "한국어 설명"} 형식이어야 합니다.
     3~4개의 구체적인 선택지를 생성하세요."""
     return str(items)
 
@@ -37,7 +33,7 @@ def send_text(content: str) -> str:
 
 @tool
 def send_hint_card(steps: list[str]) -> str:
-    """단계별 힌트 카드를 보여줍니다. 각 step은 짧은 한국어 안내 문장입니다."""
+    """단계별 힌트 카드를 보여줍니다. 각 step은 짧고 쉬운 안내 문장입니다."""
     return str(steps)
 
 
@@ -47,16 +43,14 @@ def send_image_card(caption: str) -> str:
     return caption
 
 
-# ─── 메인 노드 ────────────────────────────────────────────────────────────────
-
-def tp4(state: ChatState) -> dict:
+def helper(state: ChatState) -> dict:
     from app.clients.upstage import llm
 
     segment = state["segment"]
     grade_group = state["grade_group"]
 
     logger.info(
-        "tp4 노드 시작",
+        "helper node invoked",
         extra={
             "student_id": state["student_id"],
             "segment": segment.value,
@@ -68,19 +62,17 @@ def tp4(state: ChatState) -> dict:
     chat_history = state.get("chat_history", [])
     last_content = chat_history[-1].content.strip() if chat_history else ""
 
-    # Turn 1: 문제 ID로 문제 로드 → 원인 선택지 생성
     if current_problem is None:
         problem_data = _try_load_problem(last_content)
         messages = _generate_causes(state, problem_data, llm)
-        result = {"tp4_response": messages, "current_problem": problem_data or {}}
+        result = {"helper_response": messages, "current_problem": problem_data or {}}
     else:
-        # Turn 2: 선택한 원인 + 저장된 문제 데이터로 코칭
         cause_label = last_content
         messages = _build_coaching(state, current_problem, cause_label, llm)
-        result = {"tp4_response": messages}
+        result = {"helper_response": messages}
 
     logger.info(
-        "tp4 노드 완료",
+        "helper node completed",
         extra={
             "student_id": state["student_id"],
             "turn": 1 if current_problem is None else 2,
@@ -90,10 +82,8 @@ def tp4(state: ChatState) -> dict:
     return result
 
 
-# ─── 내부 헬퍼 ───────────────────────────────────────────────────────────────
-
 def _try_load_problem(problem_id: str) -> dict | None:
-    """problem_id로 문제를 로드한다. 찾지 못하면 None 반환."""
+    """Load a problem by id. Return None when it cannot be loaded."""
     if not problem_id:
         return None
     try:
@@ -103,26 +93,24 @@ def _try_load_problem(problem_id: str) -> dict | None:
 
 
 def _generate_causes(state: ChatState, problem: dict | None, llm) -> list[ResponseMessage]:
-    """Turn 1: LLM이 문제를 분석해 막힌 원인 선택지를 동적으로 생성."""
+    """Turn 1: ask the LLM to generate likely causes as choices."""
     segment = state["segment"]
     grade_group = state["grade_group"]
     profile = state["student_profile"]
 
-    system_prompt = (
-        f"{get_persona(grade_group)}\n\n"
-        f"{get_coaching_strategy(segment)}\n\n"
-        "학생이 문제를 풀다가 막혀서 도움을 요청했습니다.\n"
+    system_prompt = build_system_prompt(grade_group, segment, HELPER_ROLE) + (
+        "\n\n학생이 문제를 풀다가 막혀서 도움을 요청했습니다.\n"
         "주어진 문제와 학생 정보를 바탕으로, 이 학생이 막혔을 만한 원인 3~4가지를 "
         "선택지로 제시해주세요.\n"
         "반드시 send_causes 도구를 호출해 선택지를 전달하세요.\n"
-        "각 선택지 id는 영문 snake_case로, label은 학생이 클릭하기 쉬운 짧은 한국어 문장으로 작성하세요."
+        "각 선택지 id는 영어 snake_case로, label은 학생이 클릭하기 쉬운 짧은 한국어 문장으로 작성하세요."
     )
 
     if problem:
         problem_info = (
             f"현재 문제:\n"
-            f"과목: {problem.get('subject', '알 수 없음')}\n"
-            f"단원: {problem.get('unit', '알 수 없음')}\n"
+            f"과목: {problem.get('subject', '정보 없음')}\n"
+            f"단원: {problem.get('unit', '정보 없음')}\n"
             f"문제: {problem.get('question', '(문제 없음)')}"
         )
     else:
@@ -134,7 +122,7 @@ def _generate_causes(state: ChatState, problem: dict | None, llm) -> list[Respon
                 "(구체적인 문제 데이터 없음)"
             )
         else:
-            problem_info = "(문제 데이터 없음 — 일반적인 학습 막힘 상황)"
+            problem_info = "(문제 데이터 없음 - 일반적인 학습 막힘 상황)"
 
     user_message = (
         f"학생: {profile['name']} ({profile['grade']}학년)\n"
@@ -158,7 +146,7 @@ def _build_coaching(
     cause_label: str,
     llm,
 ) -> list[ResponseMessage]:
-    """Turn 2: 선택한 원인에 맞는 코칭을 도구를 사용해 제공."""
+    """Turn 2: respond with coaching for the selected cause."""
     segment = state["segment"]
     grade_group = state["grade_group"]
     profile = state["student_profile"]
@@ -171,11 +159,9 @@ def _build_coaching(
             f"설명: {problem.get('explanation', '')}"
         )
 
-    system_prompt = (
-        f"{get_persona(grade_group)}\n\n"
-        f"{get_coaching_strategy(segment)}\n\n"
-        "학생이 막힌 원인을 선택했습니다. 이 원인에 맞게 학생을 도와주세요.\n"
-        "적절한 도구를 골라 응답하세요:\n"
+    system_prompt = build_system_prompt(grade_group, segment, HELPER_ROLE) + (
+        "\n\n학생이 막힘 원인을 선택했습니다. 그 원인에 맞게 학생을 도와주세요.\n"
+        "적절한 도구를 골라 응답하세요.\n"
         "- send_text: 일반 코칭 텍스트\n"
         "- send_hint_card: 단계별 힌트가 효과적일 때\n"
         "- send_image_card: 그림/시각 자료로 설명할 때\n"
@@ -184,7 +170,7 @@ def _build_coaching(
 
     user_message = (
         f"학생: {profile['name']} ({profile['grade']}학년)\n"
-        f"학생이 선택한 막힌 원인: '{cause_label}'\n\n"
+        f"학생이 선택한 막힘 원인: '{cause_label}'\n\n"
         f"{problem_info}\n\n"
         "이 원인에 맞는 도움을 제공해주세요."
     )
@@ -199,7 +185,7 @@ def _build_coaching(
 
 
 def _parse_turn1_response(response) -> list[ResponseMessage]:
-    """Turn 1 응답에서 choices 메시지를 추출."""
+    """Extract a choices message from a Turn 1 tool response."""
     for tc in getattr(response, "tool_calls", []):
         if tc["name"] == "send_causes":
             raw_items = tc["args"].get("items", [])
@@ -210,13 +196,12 @@ def _parse_turn1_response(response) -> list[ResponseMessage]:
             except (TypeError, KeyError):
                 pass
 
-    # 폴백: LLM이 도구를 사용하지 않은 경우
     content = getattr(response, "content", "") or "어느 부분이 어려웠나요?"
     return [make_text(content)]
 
 
 def _parse_turn2_response(response) -> list[ResponseMessage]:
-    """Turn 2 응답에서 메시지들을 추출."""
+    """Extract response messages from a Turn 2 tool response."""
     messages: list[ResponseMessage] = []
 
     for tc in getattr(response, "tool_calls", []):
@@ -238,9 +223,8 @@ def _parse_turn2_response(response) -> list[ResponseMessage]:
             if caption:
                 messages.append(make_image_card("https://placeholder.invalid/img", caption))
 
-    # 폴백: 도구 미사용
     if not messages:
-        content = getattr(response, "content", "") or "함께 풀어봐요!"
+        content = getattr(response, "content", "") or "함께 생각해볼까요?"
         messages.append(make_text(content))
 
     return messages

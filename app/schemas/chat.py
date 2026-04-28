@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import Annotated, Literal, TypedDict, Union
 
 from pydantic import BaseModel, Field
+from langgraph.graph.message import add_messages
 
 from app.core.enums import (
     Difficulty,
@@ -59,7 +60,7 @@ class ChatState(TypedDict):
     use_case: UseCase
     grade_group: GradeGroup
     segment: Segment
-    chat_history: list[BaseMessage]  # add_messages reducer로 자동 누적
+    chat_history: Annotated[list[BaseMessage], add_messages]  # add_messages reducer로 자동 누적
 
     # ─── 노드 라우팅용 ───
     current_touchpoint: Touchpoint

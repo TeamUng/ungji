@@ -9,6 +9,7 @@ from langchain_core.messages import HumanMessage
 from app.core.enums import GradeGroup, Segment, Touchpoint, UseCase
 from app.data.loader import StudentRecord
 from app.services.graph import graph
+from app.services.prompts.agents import HELPER_ROLE, MOTIVATOR_ROLE
 
 
 def _invoke(student: StudentRecord, use_case: UseCase, touchpoint: Touchpoint) -> dict:
@@ -68,6 +69,22 @@ def test_tp3_routing(case1_student, mock_llm):
 def test_tp5_routing(case1_student, mock_llm):
     result = _invoke(case1_student, UseCase.TALK, Touchpoint.TP5)
     assert result["response"] is not None
+
+
+def test_chat_with_non_tp4_routes_to_motivator(case1_student, mock_llm):
+    result = _invoke(case1_student, UseCase.CHAT, Touchpoint.TP1)
+
+    assert result["response"] is not None
+    system_content = mock_llm.calls[0]["messages"][0].content
+    assert MOTIVATOR_ROLE in system_content
+
+
+def test_chat_with_tp4_routes_to_helper(case1_student, mock_llm):
+    result = _invoke(case1_student, UseCase.CHAT, Touchpoint.TP4)
+
+    assert result["response"] is not None
+    system_content = mock_llm.calls[0]["messages"][0].content
+    assert HELPER_ROLE in system_content
 
 
 # ─── 잘못된 입력 예외 처리 ────────────────────────────────────────────────────
@@ -140,3 +157,24 @@ def test_chat_history_preserved_on_second_turn(case1_student, mock_llm):
     history = result["chat_history"]
     contents = [m.content for m in history]
     assert "too_long" in contents
+
+
+def test_first_turn_chat_history_survives_classify_for_tp4_problem_id(case2_student, mock_llm):
+    thread_id = f"session-first-history-{uuid.uuid4()}"
+    config = {"configurable": {"thread_id": thread_id}}
+
+    initial = {
+        "thread_id": thread_id,
+        "student_id": case2_student["student_id"],
+        "use_case": UseCase.LEARNING,
+        "current_touchpoint": Touchpoint.TP4,
+        "chat_history": [HumanMessage(content="math_ratio_saltwater_001")],
+        "response": None,
+    }
+
+    with patch("app.services.nodes.classify.load_student", return_value=case2_student):
+        result = graph.invoke(initial, config=config)
+
+    assert result["current_problem"]["problem_id"] == "math_ratio_saltwater_001"
+    contents = [message.content for message in result["chat_history"]]
+    assert "math_ratio_saltwater_001" in contents

@@ -115,7 +115,7 @@ def test_classify_node_initializes_completed_tasks_empty(case1_student: StudentR
         result = classify(state)
 
     assert result["completed_tasks"] == []
-    assert result["chat_history"] == []
+    assert "chat_history" not in result
 
 
 def test_classify_node_has_wrong_answers(case1_student: StudentRecord) -> None:

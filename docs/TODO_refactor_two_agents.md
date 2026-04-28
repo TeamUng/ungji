@@ -478,22 +478,27 @@ tests/test_tp5.py
 
 ## Implementation order (to avoid broken state mid-refactor)
 
-1. Create `app/services/prompts/agents.py`
-2. Create `app/services/nodes/helper.py` (from tp4.py + agents.py)
-3. Create `app/services/nodes/motivator.py` (from tp1–tp5 + general_chat + agents.py)
-4. Update `app/services/graph.py`
-5. Write new tests (`test_motivator_*.py`, `test_helper.py`, `test_helper_problem_examples.py`)
-6. Run `uv run pytest tests/` — all tests must pass before proceeding
-7. Delete old node files (tp1–tp5, general_chat)
-8. Delete old test files
+1. Fix LangGraph `chat_history` accumulation first:
+   - Add the `add_messages` reducer to `ChatState.chat_history`.
+   - Stop `classify()` from resetting `chat_history`.
+   - Add/keep tests proving first-turn input and later turns are preserved.
+2. Create `app/services/prompts/agents.py`
+3. Create `app/services/nodes/helper.py` (from tp4.py + agents.py)
+4. Create `app/services/nodes/motivator.py` (from tp1–tp5 + general_chat + agents.py)
+5. Update `app/services/graph.py`
+6. Write new tests (`test_motivator_*.py`, `test_helper.py`, `test_helper_problem_examples.py`)
+7. Run `uv run pytest tests/` — all tests must pass before proceeding
+8. Delete old test files, then old node files (tp1–tp5, general_chat)
 9. Run `uv run pytest tests/` again — must still pass
 
 ---
 
 ## Constraints & rules for the implementing agent
 
-- **Do not change** `app/schemas/chat.py`, `app/core/enums.py`, `app/data/`,
+- **Do not change** `app/core/enums.py`, `app/data/`,
   `app/clients/`, `app/api/`, or `app/core/` — only the files listed above.
+  Exception: `app/schemas/chat.py` may be changed only to add the `add_messages`
+  reducer to `chat_history`.
 - **Do not add** `"당신은 스마트올..."` anywhere except inside `MOTIVATOR_ROLE` and
   `HELPER_ROLE` in `agents.py`.
 - **Do not duplicate** `get_persona()` or `get_coaching_strategy()` calls —
@@ -501,5 +506,6 @@ tests/test_tp5.py
 - `motivator()` must pass `chat_history` to the LLM so conversation is continuous.
 - `helper()` tool-calling logic (Turn 1 / Turn 2 detection via `current_problem`)
   must remain exactly as in the current `tp4.py`.
-- All 127 existing tests must pass after step 6 (new tests written, old tests still present).
-- Delete old files only in step 7 after confirming the test suite is green.
+- All 127 existing tests must pass before the refactor starts.
+- After routing is switched, the replacement tests must pass before deleting old files.
+- Delete old files only after confirming the replacement test suite is green.
