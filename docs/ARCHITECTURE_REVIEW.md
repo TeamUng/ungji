@@ -32,46 +32,62 @@
 
 ---
 
-## 3. 추천 디렉토리 구조
+## 3. 확정 디렉토리 구조
 
 ```
 app/
-  main.py                     # FastAPI 앱 (현재 그대로)
-  core/                       # config, logging (현재 그대로)
-  middleware/                  # request_logger (현재 그대로)
-  api/routes/
-    chat.py                   # POST /chat 엔드포인트
+  main.py                     # FastAPI 앱
+  core/                       # config, constants, enums, logging ✅ 완료
+  middleware/                  # request_logger ✅ 완료
   schemas/
-    chat.py                   # ChatRequest, ChatResponse, ChoiceButton
-    student.py                # StudentProfile, StudentType enum
+    chat.py                   # ChatState, ChatRequest, ChatResponse, 응답 메시지 4종 ✅ 완료
+    student.py                # StudentProfile, LearningHistory, LearningPattern, WrongAnswerPattern ✅ 완료
+  api/
+    routes/
+      chat.py                 # POST /chat 엔드포인트 (T10)
   services/
-    graph.py                  # LangGraph StateGraph 정의 (단일 그래프)
+    graph.py                  # LangGraph StateGraph + 조건부 라우팅 (T9)
     nodes/
-      classify.py             # 학생 유형 판단 노드
-      home_coach.py           # 홈화면 코칭 노드
-      learning_coach.py       # 학습 중 코칭 노드
-      diagnose.py             # 막힘 원인 진단 노드
+      common.py               # 응답 builder + 세그먼트 출력 정책 helper (T4.5)
+      classify.py             # 학생 데이터 로드 + segment/grade_group 판별 + State 초기화 (T4)
+      tp1.py                  # 홈화면 진입 — 환영 메시지 + 세그먼트별 선택지 (T5)
+      tp2.py                  # 단위 학습 완료 — 진행률 축하 + 다음 학습 제안 (T7)
+      tp3.py                  # 이탈 시도 감지 — 리텐션 메시지 (T7)
+      tp4.py                  # 학습 중 도움 요청 — 막힘 원인 선택지 + 원인별 분기 코칭 (T6)
+      tp5.py                  # 오늘 학습 종료 — 오답 복습 유도 3분기 (T7)
     prompts/
-      personas.py             # 학년별 페르소나/말투
-      coaching.py             # 유형별 코칭 프롬프트
+      personas.py             # 학년 그룹별 말투 시스템 프롬프트 (T3)
+      coaching.py             # 세그먼트별 코칭 전략 프롬프트 (T3)
   clients/
-    upstage.py                # ChatUpstage 인스턴스
+    upstage.py                # ChatUpstage 인스턴스 + LangSmith 트레이싱 (T2)
   data/
-    mock_students.json        # 목업 학생 데이터
-    mock_problems.json        # 목업 문제/해설 데이터
+    loader.py                 # load_student(), load_problem() (T1)
+    mock_students.json        # 목업 학생 데이터 — 빈 배열, 케이스 1·2 데이터 추후 입력 (T1)
+    mock_problems.json        # 목업 문제·해설·힌트·단계별 풀이 — 빈 배열, 추후 입력 (T1)
 ```
 
 ---
 
-## 4. 그래프 흐름 (현재 이해)
+## 4. 그래프 흐름
 
 ```
-[진입] → [학생유형판단] → [홈화면/학습중 분기]
-  ├─ 홈화면: [유형별 선택지 생성] → [선택 처리] → [학습 시작]
-  └─ 학습중: [막힘 원인 진단] → [원인별 코칭 분기]
-       ├─ 개념부족: [쉬운설명] → [이해확인(teach-back)]
-       ├─ 계산오류: [검산유도]
-       └─ 회피/이탈: [초소형목표제안]
+[진입] POST /chat { use_case, current_touchpoint, ... }
+  ↓
+[classify 노드] — student_id로 mock 데이터 로드, segment/grade_group 판별, State 초기화
+  ↓
+[라우팅] use_case + current_touchpoint 기준 분기
+  ├─ talk  / tp1 → [TP1 노드] 환영 메시지 + 세그먼트별 선택지
+  ├─ talk  / tp2 → [TP2 노드] 진행률 축하 + 다음 학습 제안
+  ├─ talk  / tp3 → [TP3 노드] 리텐션 메시지
+  ├─ talk  / tp5 → [TP5 노드] 오답 복습 유도 (3분기)
+  │                  ├─ 오답 없음 → "오늘 다 맞았어!"
+  │                  ├─ 오답 있음 + 복습 완료 → "오답 N개 다 끝냈어!"
+  │                  └─ 오답 있음 + 복습 미진행 → "N개 중 M개 남았어!"
+  └─ learning / tp4 → [TP4 노드] 막힘 원인 선택지 → 원인별 분기 코칭
+                       ├─ 개념 부족: 쉬운 설명 + 비유 + 단계별 풀이
+                       ├─ 계산 오류: 검산 유도
+                       ├─ 문제 이해 실패: 핵심 조건 재확인
+                       └─ 회피/이탈: 초소형 목표 제안 → teach-back 유도
 ```
 
 ---
@@ -111,17 +127,19 @@ app/
 {
   "thread_id": "abc-123",
   "student_id": "student_01",
-  "entry_point": "home",
+  "use_case": "talk",
+  "current_touchpoint": "tp1",
   "message": {
-    "type": "choice",
-    "content": "비율 개념 쉽게 다시 보기"
+    "type": "init",
+    "content": ""
   }
 }
 ```
 
 - `thread_id`: 대화 세션 식별 (프론트에서 UUID 생성)
 - `student_id`: 학생 식별 (mock 데이터 조회용)
-- `entry_point`: 첫 메시지에만 포함 (`"home"` | `"learning"` | `"complete"`), 이후 생략 가능
+- `use_case`: `"talk"` (tp1/tp2/tp3/tp5) | `"learning"` (tp4)
+- `current_touchpoint`: `"tp1"` | `"tp2"` | `"tp3"` | `"tp4"` | `"tp5"`
 - `message.type`: `"init"` (첫 진입) | `"text"` (자유 입력) | `"choice"` (선택지 클릭)
 
 ### Response (SSE 스트림)
@@ -160,23 +178,26 @@ app/
 
 ---
 
-## 7. 미결 논의 사항
+## 7. 논의 사항 결과
 
-| # | 안건 | 상태 |
-| --- | --- | --- |
-| 7-1 | PRD 1-4의 코칭 레이어 4개를 독립 LangGraph 노드로 분리할지, 프롬프트 분기로 처리할지 | 미결 |
-| 7-2 | 케이스 1/2의 mock_problems.json 데이터 형태 구체화 | 미결 |
-| 7-3 | 두 케이스 간 공유 로직 범위 (어디까지 공통, 어디부터 과목/학년 특화) | 미결 |
-| 7-4 | `config.py`에 `LANGSMITH_API_KEY`, `LANGSMITH_PROJECT` 추가 | 미결 (구현 시 처리) |
+| # | 안건 | 상태 | 결정 내용 |
+| --- | --- | --- | --- |
+| 7-1 | PRD 1-4의 코칭 레이어 4개를 독립 LangGraph 노드로 분리할지, 프롬프트 분기로 처리할지 | ✅ 결정 | **TP4 단일 노드 내 프롬프트 분기**로 처리 — 막힘 원인별 응답을 TP4 노드 안에서 분기 (별도 노드 분리 없음) |
+| 7-2 | 케이스 1/2의 mock_problems.json 데이터 형태 구체화 | 🔲 미결 | 테스트 시나리오 확정 후 작성 (STATE_DESIGN 8-2) |
+| 7-3 | 두 케이스 간 공유 로직 범위 (어디까지 공통, 어디부터 과목/학년 특화) | ✅ 결정 | **classify 노드 공통**, TP1~TP5 노드는 과목 무관하게 동일 로직 — 과목·학년 특화는 프롬프트와 mock 데이터로 처리 |
+| 7-4 | `config.py`에 `LANGSMITH_API_KEY`, `LANGSMITH_PROJECT` 추가 | ✅ 결정 | T2 구현 시 처리 |
+| 7-5 | 세그먼트별 응답 형태를 어디서 관리할지 | ✅ 결정 | PRD는 요구사항 원천으로 유지하고, 실제 출력 형태와 팀 고도화 기준은 `docs/SEGMENT_RESPONSE_POLICY.md` + `nodes/common.py` helper에서 관리 |
 
 ---
 
-## 8. 다음 단계
+## 8. 구현 현황
 
-1. ~~핵심 설계 결정~~ → 완료 (섹션 5)
-2. 미결 논의 사항 합의 (섹션 7)
-3. 의존성 추가 (`uv add langgraph langchain-upstage langsmith`)
-4. LangGraph 그래프 스켈레톤 구현
-5. 케이스 1, 케이스 2 목업 데이터 작성
-6. API 엔드포인트 구현 (POST /chat + SSE)
-7. 프론트엔드 챗봇 UI 구현
+| Phase | 내용 | 상태 |
+| --- | --- | --- |
+| Phase 0 | enums, constants, schemas (ChatState, 응답 4종), pyproject.toml | ✅ 완료 |
+| Phase 1 | T1(데이터 로더), T2(Upstage 클라이언트), T3(프롬프트) | 🔲 진행 예정 |
+| Phase 1.5 | T4.5(응답 builder + 세그먼트 출력 정책) | ✅ 완료 |
+| Phase 2 | T4(classify), T5(TP1), T6(TP4), T7(TP2/3/5), T8(conftest) | 🔲 Phase 1 완료 후 |
+| Phase 3 | T9(LangGraph StateGraph 조립) | 🔲 Phase 2 완료 후 |
+| Phase 4 | T10(POST /chat + SSE) | 🔲 Phase 3 완료 후 |
+| Phase 5 | T11(프론트엔드 챗봇 UI) | 🔲 Phase 4 완료 후 |
