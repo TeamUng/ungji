@@ -15,7 +15,6 @@ dependencies = [
     "langchain-upstage>=0.3",
     "langsmith>=0.3",
     "scikit-learn>=1.5",
-    "langchain-google-genai>=4.2.2",
 ]
 
 [dependency-groups]
