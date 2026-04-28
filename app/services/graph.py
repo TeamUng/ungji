@@ -70,6 +70,15 @@ def _route(state: ChatState) -> str:
     return talk_routes[touchpoint]
 
 
+# ─── 진입 라우팅 ─────────────────────────────────────────────────────────────
+
+def _entry_route(state: ChatState) -> str:
+    """첫 턴(student_profile 없음)이면 classify, 이후 턴이면 바로 TP 노드로."""
+    if state.get("student_profile") is None:
+        return "classify"
+    return _route(state)
+
+
 # ─── 그래프 조립 ──────────────────────────────────────────────────────────────
 
 _builder = StateGraph(ChatState)
@@ -81,11 +90,10 @@ _builder.add_node("tp3", _tp3_node)
 _builder.add_node("tp4", _tp4_node)
 _builder.add_node("tp5", _tp5_node)
 
-_builder.add_edge(START, "classify")
+# 첫 턴: START → classify → _route → TP 노드
+# 이후 턴: START → _route(state) → TP 노드 (classify 생략)
+_builder.add_conditional_edges(START, _entry_route)
 _builder.add_conditional_edges("classify", _route)
-
-for _tp_node in ("tp1", "tp2", "tp3", "tp4", "tp5"):
-    _builder.add_edge(_tp_node, END)
 
 memory = InMemorySaver()
 graph = _builder.compile(checkpointer=memory)
