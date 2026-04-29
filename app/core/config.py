@@ -15,6 +15,8 @@ class Settings(BaseSettings):
     DISCORD_WEBHOOK_URL: str = ""
     UPSTAGE_API_KEY: str = ""
     UPSTAGE_BASE_URL: str = "https://api.upstage.ai/v1/solar"
+    OPENROUTER_API_KEY: str = ""
+    OPENROUTER_BASE_URL: str = "https://openrouter.ai/api/v1"
     LANGSMITH_API_KEY: str = ""
     LANGSMITH_PROJECT: str = "ungji"
     GOOGLE_API_KEY: str = ""
