@@ -3,7 +3,7 @@ from __future__ import annotations
 import pytest
 
 from app.core.enums import GradeGroup, Segment
-from app.services.prompts.agents import MOTIVATOR_ROLE, build_system_prompt
+from app.services.prompts.agents import HELPER_ROLE, MOTIVATOR_ROLE, build_system_prompt
 from app.services.prompts.coaching import get_coaching_strategy
 from app.services.prompts.personas import get_persona
 
@@ -120,6 +120,8 @@ def test_case_1_lower_low_lazy_prompt_matches_prd_direction():
     assert "즉시 성공 경험" in strategy
     assert "절대 길게 설명하지 마" in strategy
     assert "딱 이것만 해보자" in combined_prompt
+    assert "선택지를 기본으로 주지 마" in strategy
+    assert "하나의 분명한 추천" in strategy
 
 
 def test_case_2_upper_low_diligent_prompt_matches_prd_direction():
@@ -137,3 +139,18 @@ def test_case_2_upper_low_diligent_prompt_matches_prd_direction():
     assert "단계별로 설명" in strategy
     assert "정답을 바로 알려주지 말고" in strategy
     assert "teach-back" in combined_prompt
+
+
+def test_motivator_role_is_direct_student_message_not_teacher_script():
+    assert "학생 화면에 그대로 표시" in MOTIVATOR_ROLE
+    assert "선생님이나 보호자에게 설명하듯 쓰지 마세요" in MOTIVATOR_ROLE
+    assert "메타 설명을 절대 쓰지 마세요" in MOTIVATOR_ROLE
+    assert "수업 내용을 자세히 설명" in MOTIVATOR_ROLE
+    assert "새 문제/새 과제/연습문제" in MOTIVATOR_ROLE
+
+
+def test_helper_role_stays_on_current_problem_only():
+    assert "학생 화면에 그대로 표시" in HELPER_ROLE
+    assert "현재 context에 들어온 단원 또는 problem_id" in HELPER_ROLE
+    assert "새 문제, 새 과제, 추가 숙제" in HELPER_ROLE
+    assert "정답을 바로 알려주지 말고" in HELPER_ROLE

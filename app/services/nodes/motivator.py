@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from langchain_core.messages import SystemMessage
 
-from app.core.enums import Touchpoint, UseCase
+from app.core.enums import Touchpoint
 from app.core.logging import get_logger
 from app.schemas.chat import ChatResponse, ChatState
 from app.services.nodes.common import make_chat_response, make_text
@@ -48,9 +48,6 @@ def motivator(state: ChatState) -> ChatResponse:
 
 
 def _get_situation(state: ChatState) -> str:
-    if state["use_case"] == UseCase.CHAT:
-        return ""
-
     touchpoint = state.get("current_touchpoint")
 
     if touchpoint == Touchpoint.TP1:
@@ -103,7 +100,8 @@ def _situation_tp1(state: ChatState) -> str:
         "학생 홈화면에는 아래 4개 단원 카드가 보입니다.\n"
         f"{tasks}\n\n"
         "이 4개 중 지금 시작하기 가장 좋은 단원 하나를 골라 추천하세요. "
-        "학생에게 4개 전체를 다시 선택지처럼 나열하지 말고, 추천 단원 하나와 이유를 짧게 말하세요."
+        "학생에게 4개 전체를 다시 선택지처럼 나열하지 말고, 추천 단원 하나와 이유를 짧게 말하세요. "
+        "단원 내용을 가르치거나 새 문제를 내지 마세요."
     )
 
 
@@ -123,12 +121,15 @@ def _situation_tp2(state: ChatState) -> str:
         situation = (
             f"완료: {completed_str} ({len(completed_tasks)}/{len(today_tasks)}개)\n"
             f"남은 과제:\n" + "\n".join(remaining_lines) + "\n\n"
-            "방금 과제를 완료한 학생을 격려하고, 다음으로 할 과제 하나를 추천하세요."
+            "방금 과제를 완료한 학생을 격려하고, 다음으로 할 과제 하나를 추천하세요. "
+            "여러 선택지를 주지 말고 하나를 분명히 찍어주세요. "
+            "단원 내용을 설명하거나 새 과제를 만들지 마세요."
         )
     else:
         situation = (
             f"모든 과제 완료! ({len(today_tasks)}/{len(today_tasks)}개)\n\n"
-            "모든 과제를 마친 학생에게 짧게 칭찬하고 북클럽 코너로 안내하세요."
+            "모든 과제를 마친 학생에게 짧게 칭찬하고 북클럽 코너로 안내하세요. "
+            "새 학습 과제나 복습 문제를 만들지 마세요."
         )
 
     return f"학생: {profile['name']} ({profile['grade']}학년)\n{situation}"
@@ -150,7 +151,9 @@ def _situation_tp3(state: ChatState) -> str:
         f"{task_info}"
         f"남은 과제: {remaining_count}개\n\n"
         "강요하지 말고 공감하며, 쉽고 돌아오기 좋은 작은 행동 하나를 제안하세요. "
-        "응답은 2~3문장으로 작성하고 선택지를 주세요."
+        "응답은 2~3문장으로 작성하세요. "
+        "여러 선택지를 주지 말고, 지금 할 수 있는 아주 작은 행동 하나를 추천하세요. "
+        "수업 내용을 설명하거나 새 문제를 내지 마세요."
     )
 
 
@@ -167,7 +170,9 @@ def _situation_tp5(state: ChatState) -> str:
         f"오답 현황: {wrong_summary}\n"
         f"오늘 평균 점수: {state['today_score']}점\n\n"
         "오늘 학습을 진심으로 마무리해주세요. "
-        "오답이 남아 있다면 부드럽게 복습을 권유하고, 없으면 짧게 칭찬하세요."
+        "TP1처럼 새 단원을 시작시키지 마세요. "
+        "오답이 남아 있다면 부드럽게 다음에 이어서 복습하자고 말하고, 없으면 짧게 칭찬하세요. "
+        "새 문제나 새 과제를 만들지 마세요."
     )
 
 

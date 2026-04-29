@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from app.core.enums import GradeGroup, Segment, Touchpoint
+from app.core.enums import GradeGroup, Segment, Touchpoint, UseCase
 from app.services.nodes.motivator import _build_wrong_answer_summary, motivator
 
 
@@ -74,3 +74,18 @@ def test_wrong_summary_in_situation_partial(case2_student, make_chat_state, mock
 
     prompt_text = "\n".join(message.content for message in mock_llm.calls[0]["messages"])
     assert "남아 있어요" in prompt_text
+
+
+def test_chat_followup_keeps_tp5_situation(case2_student, make_chat_state, mock_llm):
+    state = make_chat_state(
+        case2_student,
+        segment=Segment.LOW_DILIGENT,
+        grade_group=GradeGroup.UPPER,
+        use_case=UseCase.CHAT,
+        touchpoint=Touchpoint.TP5,
+    )
+    motivator(state)
+
+    prompt_text = "\n".join(message.content for message in mock_llm.calls[0]["messages"])
+    assert "오늘 학습을 끝내려 합니다" in prompt_text
+    assert "TP1처럼 새 단원을 시작시키지 마세요" in prompt_text

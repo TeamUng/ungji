@@ -115,6 +115,8 @@ def _coach_tp4(state: ChatState, problem: dict, llm) -> list[ResponseMessage]:
         "If the student selects a choice, describes a new reason, changes their mind, or attempts an answer,"
         " continue naturally from that message.\n"
         "Guide step by step with one small next question or hint. Do not jump straight to the final answer.\n"
+        "Never create new assignments, new problems, or separate practice. Help only with the current"
+        " task/problem supplied in the context.\n"
         "Use any suitable tool: send_causes, send_text, send_hint_card, or send_image_card."
     )
 

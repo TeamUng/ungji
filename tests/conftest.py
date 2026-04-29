@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 import sys
 import types
 from collections.abc import Callable, Iterator
@@ -19,8 +20,22 @@ from app.core.enums import (
     WrongCause,
 )
 from app.data.loader import StudentRecord
+
+# Tests use FakeLLM responses. Keep LangGraph/LangChain from exporting those
+# fake runs to LangSmith when a developer has tracing enabled locally.
+os.environ.setdefault("LANGCHAIN_TRACING_V2", "false")
+os.environ.setdefault("LANGSMITH_TRACING", "false")
+os.environ.setdefault("UNGJI_DISABLE_LANGSMITH_TRACING", "true")
+
 from app.main import app
 from app.schemas.chat import ChatState, Task
+
+
+@pytest.fixture(autouse=True)
+def disable_langsmith_tracing_for_tests(monkeypatch):
+    monkeypatch.setenv("LANGCHAIN_TRACING_V2", "false")
+    monkeypatch.setenv("LANGSMITH_TRACING", "false")
+    monkeypatch.setenv("UNGJI_DISABLE_LANGSMITH_TRACING", "true")
 
 
 @pytest.fixture

@@ -31,3 +31,5 @@ def test_current_task_and_remaining_count_in_situation(case1_student, make_chat_
     assert current_task["subject"] in prompt_text
     assert current_task["unit"] in prompt_text
     assert "남은 과제: 1개" in prompt_text
+    assert "여러 선택지를 주지 말고" in prompt_text
+    assert "아주 작은 행동 하나" in prompt_text

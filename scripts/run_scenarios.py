@@ -14,6 +14,7 @@ from __future__ import annotations
 import argparse
 import csv
 import io
+import os
 import sys
 import uuid
 from collections.abc import Sequence
@@ -369,6 +370,7 @@ def _append_transcript_header(
     timestamp: str,
     student_ids: Sequence[str],
     simulate_conversation: bool,
+    llm_summary: dict[str, str],
 ) -> None:
     transcript_lines.extend([
         "# Scenario Conversation Transcript",
@@ -376,6 +378,9 @@ def _append_transcript_header(
         f"- Generated: {timestamp}",
         f"- Student profiles: {', '.join(student_ids)}",
         f"- Simulated follow-up graph turns: {simulate_conversation}",
+        f"- LLM client: {llm_summary['class']}",
+        f"- LangSmith tracing: {llm_summary['langsmith_tracing'] or 'unset'}",
+        f"- LangSmith project: {llm_summary['langsmith_project'] or 'unset'}",
         "",
     ])
 
@@ -494,6 +499,19 @@ def _configure_stdout() -> None:
             )
 
 
+def _llm_runtime_summary() -> dict[str, str]:
+    from app.clients.upstage import llm
+
+    return {
+        "class": f"{llm.__class__.__module__}.{llm.__class__.__name__}",
+        "langsmith_tracing": (
+            os.environ.get("LANGSMITH_TRACING")
+            or os.environ.get("LANGCHAIN_TRACING_V2", "")
+        ),
+        "langsmith_project": os.environ.get("LANGCHAIN_PROJECT", ""),
+    }
+
+
 def main(argv: Sequence[str] | None = None) -> None:
     _configure_stdout()
     setup_logging()
@@ -508,11 +526,18 @@ def main(argv: Sequence[str] | None = None) -> None:
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     csv_path = RESULTS_DIR / f"scenario_results_{timestamp}.csv"
     transcript_path = _transcript_path(csv_path)
+    llm_summary = _llm_runtime_summary()
 
     print(f"\n{'=' * 70}")
     print("  LangGraph scenario runner")
     print(f"  Students: {len(student_ids)} | base scenarios per student: {len(TP_SCENARIOS)}")
     print(f"  Simulated follow-up graph turns: {args.simulate_conversation}")
+    print(f"  LLM client: {llm_summary['class']}")
+    print(
+        "  LangSmith tracing: "
+        f"{llm_summary['langsmith_tracing'] or 'unset'}"
+        f" | project: {llm_summary['langsmith_project'] or 'unset'}"
+    )
     print(f"  CSV: {csv_path}")
     print(f"  Transcript: {transcript_path}")
     print(f"{'=' * 70}")
@@ -525,6 +550,9 @@ def main(argv: Sequence[str] | None = None) -> None:
             "simulate_conversation": args.simulate_conversation,
             "csv_path": str(csv_path),
             "transcript_path": str(transcript_path),
+            "llm_client": llm_summary["class"],
+            "langsmith_tracing": llm_summary["langsmith_tracing"],
+            "langsmith_project": llm_summary["langsmith_project"],
         },
     )
 
@@ -535,6 +563,7 @@ def main(argv: Sequence[str] | None = None) -> None:
         timestamp=timestamp,
         student_ids=student_ids,
         simulate_conversation=args.simulate_conversation,
+        llm_summary=llm_summary,
     )
 
     for student_id in student_ids:
