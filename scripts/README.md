@@ -4,6 +4,8 @@
 
 `scripts/run_scenarios.py`는 FastAPI 엔드포인트를 거치지 않고 LangGraph를 직접 호출하는 회귀 테스트용 실행 스크립트입니다. 선택한 학생 프로필에 대해 TP1~TP5 시나리오를 실행하고, 결과를 CSV와 Markdown 대화 기록으로 저장합니다.
 
+기획 의도와 실제 출력의 차이를 보기 위해 `scripts/scenarios/expected_cases.json`이 있으면 기대 조건 평가 CSV도 함께 저장합니다.
+
 ### 무엇을 실행하나요?
 
 기본 실행은 아래 4개 학생 프로필만 사용합니다.
@@ -65,6 +67,18 @@ uv --cache-dir .uv-cache run python scripts/run_scenarios.py --simulate-conversa
 
 `--simulate-conversation`은 추가 LangGraph 호출을 만들기 때문에 LLM API 호출 수가 늘어납니다.
 
+기대 조건 평가를 끄기:
+
+```powershell
+uv --cache-dir .uv-cache run python scripts/run_scenarios.py --skip-expectations
+```
+
+다른 기대 조건 파일 사용:
+
+```powershell
+uv --cache-dir .uv-cache run python scripts/run_scenarios.py --expectations scripts/scenarios/expected_cases.json
+```
+
 ### CLI 옵션
 
 | 옵션 | 설명 |
@@ -76,6 +90,8 @@ uv --cache-dir .uv-cache run python scripts/run_scenarios.py --simulate-conversa
 | `--diligence lazy diligent` | 성실도 필터 |
 | `--list-students` | 사용 가능한 프로필 출력 후 종료 |
 | `--simulate-conversation` | 코치 응답 뒤에 학생 응답을 시뮬레이션하고 그래프를 이어서 호출 |
+| `--expectations PATH` | 기대 출력 평가 기준 JSON 경로 |
+| `--skip-expectations` | 기대 출력 평가를 건너뜀 |
 
 `--all`은 `--students` 또는 조건 필터와 함께 사용할 수 없습니다. `--students`도 조건 필터와 함께 사용할 수 없습니다.
 
@@ -86,6 +102,12 @@ uv --cache-dir .uv-cache run python scripts/run_scenarios.py --simulate-conversa
 ```text
 scripts/results/scenario_results_YYYYMMDD_HHMMSS.csv
 scripts/results/scenario_transcript_YYYYMMDD_HHMMSS.md
+```
+
+`scripts/scenarios/expected_cases.json`이 있으면 아래 평가 파일도 생성됩니다.
+
+```text
+scripts/results/scenario_eval_YYYYMMDD_HHMMSS.csv
 ```
 
 CSV에는 회귀 비교에 필요한 구조화된 결과가 들어갑니다.
@@ -113,16 +135,27 @@ CSV에는 회귀 비교에 필요한 구조화된 결과가 들어갑니다.
 
 Markdown transcript에는 학생과 코치의 대화가 사람이 읽기 쉬운 형태로 기록됩니다. TP4 선택지는 choice id와 label이 함께 표시됩니다.
 
+평가 CSV는 문장 완전 일치가 아니라 아래 기준을 검사합니다.
+
+- `must_include_any`: 기대 의도를 드러내는 표현 중 하나 이상 포함
+- `must_include_all`: 필수 표현 모두 포함
+- `must_not_include`: 내부 지시, 메타 표현, TP 오용 표현 미노출
+- `max_choices`: 선택지 개수 상한
+- `expected_problem_id`: 기대 문제 ID 사용 여부
+
 ### 주의사항
 
 - 이 스크립트는 실제 LangGraph와 LLM 클라이언트를 호출합니다.
 - `.env`에 필요한 API 키가 없으면 실제 실행이 실패할 수 있습니다.
 - `--list-students`는 LLM을 호출하지 않는 가벼운 확인 명령입니다.
 - 생성된 CSV/Markdown 결과 파일은 회귀 확인용 산출물입니다. 커밋 전에 필요한 파일인지 확인하세요.
+- 기대 조건은 하드코딩 답변이 아니라 기획 의도 검수 기준입니다. 프롬프트나 모델을 바꾼 뒤 `scenario_eval_*.csv`의 실패 항목을 보고 프롬프트·가드레일·내부 구조를 보강합니다.
 
 ## English
 
 `scripts/run_scenarios.py` is a regression runner that calls LangGraph directly instead of going through the FastAPI endpoint. It runs TP1-TP5 scenarios for selected mock student profiles and saves both structured CSV results and a Markdown conversation transcript.
+
+When `scripts/scenarios/expected_cases.json` exists, the runner also writes an expectation evaluation CSV to compare actual LLM output with the planning intent.
 
 ### What Does It Run?
 
@@ -185,6 +218,12 @@ uv --cache-dir .uv-cache run python scripts/run_scenarios.py --simulate-conversa
 
 `--simulate-conversation` increases the number of LangGraph and LLM calls.
 
+Skip expectation evaluation:
+
+```powershell
+uv --cache-dir .uv-cache run python scripts/run_scenarios.py --skip-expectations
+```
+
 ### CLI Options
 
 | Option | Description |
@@ -196,6 +235,8 @@ uv --cache-dir .uv-cache run python scripts/run_scenarios.py --simulate-conversa
 | `--diligence lazy diligent` | Filter by diligence |
 | `--list-students` | Print available profiles and exit |
 | `--simulate-conversation` | Simulate student replies after coach responses and continue the graph |
+| `--expectations PATH` | JSON file with expectation checks |
+| `--skip-expectations` | Skip expectation evaluation |
 
 `--all` cannot be combined with `--students` or criteria filters. `--students` cannot be combined with criteria filters.
 
@@ -206,6 +247,12 @@ Each run creates two files under `scripts/results/`:
 ```text
 scripts/results/scenario_results_YYYYMMDD_HHMMSS.csv
 scripts/results/scenario_transcript_YYYYMMDD_HHMMSS.md
+```
+
+If expectation checks are enabled, it also writes:
+
+```text
+scripts/results/scenario_eval_YYYYMMDD_HHMMSS.csv
 ```
 
 The CSV contains structured data for regression comparison.
