@@ -312,16 +312,120 @@ PRD 케이스 1·2가 처음부터 끝까지 작동하는 것.
 ### T11. 챗봇 UI
 
 **브랜치**: `feature/T11-frontend`
-**담당 파일**: 별도 결정 (Next.js App Router 또는 React+Vite)
+**담당 파일**: `frontend/` (Next.js App Router)
 **의존**: T10 | **블로킹**: 없음
 
-- [ ] 스택 결정 (Next.js App Router 또는 React+Vite)
-- [ ] 태블릿 비율 챗봇 UI 레이아웃 구현
+- [x] 스택 결정 — Next.js App Router + TypeScript + Tailwind CSS
+- [x] 태블릿 비율 챗봇 UI 레이아웃 구현
+  - [x] 스마트올 `오늘의 학습` 홈 화면 기반 레이아웃
+  - [x] 학습 화면 위 AI 코치 레이어 구조
+  - [x] 학습 완료/마무리 화면 흐름
+  - [x] AI 코치 캐릭터 드래그 동작
 - [ ] SSE 스트리밍 수신 및 메시지 순차 렌더링
-- [ ] `text` 타입 — 말풍선 컴포넌트
-- [ ] `choices` 타입 — 선택지 버튼 컴포넌트 (클릭 시 `POST /chat` 재호출)
-- [ ] `image_card` 타입 — 이미지 카드 컴포넌트
-- [ ] `hint_card` 타입 — 단계별 힌트 카드 컴포넌트 (스텝 순서 표시)
-- [ ] 학생 선택 드롭다운 (student_id 전달용, mock 학생 목록)
-- [ ] 케이스 1 / 케이스 2 전환 가능하게
-- [ ] **완료 기준**: 케이스 1·2 전체 흐름 브라우저에서 처음부터 끝까지 동작 확인
+- [x] mock/live adapter 기반 메시지 순차 렌더링 구조
+- [x] `text` 타입 — 말풍선 컴포넌트
+- [x] `choices` 타입 — 선택지 버튼 컴포넌트
+- [x] mock 기준 `choices` 클릭 시 학생 선택 말풍선 + 다음 코치 응답 누적 렌더링
+- [ ] `choices` 클릭 시 실제 `POST /chat` 재호출 (T10 이후)
+- [x] `image_card` 타입 — 이미지 카드 컴포넌트
+- [x] `hint_card` 타입 — 단계별 힌트 카드 컴포넌트 (스텝 순서 표시)
+- [x] TP4 케이스별 선택지 분기 mock 응답
+- [x] 수학 케이스 teach-back 텍스트 입력
+- [x] TP3 상세 도움 채팅창 전환
+- [x] TP5 오답 복습 채팅창 전환
+- [x] 학생 선택 드롭다운 (student_id 전달용, mock 학생 목록)
+- [x] `/` 학생 화면과 `/tp-demo` 내부 검수 화면 분리
+- [x] mock/live chat adapter 인터페이스 분리
+- [x] 케이스 1 / 케이스 2 전환 가능하게
+- [x] 백엔드 `ChatRequest` / `ChatResponse`와 맞춘 프론트 타입 정의
+- [x] `/chat` 연동 전까지 사용할 mock chat adapter 구현
+- [x] 뽀롱쌤 투명 PNG 원본 수령 및 기준 asset 보관
+  - [x] `frontend/public/assets/porong/brand/porong-logo-full-original.png` 원본 보관
+  - [x] `frontend/public/assets/porong/brand/porong-logo-full.webp` WebP 변환본 생성
+- [x] 뽀롱쌤 asset 폴더 구조 구축
+  - [x] `frontend/public/assets/porong/brand/`
+  - [x] `frontend/public/assets/porong/mascot/`
+  - [x] `frontend/public/assets/porong/ui/`
+  - [x] `frontend/public/assets/porong/motion/`
+- [x] 1차 mascot 상태별 WebP asset 구성
+  - [x] `porong-overlay-idle.webp`
+  - [x] `porong-overlay-welcome.webp`
+  - [x] `porong-overlay-thinking.webp`
+  - [x] `porong-overlay-speaking.webp`
+  - [x] `porong-overlay-hint.webp`
+  - [x] `porong-overlay-cheer.webp`
+  - [x] `porong-overlay-comfort.webp`
+  - [x] `porong-overlay-confused.webp`
+  - [x] `porong-overlay-touched.webp`
+  - [x] `porong-overlay-dragging.webp`
+  - [x] `porong-overlay-hanging.webp`
+  - [x] `porong-overlay-snapping.webp`
+  - [x] `porong-overlay-edge.webp`
+  - [x] `porong-head.webp`
+- [x] UI 장식 SVG asset 구성
+  - [x] `star.svg`
+  - [x] `sparkle.svg`
+  - [x] `speech-tail.svg`
+  - [x] `wand.svg`
+- [x] 기존 CSS 얼굴형 코치를 실제 뽀롱쌤 이미지 기반 `PorongOverlay`로 교체
+  - [x] `PorongMascot` — 상태별 뽀롱쌤 이미지 렌더링
+  - [x] `PorongSpeechBubble` — TP별 짧은 말풍선과 CTA 렌더링
+  - [x] `PorongOverlay` — 캐릭터, 말풍선, 탭/드래그 상태 통합 제어
+  - [x] `usePorongDrag` — 탭과 드래그 구분
+  - [x] `usePorongSnap` — 화면 안 safe snap 위치 계산
+  - [x] `porongTypes` / `porongAssets` — 상태 타입과 asset 경로 분리
+- [x] 뽀롱쌤 드래그 인터랙션 1차 구현
+  - [x] 짧게 탭하면 채팅창 또는 말풍선 열기
+  - [x] 8px 이상 움직이면 드래그 상태로 전환
+  - [x] 드래그 중 살짝 확대, 기울기, 매달림 느낌 적용
+  - [x] 손을 떼면 가까운 safe snap point로 이동
+  - [x] 채팅창이 열렸을 때 캐릭터와 패널이 겹치지 않도록 위치 보정
+  - [x] 세로형 태블릿 화면에서 오버레이가 화면 밖으로 나가지 않도록 보정
+- [x] TP1~TP5 흐름과 뽀롱쌤 상태 연결
+  - [x] TP1 홈 진입/추천: `welcome`
+  - [x] TP2 학습 완료: `cheer`
+  - [x] TP3 이탈 시도: `comfort`
+  - [x] TP4 학습 중 도움 요청: `idle` / `hint` / `speaking`
+  - [x] TP5 오늘 학습 종료/오답 복습: `cheer` / `comfort`
+  - [x] 답변 생성 중: `thinking`
+- [x] CSS 기반 뽀롱쌤 모션 구현
+  - [x] idle/welcome 둥실둥실 모션
+  - [x] touched 터치 반응 모션
+  - [x] dragging 매달림 느낌 모션
+  - [x] snapping 착지 bounce 모션
+  - [x] thinking/hint 반짝임 모션
+  - [x] speaking 말하는 느낌 모션
+  - [x] cheer 칭찬 팝 모션
+  - [x] comfort 부드러운 흔들림 모션
+  - [x] confused 갸웃 모션
+  - [x] `prefers-reduced-motion` 접근성 대응
+- [x] 뽀롱쌤 작업 워크로그 작성
+  - [x] `docs/worklogs/2026-04-29_feature-T11-porong-asset-system.md`
+- [x] `1280x800`, `800x1280` 태블릿 화면 검증
+- [x] `/`, `/tp-demo`, `/smartall-home`에서 뽀롱쌤 오버레이 표시 확인
+- [x] `npm run lint` 통과
+- [x] `npm run build` 통과
+- [x] **mock 기준 완료 기준**: 케이스 1·2 전체 흐름 브라우저에서 처음부터 끝까지 동작 확인
+- [ ] 뽀롱쌤 캐릭터와 하단 `뽀롱쌤` 로고 텍스트를 완전히 분리한 원본 asset 확보
+- [ ] 실제 프레임/포즈 기반 뽀롱쌤 애니메이션 고도화
+  - [ ] `porong-hanging-left.webp` / `porong-hanging-right.webp` 제작 및 드래그 방향별 적용
+  - [ ] `porong-speaking-1.webp` / `porong-speaking-2.webp` 제작 및 말하는 중 프레임 전환
+  - [ ] `porong-blink.webp` 제작 및 idle 눈 깜빡임 적용
+  - [ ] `porong-cheer-1.webp` / `porong-cheer-2.webp` 제작 및 칭찬 모션 고도화
+  - [ ] `porong-comfort.webp` / `porong-confused.webp` 별도 표정 asset 제작
+  - [ ] snap 착지 전용 포즈 asset 제작
+- [ ] 레이어 분리형 뽀롱쌤 asset 검토
+  - [ ] 몸통, 눈, 입, 팔, 안경, 학사모, 리본, 책, 마법봉, 그림자 분리
+  - [ ] 입만 움직이는 speaking 모션 구현
+  - [ ] 눈만 깜빡이는 blink 모션 구현
+  - [ ] 팔/마법봉이 반응하는 cheer/hint 모션 구현
+- [ ] Rive 또는 Lottie 기반 캐릭터 리깅 도입 여부 검토
+  - [ ] 보급형 태블릿 성능 검토
+  - [ ] 상태 제어 API 설계 유지 가능성 검토
+  - [ ] 디자이너/Figma 원본 제공 가능 여부 확인
+- [ ] 실제 터치 디바이스에서 뽀롱쌤 드래그 수동 QA
+  - [ ] 탭과 드래그 오작동 여부 확인
+  - [ ] 채팅창 열림 상태에서 겹침 여부 확인
+  - [ ] 학습 문제/선택지/CTA 가림 여부 확인
+  - [ ] 모션이 학습을 방해하지 않는지 확인
+- [ ] **최종 완료 기준**: T10 `/chat` 연결 후 SSE 스트리밍으로 케이스 1·2 전체 흐름 확인
