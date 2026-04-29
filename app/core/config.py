@@ -14,7 +14,7 @@ class Settings(BaseSettings):
     LOGTAIL_HOST: str = ""
     DISCORD_WEBHOOK_URL: str = ""
     UPSTAGE_API_KEY: str = ""
-    UPSTAGE_BASE_URL: str = "https://api.upstage.ai/v1/solar"
+    OPENAI_API_KEY: str = ""
     LANGSMITH_API_KEY: str = ""
     LANGSMITH_PROJECT: str = "ungji"
     GOOGLE_API_KEY: str = ""

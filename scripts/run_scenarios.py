@@ -500,7 +500,7 @@ def _configure_stdout() -> None:
 
 
 def _llm_runtime_summary() -> dict[str, str]:
-    from app.clients.upstage import llm
+    from app.clients.llm import llm
 
     return {
         "class": f"{llm.__class__.__module__}.{llm.__class__.__name__}",
