@@ -14,6 +14,7 @@ from __future__ import annotations
 import argparse
 import csv
 import io
+import json
 import sys
 import uuid
 from collections.abc import Sequence
@@ -136,6 +137,7 @@ TP4_SIMULATED_FOLLOWUPS_BY_SUBJECT = {
 
 RESULTS_DIR = Path(__file__).parent / "results"
 RESULTS_DIR.mkdir(exist_ok=True)
+DEFAULT_EXPECTATIONS_PATH = Path(__file__).parent / "scenarios" / "expected_cases.json"
 
 CSV_COLUMNS = [
     "runner_mode",
@@ -154,6 +156,20 @@ CSV_COLUMNS = [
     "has_wrong_answers", "wrong_content_done_today",
     "response_text", "choices", "message_types",
     "error",
+]
+
+EVAL_COLUMNS = [
+    "case_id",
+    "student_id",
+    "touchpoint",
+    "use_case",
+    "turn",
+    "scenario_label",
+    "criterion",
+    "expected",
+    "actual",
+    "passed",
+    "note",
 ]
 
 
@@ -206,6 +222,20 @@ def _parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
             "After each coach response, simulate a student reply and continue the graph. "
             "This increases LLM calls and adds follow-up rows to the CSV."
         ),
+    )
+    parser.add_argument(
+        "--expectations",
+        type=Path,
+        default=DEFAULT_EXPECTATIONS_PATH,
+        help=(
+            "JSON file with scenario expectation checks. "
+            "Defaults to scripts/scenarios/expected_cases.json."
+        ),
+    )
+    parser.add_argument(
+        "--skip-expectations",
+        action="store_true",
+        help="Skip expectation evaluation even when the expectations JSON exists.",
     )
 
     args = parser.parse_args(argv)
@@ -547,6 +577,172 @@ def _build_result_row(
     }
 
 
+def _load_scenario_expectations(path: Path) -> list[dict[str, Any]]:
+    if not path.exists():
+        return []
+
+    raw = json.loads(path.read_text(encoding="utf-8"))
+    expectations: list[dict[str, Any]] = []
+    for case in raw.get("cases", []):
+        case_id = case.get("case_id", "")
+        student_id = case.get("student_id", "")
+        for item in case.get("expectations", []):
+            expectations.append({
+                "case_id": case_id,
+                "student_id": student_id,
+                **item,
+            })
+    return expectations
+
+
+def _matches_expectation(row: dict[str, Any], expectation: dict[str, Any]) -> bool:
+    if row["student_id"] != expectation["student_id"]:
+        return False
+    if row["touchpoint"] != expectation["touchpoint"]:
+        return False
+    if row["use_case"] != expectation["use_case"]:
+        return False
+    if int(row["turn"]) != int(expectation["turn"]):
+        return False
+
+    scenario_label = expectation.get("scenario_label")
+    return not scenario_label or row["scenario_label"] == scenario_label
+
+
+def _combined_student_output(row: dict[str, Any]) -> str:
+    return "\n".join(
+        str(row.get(field, ""))
+        for field in ("response_text", "choices", "message_types")
+        if row.get(field)
+    )
+
+
+def _choice_count(row: dict[str, Any]) -> int:
+    choices = str(row.get("choices", "")).strip()
+    if not choices:
+        return 0
+    return len([choice for choice in choices.split(" | ") if choice.strip()])
+
+
+def _eval_row(
+    *,
+    expectation: dict[str, Any],
+    criterion: str,
+    expected: Any,
+    actual: Any,
+    passed: bool,
+    note: str = "",
+) -> dict[str, Any]:
+    return {
+        "case_id": expectation.get("case_id", ""),
+        "student_id": expectation.get("student_id", ""),
+        "touchpoint": expectation.get("touchpoint", ""),
+        "use_case": expectation.get("use_case", ""),
+        "turn": expectation.get("turn", ""),
+        "scenario_label": expectation.get("scenario_label", ""),
+        "criterion": criterion,
+        "expected": expected,
+        "actual": actual,
+        "passed": passed,
+        "note": note,
+    }
+
+
+def _evaluate_expectation(
+    row: dict[str, Any] | None,
+    expectation: dict[str, Any],
+) -> list[dict[str, Any]]:
+    if row is None:
+        return [_eval_row(
+            expectation=expectation,
+            criterion="row_exists",
+            expected=True,
+            actual=False,
+            passed=False,
+            note="No scenario result row matched this expectation.",
+        )]
+
+    output = _combined_student_output(row)
+    eval_rows: list[dict[str, Any]] = []
+
+    if expected_problem_id := expectation.get("expected_problem_id"):
+        actual_problem_id = row.get("problem_id", "")
+        eval_rows.append(_eval_row(
+            expectation=expectation,
+            criterion="expected_problem_id",
+            expected=expected_problem_id,
+            actual=actual_problem_id,
+            passed=actual_problem_id == expected_problem_id,
+        ))
+
+    if must_include_any := expectation.get("must_include_any"):
+        matched = [term for term in must_include_any if term in output]
+        eval_rows.append(_eval_row(
+            expectation=expectation,
+            criterion="must_include_any",
+            expected=" | ".join(must_include_any),
+            actual=" | ".join(matched) if matched else output[:160],
+            passed=bool(matched),
+            note=expectation.get("must_include_any_note", ""),
+        ))
+
+    if must_include_all := expectation.get("must_include_all"):
+        missing = [term for term in must_include_all if term not in output]
+        eval_rows.append(_eval_row(
+            expectation=expectation,
+            criterion="must_include_all",
+            expected=" | ".join(must_include_all),
+            actual=f"missing: {' | '.join(missing)}" if missing else "all present",
+            passed=not missing,
+        ))
+
+    if must_not_include := expectation.get("must_not_include"):
+        found = [term for term in must_not_include if term in output]
+        eval_rows.append(_eval_row(
+            expectation=expectation,
+            criterion="must_not_include",
+            expected=" | ".join(must_not_include),
+            actual=" | ".join(found) if found else "",
+            passed=not found,
+        ))
+
+    if "max_choices" in expectation:
+        max_choices = int(expectation["max_choices"])
+        actual_count = _choice_count(row)
+        eval_rows.append(_eval_row(
+            expectation=expectation,
+            criterion="max_choices",
+            expected=max_choices,
+            actual=actual_count,
+            passed=actual_count <= max_choices,
+        ))
+
+    if not eval_rows:
+        eval_rows.append(_eval_row(
+            expectation=expectation,
+            criterion="row_exists",
+            expected=True,
+            actual=True,
+            passed=True,
+        ))
+
+    return eval_rows
+
+
+def _evaluate_rows_against_expectations(
+    rows: list[dict[str, Any]],
+    expectations: list[dict[str, Any]],
+) -> list[dict[str, Any]]:
+    eval_rows: list[dict[str, Any]] = []
+    for expectation in expectations:
+        matched_row = next(
+            (row for row in rows if _matches_expectation(row, expectation)),
+            None,
+        )
+        eval_rows.extend(_evaluate_expectation(matched_row, expectation))
+    return eval_rows
+
+
 def _configure_stdout() -> None:
     for stream_name in ("stdout", "stderr"):
         stream = getattr(sys, stream_name)
@@ -585,6 +781,8 @@ def main(argv: Sequence[str] | None = None) -> None:
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     csv_path = RESULTS_DIR / f"scenario_results_{timestamp}.csv"
     transcript_path = _transcript_path(csv_path)
+    eval_path = RESULTS_DIR / f"scenario_eval_{timestamp}.csv"
+    expectations = [] if args.skip_expectations else _load_scenario_expectations(args.expectations)
 
     print(f"\n{'=' * 70}")
     print("  LangGraph scenario runner")
@@ -592,6 +790,12 @@ def main(argv: Sequence[str] | None = None) -> None:
     print(f"  Simulated follow-up graph turns: {args.simulate_conversation}")
     print(f"  CSV: {csv_path}")
     print(f"  Transcript: {transcript_path}")
+    if expectations:
+        print(f"  Expectation eval: {eval_path}")
+    elif args.skip_expectations:
+        print("  Expectation eval: skipped")
+    else:
+        print(f"  Expectation eval: no file at {args.expectations}")
     print(f"{'=' * 70}")
 
     logger.info(
@@ -602,6 +806,8 @@ def main(argv: Sequence[str] | None = None) -> None:
             "simulate_conversation": args.simulate_conversation,
             "csv_path": str(csv_path),
             "transcript_path": str(transcript_path),
+            "expectations_path": str(args.expectations),
+            "expectation_count": len(expectations),
         },
     )
 
@@ -789,9 +995,18 @@ def main(argv: Sequence[str] | None = None) -> None:
 
     transcript_path.write_text("\n".join(transcript_lines).rstrip() + "\n", encoding="utf-8")
 
+    eval_rows: list[dict[str, Any]] = []
+    if expectations:
+        eval_rows = _evaluate_rows_against_expectations(all_rows, expectations)
+        with eval_path.open("w", newline="", encoding="utf-8-sig") as f:
+            writer = csv.DictWriter(f, fieldnames=EVAL_COLUMNS)
+            writer.writeheader()
+            writer.writerows(eval_rows)
+
     total = len(all_rows)
     errors = sum(1 for row in all_rows if row["error"])
     classification_errors = sum(1 for row in all_rows if not row["classification_ok"])
+    eval_failures = sum(1 for row in eval_rows if not row["passed"])
 
     logger.info(
         "LangGraph scenario runner completed",
@@ -799,8 +1014,11 @@ def main(argv: Sequence[str] | None = None) -> None:
             "total": total,
             "errors": errors,
             "classification_errors": classification_errors,
+            "expectation_checks": len(eval_rows),
+            "expectation_failures": eval_failures,
             "csv_path": str(csv_path),
             "transcript_path": str(transcript_path),
+            "eval_path": str(eval_path) if eval_rows else "",
         },
     )
     _flush_langsmith_traces()
@@ -810,8 +1028,12 @@ def main(argv: Sequence[str] | None = None) -> None:
         f"  Done: {total} rows | errors: {errors} | "
         f"classification mismatches: {classification_errors}"
     )
+    if eval_rows:
+        print(f"  Expectation checks: {len(eval_rows)} | failures: {eval_failures}")
     print(f"  CSV saved: {csv_path}")
     print(f"  Transcript saved: {transcript_path}")
+    if eval_rows:
+        print(f"  Eval saved: {eval_path}")
     print(f"{'=' * 70}\n")
 
 

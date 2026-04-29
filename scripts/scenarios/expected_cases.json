@@ -1,0 +1,128 @@
+{
+  "version": 1,
+  "description": "Scenario expectation checks for comparing planning intent with actual LLM outputs.",
+  "cases": [
+    {
+      "case_id": "case_1_upper_low_diligent",
+      "student_id": "upper-low-diligent",
+      "purpose": "저성취/성실 고학년: 수학 비율 문제를 단계적으로 돕고 다음 국어 학습으로 유도한다.",
+      "expectations": [
+        {
+          "touchpoint": "tp1",
+          "use_case": "talk",
+          "turn": 1,
+          "scenario_label": "TP1 home-screen entry",
+          "must_include_any": ["수학", "비율"],
+          "must_include_any_note": "첫 진입에서 수학 비율과 비례식 시작을 유도해야 한다.",
+          "must_not_include": ["추천 이유", "내부 이유", "새 문제", "미션", "교과서 페이지"]
+        },
+        {
+          "touchpoint": "tp4",
+          "use_case": "learning",
+          "turn": 1,
+          "scenario_label": "TP4 stuck: cause choices",
+          "expected_problem_id": "math_ratio_saltwater_001",
+          "max_choices": 3,
+          "must_include_any": ["어려", "막혔", "헷갈"],
+          "must_not_include": ["정답은", "0.25", "0.2", "추천 이유", "내부 이유"]
+        },
+        {
+          "touchpoint": "tp4",
+          "use_case": "learning",
+          "turn": 2,
+          "scenario_label": "TP4 stuck: coaching after cause",
+          "expected_problem_id": "math_ratio_saltwater_001",
+          "must_include_any": ["소금", "소금물", "나누"],
+          "must_not_include": ["새 문제", "교과서 페이지", "추천 이유", "내부 이유"]
+        },
+        {
+          "touchpoint": "tp2",
+          "use_case": "talk",
+          "turn": 1,
+          "scenario_label": "TP2 unit completed",
+          "must_include_any": ["국어", "주장", "근거"],
+          "must_not_include": ["새 문제", "미션", "교과서 페이지", "추천 이유"]
+        },
+        {
+          "touchpoint": "tp3",
+          "use_case": "talk",
+          "turn": 1,
+          "scenario_label": "TP3 exit prevention",
+          "event": "exit_attempt",
+          "current_task_remaining_count": 2,
+          "must_include_any": ["2문제", "두 문제", "조금만", "거의"],
+          "must_not_include": ["첫 식", "어디가 어려", "같이 풀어", "힌트", "추천 이유"]
+        },
+        {
+          "touchpoint": "tp5",
+          "use_case": "talk",
+          "turn": 1,
+          "scenario_label": "TP5 learning wrap-up",
+          "must_include_any": ["오답", "복습", "마무리", "쉬어"],
+          "must_not_include": ["새 문제", "미션", "교과서 페이지", "추천 이유"]
+        }
+      ]
+    },
+    {
+      "case_id": "case_2_lower_low_lazy",
+      "student_id": "lower-low-lazy",
+      "purpose": "저성취/불성실 저학년: 짧고 쉬운 말로 국어 시작을 유도하고 3턴 안에 도움을 제공한다.",
+      "expectations": [
+        {
+          "touchpoint": "tp1",
+          "use_case": "talk",
+          "turn": 1,
+          "scenario_label": "TP1 home-screen entry",
+          "must_include_any": ["국어", "받침", "낱말"],
+          "must_include_any_note": "첫 진입에서 국어 받침 학습을 부담 낮게 유도해야 한다.",
+          "must_not_include": ["추천 이유", "내부 이유", "저성취", "불성실", "세그먼트"]
+        },
+        {
+          "touchpoint": "tp4",
+          "use_case": "learning",
+          "turn": 1,
+          "scenario_label": "TP4 stuck: cause choices",
+          "expected_problem_id": "lower_korean_reading_001",
+          "max_choices": 3,
+          "must_include_any": ["어디", "헷갈", "어려"],
+          "must_not_include": ["정답은", "책", "추천 이유", "내부 이유"]
+        },
+        {
+          "touchpoint": "tp4",
+          "use_case": "learning",
+          "turn": 2,
+          "scenario_label": "TP4 stuck: coaching after cause",
+          "expected_problem_id": "lower_korean_reading_001",
+          "must_include_any": ["받침", "아래", "책", "잘"],
+          "must_not_include": ["새 문제", "교과서 페이지", "추천 이유", "내부 이유"]
+        },
+        {
+          "touchpoint": "tp2",
+          "use_case": "talk",
+          "turn": 1,
+          "scenario_label": "TP2 unit completed",
+          "must_include_any": ["수학", "더하기", "사과"],
+          "must_not_include": ["추천 이유", "내부 이유", "저성취", "불성실"]
+        },
+        {
+          "touchpoint": "tp3",
+          "use_case": "talk",
+          "turn": 1,
+          "scenario_label": "TP3 exit prevention",
+          "event": "exit_attempt",
+          "current_task_remaining_count": 2,
+          "must_include_any": ["2문제", "두 문제", "거의", "끝"],
+          "must_not_include": ["첫 식", "어디가 어려", "같이 풀어", "힌트", "추천 이유"]
+        },
+        {
+          "touchpoint": "tp5",
+          "use_case": "talk",
+          "turn": 1,
+          "scenario_label": "TP5 learning wrap-up",
+          "must_include_any": ["잘했", "오답", "복습", "쉬어"],
+          "must_not_include": ["새 문제", "미션", "교과서 페이지", "추천 이유"]
+        }
+      ]
+    }
+  ]
+}
