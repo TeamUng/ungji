@@ -1,179 +1,577 @@
 [
   {
-    "student_id": "lower-lazy",
+    "student_id": "lower-low-lazy",
     "profile": {
       "name": "민준",
       "grade": 1,
-      "preferred_subject": "통합",
+      "preferred_subject": "국어",
       "strong_subject": "통합",
-      "recent_avg_score": 65,
-      "avg_completion_rate": 30
+      "recent_avg_score": 64,
+      "avg_completion_rate": 35
     },
     "learning_history": {
-      "subject_avg_scores": {
-        "국어": 62,
-        "수학": 58,
-        "영어": 70,
-        "통합": 72
-      },
-      "subject_completion_rates": {
-        "국어": 35,
-        "수학": 25,
-        "영어": 30,
-        "통합": 40
-      }
+      "subject_avg_scores": {"국어": 64, "수학": 58, "영어": 61, "통합": 70},
+      "subject_completion_rates": {"국어": 35, "수학": 28, "영어": 32, "통합": 42}
     },
     "learning_pattern": {
       "wrong_content_rate": 20,
-      "wrong_content_total": 3,
+      "wrong_content_total": 4,
       "wrong_content_done": 0,
       "skipping_habit": true,
       "guessing_habit": true,
       "careless_habit": false
     },
     "wrong_answer_pattern": {
-      "frequent_wrong_type": "개념 이해 부족",
-      "repeated_wrong_subjects": ["수학", "국어"],
+      "frequent_wrong_type": "낱말 읽기",
+      "repeated_wrong_subjects": ["국어", "수학"],
       "wrong_cause": "찍기"
     },
     "today_tasks": [
       {
         "subject": "국어",
         "unit": "받침이 있는 낱말 읽기",
-        "problem_id": null,
-        "problem_count": 5,
-        "estimated_time": 10,
-        "difficulty": "하",
-        "ai_predicted_score": 0
-      },
-      {
-        "subject": "수학",
-        "unit": "한 자리 수 더하기",
-        "problem_id": null,
+        "problem_ids": ["lower_korean_reading_001"],
+        "problem_id": "lower_korean_reading_001",
         "problem_count": 5,
         "estimated_time": 10,
         "difficulty": "하",
         "ai_predicted_score": 62
       },
       {
-        "subject": "영어",
-        "unit": "알파벳 익히기",
-        "problem_id": null,
+        "subject": "수학",
+        "unit": "한 자리 수 더하기",
+        "problem_ids": ["lower_math_addition_001"],
+        "problem_id": "lower_math_addition_001",
         "problem_count": 5,
         "estimated_time": 8,
         "difficulty": "하",
-        "ai_predicted_score": 0
+        "ai_predicted_score": 58
       },
       {
         "subject": "통합",
         "unit": "봄 관찰하기",
-        "problem_id": null,
+        "problem_ids": ["lower_integrated_season_001"],
+        "problem_id": "lower_integrated_season_001",
         "problem_count": 4,
         "estimated_time": 8,
         "difficulty": "하",
-        "ai_predicted_score": 0
+        "ai_predicted_score": 70
+      },
+      {
+        "subject": "영어",
+        "unit": "알파벳 익히기",
+        "problem_ids": ["lower_english_alphabet_001"],
+        "problem_id": "lower_english_alphabet_001",
+        "problem_count": 5,
+        "estimated_time": 8,
+        "difficulty": "하",
+        "ai_predicted_score": 61
       }
     ]
   },
   {
-    "student_id": "lower-diligent",
+    "student_id": "lower-low-diligent",
     "profile": {
       "name": "지아",
       "grade": 2,
-      "preferred_subject": "영어",
-      "strong_subject": "영어",
-      "recent_avg_score": 92,
-      "avg_completion_rate": 88
+      "preferred_subject": "국어",
+      "strong_subject": "국어",
+      "recent_avg_score": 72,
+      "avg_completion_rate": 86
     },
     "learning_history": {
-      "subject_avg_scores": {
-        "국어": 90,
-        "수학": 88,
-        "영어": 96,
-        "통합": 91
-      },
-      "subject_completion_rates": {
-        "국어": 90,
-        "수학": 85,
-        "영어": 95,
-        "통합": 88
-      }
+      "subject_avg_scores": {"국어": 72, "수학": 68, "영어": 70, "통합": 75},
+      "subject_completion_rates": {"국어": 88, "수학": 82, "영어": 86, "통합": 90}
     },
     "learning_pattern": {
-      "wrong_content_rate": 80,
-      "wrong_content_total": 2,
-      "wrong_content_done": 1,
+      "wrong_content_rate": 75,
+      "wrong_content_total": 4,
+      "wrong_content_done": 3,
       "skipping_habit": false,
+      "guessing_habit": false,
+      "careless_habit": false
+    },
+    "wrong_answer_pattern": {
+      "frequent_wrong_type": "문장 뜻 파악",
+      "repeated_wrong_subjects": ["국어"],
+      "wrong_cause": "개념 부족"
+    },
+    "today_tasks": [
+      {
+        "subject": "국어",
+        "unit": "받침이 있는 낱말 읽기",
+        "problem_ids": ["lower_korean_reading_001"],
+        "problem_id": "lower_korean_reading_001",
+        "problem_count": 5,
+        "estimated_time": 10,
+        "difficulty": "하",
+        "ai_predicted_score": 72
+      },
+      {
+        "subject": "수학",
+        "unit": "한 자리 수 더하기",
+        "problem_ids": ["lower_math_addition_001"],
+        "problem_id": "lower_math_addition_001",
+        "problem_count": 5,
+        "estimated_time": 8,
+        "difficulty": "중",
+        "ai_predicted_score": 68
+      },
+      {
+        "subject": "통합",
+        "unit": "봄 관찰하기",
+        "problem_ids": ["lower_integrated_season_001"],
+        "problem_id": "lower_integrated_season_001",
+        "problem_count": 4,
+        "estimated_time": 8,
+        "difficulty": "하",
+        "ai_predicted_score": 75
+      },
+      {
+        "subject": "영어",
+        "unit": "알파벳 익히기",
+        "problem_ids": ["lower_english_alphabet_001"],
+        "problem_id": "lower_english_alphabet_001",
+        "problem_count": 5,
+        "estimated_time": 8,
+        "difficulty": "하",
+        "ai_predicted_score": 70
+      }
+    ]
+  },
+  {
+    "student_id": "lower-high-lazy",
+    "profile": {
+      "name": "도윤",
+      "grade": 2,
+      "preferred_subject": "수학",
+      "strong_subject": "수학",
+      "recent_avg_score": 94,
+      "avg_completion_rate": 42
+    },
+    "learning_history": {
+      "subject_avg_scores": {"국어": 88, "수학": 94, "영어": 90, "통합": 91},
+      "subject_completion_rates": {"국어": 45, "수학": 42, "영어": 44, "통합": 48}
+    },
+    "learning_pattern": {
+      "wrong_content_rate": 30,
+      "wrong_content_total": 2,
+      "wrong_content_done": 0,
+      "skipping_habit": true,
       "guessing_habit": false,
       "careless_habit": true
     },
     "wrong_answer_pattern": {
-      "frequent_wrong_type": "계산 실수",
+      "frequent_wrong_type": "받아올림 계산",
       "repeated_wrong_subjects": ["수학"],
       "wrong_cause": "실수"
     },
     "today_tasks": [
       {
-        "subject": "국어",
-        "unit": "문장 부호 익히기",
-        "problem_id": null,
-        "problem_count": 6,
-        "estimated_time": 10,
-        "difficulty": "중",
-        "ai_predicted_score": 0
-      },
-      {
         "subject": "수학",
-        "unit": "받아내림이 있는 뺄셈",
-        "problem_id": null,
-        "problem_count": 6,
-        "estimated_time": 12,
+        "unit": "한 자리 수 더하기",
+        "problem_ids": ["lower_math_addition_001"],
+        "problem_id": "lower_math_addition_001",
+        "problem_count": 5,
+        "estimated_time": 8,
         "difficulty": "중",
-        "ai_predicted_score": 88
+        "ai_predicted_score": 93
       },
       {
-        "subject": "영어",
-        "unit": "기초 단어 익히기",
-        "problem_id": null,
+        "subject": "국어",
+        "unit": "받침이 있는 낱말 읽기",
+        "problem_ids": ["lower_korean_reading_001"],
+        "problem_id": "lower_korean_reading_001",
         "problem_count": 5,
         "estimated_time": 10,
         "difficulty": "하",
-        "ai_predicted_score": 0
+        "ai_predicted_score": 88
       },
       {
         "subject": "통합",
-        "unit": "여름 생물 관찰",
-        "problem_id": null,
+        "unit": "봄 관찰하기",
+        "problem_ids": ["lower_integrated_season_001"],
+        "problem_id": "lower_integrated_season_001",
         "problem_count": 4,
         "estimated_time": 8,
         "difficulty": "하",
-        "ai_predicted_score": 0
+        "ai_predicted_score": 91
+      },
+      {
+        "subject": "영어",
+        "unit": "알파벳 익히기",
+        "problem_ids": ["lower_english_alphabet_001"],
+        "problem_id": "lower_english_alphabet_001",
+        "problem_count": 5,
+        "estimated_time": 8,
+        "difficulty": "하",
+        "ai_predicted_score": 90
       }
     ]
   },
   {
-    "student_id": "upper-lazy",
+    "student_id": "lower-high-diligent",
+    "profile": {
+      "name": "하윤",
+      "grade": 1,
+      "preferred_subject": "수학",
+      "strong_subject": "수학",
+      "recent_avg_score": 96,
+      "avg_completion_rate": 93
+    },
+    "learning_history": {
+      "subject_avg_scores": {"국어": 92, "수학": 96, "영어": 91, "통합": 94},
+      "subject_completion_rates": {"국어": 90, "수학": 94, "영어": 92, "통합": 95}
+    },
+    "learning_pattern": {
+      "wrong_content_rate": 90,
+      "wrong_content_total": 1,
+      "wrong_content_done": 1,
+      "skipping_habit": false,
+      "guessing_habit": false,
+      "careless_habit": false
+    },
+    "wrong_answer_pattern": {
+      "frequent_wrong_type": "문제 조건 확인",
+      "repeated_wrong_subjects": ["수학"],
+      "wrong_cause": "실수"
+    },
+    "today_tasks": [
+      {
+        "subject": "수학",
+        "unit": "한 자리 수 더하기",
+        "problem_ids": ["lower_math_addition_001"],
+        "problem_id": "lower_math_addition_001",
+        "problem_count": 5,
+        "estimated_time": 8,
+        "difficulty": "중",
+        "ai_predicted_score": 96
+      },
+      {
+        "subject": "국어",
+        "unit": "받침이 있는 낱말 읽기",
+        "problem_ids": ["lower_korean_reading_001"],
+        "problem_id": "lower_korean_reading_001",
+        "problem_count": 5,
+        "estimated_time": 10,
+        "difficulty": "하",
+        "ai_predicted_score": 92
+      },
+      {
+        "subject": "통합",
+        "unit": "봄 관찰하기",
+        "problem_ids": ["lower_integrated_season_001"],
+        "problem_id": "lower_integrated_season_001",
+        "problem_count": 4,
+        "estimated_time": 8,
+        "difficulty": "하",
+        "ai_predicted_score": 94
+      },
+      {
+        "subject": "영어",
+        "unit": "알파벳 익히기",
+        "problem_ids": ["lower_english_alphabet_001"],
+        "problem_id": "lower_english_alphabet_001",
+        "problem_count": 5,
+        "estimated_time": 8,
+        "difficulty": "하",
+        "ai_predicted_score": 91
+      }
+    ]
+  },
+  {
+    "student_id": "middle-low-lazy",
+    "profile": {
+      "name": "유찬",
+      "grade": 3,
+      "preferred_subject": "수학",
+      "strong_subject": "국어",
+      "recent_avg_score": 66,
+      "avg_completion_rate": 38
+    },
+    "learning_history": {
+      "subject_avg_scores": {"국어": 70, "수학": 62, "영어": 66, "과학": 68},
+      "subject_completion_rates": {"국어": 42, "수학": 35, "영어": 38, "과학": 40}
+    },
+    "learning_pattern": {
+      "wrong_content_rate": 25,
+      "wrong_content_total": 5,
+      "wrong_content_done": 1,
+      "skipping_habit": true,
+      "guessing_habit": true,
+      "careless_habit": true
+    },
+    "wrong_answer_pattern": {
+      "frequent_wrong_type": "분모가 다른 분수",
+      "repeated_wrong_subjects": ["수학"],
+      "wrong_cause": "개념 부족"
+    },
+    "today_tasks": [
+      {
+        "subject": "수학",
+        "unit": "분수의 덧셈",
+        "problem_ids": ["middle_math_fraction_001"],
+        "problem_id": "middle_math_fraction_001",
+        "problem_count": 6,
+        "estimated_time": 12,
+        "difficulty": "중",
+        "ai_predicted_score": 64
+      },
+      {
+        "subject": "국어",
+        "unit": "글의 중심 생각 찾기",
+        "problem_ids": ["middle_korean_summary_001"],
+        "problem_id": "middle_korean_summary_001",
+        "problem_count": 5,
+        "estimated_time": 12,
+        "difficulty": "중",
+        "ai_predicted_score": 70
+      },
+      {
+        "subject": "과학",
+        "unit": "식물의 한살이",
+        "problem_ids": ["middle_science_plants_001"],
+        "problem_id": "middle_science_plants_001",
+        "problem_count": 5,
+        "estimated_time": 10,
+        "difficulty": "중",
+        "ai_predicted_score": 68
+      },
+      {
+        "subject": "영어",
+        "unit": "기초 단어와 문장",
+        "problem_ids": ["middle_english_words_001"],
+        "problem_id": "middle_english_words_001",
+        "problem_count": 5,
+        "estimated_time": 10,
+        "difficulty": "하",
+        "ai_predicted_score": 66
+      }
+    ]
+  },
+  {
+    "student_id": "middle-low-diligent",
+    "profile": {
+      "name": "소윤",
+      "grade": 4,
+      "preferred_subject": "수학",
+      "strong_subject": "과학",
+      "recent_avg_score": 74,
+      "avg_completion_rate": 87
+    },
+    "learning_history": {
+      "subject_avg_scores": {"국어": 76, "수학": 72, "영어": 74, "과학": 80},
+      "subject_completion_rates": {"국어": 85, "수학": 88, "영어": 86, "과학": 90}
+    },
+    "learning_pattern": {
+      "wrong_content_rate": 70,
+      "wrong_content_total": 4,
+      "wrong_content_done": 3,
+      "skipping_habit": false,
+      "guessing_habit": false,
+      "careless_habit": false
+    },
+    "wrong_answer_pattern": {
+      "frequent_wrong_type": "분수 계산 순서",
+      "repeated_wrong_subjects": ["수학"],
+      "wrong_cause": "개념 부족"
+    },
+    "today_tasks": [
+      {
+        "subject": "수학",
+        "unit": "분수의 덧셈",
+        "problem_ids": ["middle_math_fraction_001"],
+        "problem_id": "middle_math_fraction_001",
+        "problem_count": 6,
+        "estimated_time": 12,
+        "difficulty": "중",
+        "ai_predicted_score": 74
+      },
+      {
+        "subject": "국어",
+        "unit": "글의 중심 생각 찾기",
+        "problem_ids": ["middle_korean_summary_001"],
+        "problem_id": "middle_korean_summary_001",
+        "problem_count": 5,
+        "estimated_time": 12,
+        "difficulty": "중",
+        "ai_predicted_score": 76
+      },
+      {
+        "subject": "과학",
+        "unit": "식물의 한살이",
+        "problem_ids": ["middle_science_plants_001"],
+        "problem_id": "middle_science_plants_001",
+        "problem_count": 5,
+        "estimated_time": 10,
+        "difficulty": "중",
+        "ai_predicted_score": 80
+      },
+      {
+        "subject": "영어",
+        "unit": "기초 단어와 문장",
+        "problem_ids": ["middle_english_words_001"],
+        "problem_id": "middle_english_words_001",
+        "problem_count": 5,
+        "estimated_time": 10,
+        "difficulty": "하",
+        "ai_predicted_score": 74
+      }
+    ]
+  },
+  {
+    "student_id": "middle-high-lazy",
+    "profile": {
+      "name": "지훈",
+      "grade": 4,
+      "preferred_subject": "국어",
+      "strong_subject": "국어",
+      "recent_avg_score": 93,
+      "avg_completion_rate": 45
+    },
+    "learning_history": {
+      "subject_avg_scores": {"국어": 95, "수학": 90, "영어": 91, "과학": 92},
+      "subject_completion_rates": {"국어": 44, "수학": 42, "영어": 45, "과학": 48}
+    },
+    "learning_pattern": {
+      "wrong_content_rate": 25,
+      "wrong_content_total": 2,
+      "wrong_content_done": 0,
+      "skipping_habit": true,
+      "guessing_habit": false,
+      "careless_habit": true
+    },
+    "wrong_answer_pattern": {
+      "frequent_wrong_type": "중심 문장 찾기",
+      "repeated_wrong_subjects": ["국어"],
+      "wrong_cause": "실수"
+    },
+    "today_tasks": [
+      {
+        "subject": "국어",
+        "unit": "글의 중심 생각 찾기",
+        "problem_ids": ["middle_korean_summary_001"],
+        "problem_id": "middle_korean_summary_001",
+        "problem_count": 5,
+        "estimated_time": 12,
+        "difficulty": "중",
+        "ai_predicted_score": 93
+      },
+      {
+        "subject": "수학",
+        "unit": "분수의 덧셈",
+        "problem_ids": ["middle_math_fraction_001"],
+        "problem_id": "middle_math_fraction_001",
+        "problem_count": 6,
+        "estimated_time": 12,
+        "difficulty": "중",
+        "ai_predicted_score": 90
+      },
+      {
+        "subject": "과학",
+        "unit": "식물의 한살이",
+        "problem_ids": ["middle_science_plants_001"],
+        "problem_id": "middle_science_plants_001",
+        "problem_count": 5,
+        "estimated_time": 10,
+        "difficulty": "중",
+        "ai_predicted_score": 92
+      },
+      {
+        "subject": "영어",
+        "unit": "기초 단어와 문장",
+        "problem_ids": ["middle_english_words_001"],
+        "problem_id": "middle_english_words_001",
+        "problem_count": 5,
+        "estimated_time": 10,
+        "difficulty": "하",
+        "ai_predicted_score": 91
+      }
+    ]
+  },
+  {
+    "student_id": "middle-high-diligent",
+    "profile": {
+      "name": "다은",
+      "grade": 3,
+      "preferred_subject": "국어",
+      "strong_subject": "국어",
+      "recent_avg_score": 95,
+      "avg_completion_rate": 91
+    },
+    "learning_history": {
+      "subject_avg_scores": {"국어": 96, "수학": 92, "영어": 93, "과학": 94},
+      "subject_completion_rates": {"국어": 92, "수학": 90, "영어": 91, "과학": 93}
+    },
+    "learning_pattern": {
+      "wrong_content_rate": 80,
+      "wrong_content_total": 2,
+      "wrong_content_done": 2,
+      "skipping_habit": false,
+      "guessing_habit": false,
+      "careless_habit": false
+    },
+    "wrong_answer_pattern": {
+      "frequent_wrong_type": "근거 문장 찾기",
+      "repeated_wrong_subjects": ["국어"],
+      "wrong_cause": "실수"
+    },
+    "today_tasks": [
+      {
+        "subject": "국어",
+        "unit": "글의 중심 생각 찾기",
+        "problem_ids": ["middle_korean_summary_001"],
+        "problem_id": "middle_korean_summary_001",
+        "problem_count": 5,
+        "estimated_time": 12,
+        "difficulty": "중",
+        "ai_predicted_score": 95
+      },
+      {
+        "subject": "수학",
+        "unit": "분수의 덧셈",
+        "problem_ids": ["middle_math_fraction_001"],
+        "problem_id": "middle_math_fraction_001",
+        "problem_count": 6,
+        "estimated_time": 12,
+        "difficulty": "중",
+        "ai_predicted_score": 92
+      },
+      {
+        "subject": "과학",
+        "unit": "식물의 한살이",
+        "problem_ids": ["middle_science_plants_001"],
+        "problem_id": "middle_science_plants_001",
+        "problem_count": 5,
+        "estimated_time": 10,
+        "difficulty": "중",
+        "ai_predicted_score": 94
+      },
+      {
+        "subject": "영어",
+        "unit": "기초 단어와 문장",
+        "problem_ids": ["middle_english_words_001"],
+        "problem_id": "middle_english_words_001",
+        "problem_count": 5,
+        "estimated_time": 10,
+        "difficulty": "하",
+        "ai_predicted_score": 93
+      }
+    ]
+  },
+  {
+    "student_id": "upper-low-lazy",
     "profile": {
       "name": "준서",
       "grade": 5,
-      "preferred_subject": "과학",
+      "preferred_subject": "수학",
       "strong_subject": "과학",
       "recent_avg_score": 68,
       "avg_completion_rate": 35
     },
     "learning_history": {
-      "subject_avg_scores": {
-        "국어": 65,
-        "수학": 60,
-        "영어": 72,
-        "과학": 78
-      },
-      "subject_completion_rates": {
-        "국어": 40,
-        "수학": 30,
-        "영어": 35,
-        "과학": 45
-      }
+      "subject_avg_scores": {"국어": 65, "수학": 60, "사회": 66, "과학": 78},
+      "subject_completion_rates": {"국어": 40, "수학": 30, "사회": 35, "과학": 45}
     },
     "learning_pattern": {
       "wrong_content_rate": 25,
@@ -190,17 +588,9 @@
     },
     "today_tasks": [
       {
-        "subject": "국어",
-        "unit": "이야기 속 인물의 마음",
-        "problem_id": null,
-        "problem_count": 5,
-        "estimated_time": 12,
-        "difficulty": "중",
-        "ai_predicted_score": 0
-      },
-      {
         "subject": "수학",
         "unit": "비율과 비례식",
+        "problem_ids": ["math_ratio_saltwater_001"],
         "problem_id": "math_ratio_saltwater_001",
         "problem_count": 4,
         "estimated_time": 15,
@@ -208,75 +598,149 @@
         "ai_predicted_score": 58
       },
       {
-        "subject": "영어",
-        "unit": "현재 완료형",
-        "problem_id": null,
-        "problem_count": 5,
-        "estimated_time": 12,
-        "difficulty": "중",
-        "ai_predicted_score": 0
-      },
-      {
         "subject": "과학",
         "unit": "생태계와 환경",
-        "problem_id": null,
+        "problem_ids": ["upper_science_ecosystem_001"],
+        "problem_id": "upper_science_ecosystem_001",
         "problem_count": 5,
         "estimated_time": 12,
         "difficulty": "중",
-        "ai_predicted_score": 0
+        "ai_predicted_score": 78
+      },
+      {
+        "subject": "국어",
+        "unit": "주장과 근거 파악하기",
+        "problem_ids": ["upper_korean_argument_001"],
+        "problem_id": "upper_korean_argument_001",
+        "problem_count": 5,
+        "estimated_time": 12,
+        "difficulty": "중",
+        "ai_predicted_score": 65
+      },
+      {
+        "subject": "사회",
+        "unit": "세계 여러 나라의 환경",
+        "problem_ids": ["upper_social_environment_001"],
+        "problem_id": "upper_social_environment_001",
+        "problem_count": 5,
+        "estimated_time": 12,
+        "difficulty": "중",
+        "ai_predicted_score": 66
       }
     ]
   },
   {
-    "student_id": "upper-diligent",
+    "student_id": "upper-low-diligent",
     "profile": {
-      "name": "채원",
+      "name": "서연",
       "grade": 6,
       "preferred_subject": "수학",
-      "strong_subject": "수학",
-      "recent_avg_score": 94,
-      "avg_completion_rate": 92
+      "strong_subject": "과학",
+      "recent_avg_score": 73,
+      "avg_completion_rate": 88
     },
     "learning_history": {
-      "subject_avg_scores": {
-        "국어": 91,
-        "수학": 97,
-        "영어": 90,
-        "사회": 92
-      },
-      "subject_completion_rates": {
-        "국어": 90,
-        "수학": 98,
-        "영어": 88,
-        "사회": 92
-      }
+      "subject_avg_scores": {"국어": 76, "수학": 72, "사회": 74, "과학": 84},
+      "subject_completion_rates": {"국어": 86, "수학": 90, "사회": 84, "과학": 88}
     },
     "learning_pattern": {
-      "wrong_content_rate": 90,
-      "wrong_content_total": 2,
-      "wrong_content_done": 2,
+      "wrong_content_rate": 75,
+      "wrong_content_total": 4,
+      "wrong_content_done": 3,
       "skipping_habit": false,
+      "guessing_habit": false,
+      "careless_habit": false
+    },
+    "wrong_answer_pattern": {
+      "frequent_wrong_type": "비율과 비례식",
+      "repeated_wrong_subjects": ["수학"],
+      "wrong_cause": "개념 부족"
+    },
+    "today_tasks": [
+      {
+        "subject": "수학",
+        "unit": "비율과 비례식",
+        "problem_ids": ["math_ratio_saltwater_001"],
+        "problem_id": "math_ratio_saltwater_001",
+        "problem_count": 4,
+        "estimated_time": 15,
+        "difficulty": "중",
+        "ai_predicted_score": 73
+      },
+      {
+        "subject": "과학",
+        "unit": "생태계와 환경",
+        "problem_ids": ["upper_science_ecosystem_001"],
+        "problem_id": "upper_science_ecosystem_001",
+        "problem_count": 5,
+        "estimated_time": 12,
+        "difficulty": "중",
+        "ai_predicted_score": 84
+      },
+      {
+        "subject": "국어",
+        "unit": "주장과 근거 파악하기",
+        "problem_ids": ["upper_korean_argument_001"],
+        "problem_id": "upper_korean_argument_001",
+        "problem_count": 5,
+        "estimated_time": 12,
+        "difficulty": "중",
+        "ai_predicted_score": 76
+      },
+      {
+        "subject": "사회",
+        "unit": "세계 여러 나라의 환경",
+        "problem_ids": ["upper_social_environment_001"],
+        "problem_id": "upper_social_environment_001",
+        "problem_count": 5,
+        "estimated_time": 12,
+        "difficulty": "중",
+        "ai_predicted_score": 74
+      }
+    ]
+  },
+  {
+    "student_id": "upper-high-lazy",
+    "profile": {
+      "name": "시우",
+      "grade": 6,
+      "preferred_subject": "과학",
+      "strong_subject": "과학",
+      "recent_avg_score": 94,
+      "avg_completion_rate": 44
+    },
+    "learning_history": {
+      "subject_avg_scores": {"국어": 90, "수학": 91, "사회": 93, "과학": 96},
+      "subject_completion_rates": {"국어": 43, "수학": 42, "사회": 46, "과학": 45}
+    },
+    "learning_pattern": {
+      "wrong_content_rate": 25,
+      "wrong_content_total": 2,
+      "wrong_content_done": 0,
+      "skipping_habit": true,
       "guessing_habit": false,
       "careless_habit": true
     },
     "wrong_answer_pattern": {
-      "frequent_wrong_type": "계산 실수",
-      "repeated_wrong_subjects": ["수학"],
+      "frequent_wrong_type": "생태계 먹이 관계",
+      "repeated_wrong_subjects": ["과학"],
       "wrong_cause": "실수"
     },
     "today_tasks": [
       {
-        "subject": "국어",
-        "unit": "주장과 근거 파악하기",
-        "problem_id": null,
+        "subject": "과학",
+        "unit": "생태계와 환경",
+        "problem_ids": ["upper_science_ecosystem_001"],
+        "problem_id": "upper_science_ecosystem_001",
         "problem_count": 5,
         "estimated_time": 12,
-        "difficulty": "중",
-        "ai_predicted_score": 0
+        "difficulty": "상",
+        "ai_predicted_score": 94
       },
       {
         "subject": "수학",
         "unit": "비율과 비례식",
+        "problem_ids": ["math_ratio_saltwater_001"],
         "problem_id": "math_ratio_saltwater_001",
         "problem_count": 4,
         "estimated_time": 15,
@@ -284,22 +748,94 @@
         "ai_predicted_score": 91
       },
       {
-        "subject": "영어",
-        "unit": "수동태",
-        "problem_id": null,
+        "subject": "국어",
+        "unit": "주장과 근거 파악하기",
+        "problem_ids": ["upper_korean_argument_001"],
+        "problem_id": "upper_korean_argument_001",
         "problem_count": 5,
         "estimated_time": 12,
-        "difficulty": "상",
-        "ai_predicted_score": 0
+        "difficulty": "중",
+        "ai_predicted_score": 90
       },
       {
         "subject": "사회",
         "unit": "세계 여러 나라의 환경",
-        "problem_id": null,
+        "problem_ids": ["upper_social_environment_001"],
+        "problem_id": "upper_social_environment_001",
         "problem_count": 5,
         "estimated_time": 12,
         "difficulty": "중",
-        "ai_predicted_score": 0
+        "ai_predicted_score": 93
+      }
+    ]
+  },
+  {
+    "student_id": "upper-high-diligent",
+    "profile": {
+      "name": "채원",
+      "grade": 6,
+      "preferred_subject": "과학",
+      "strong_subject": "과학",
+      "recent_avg_score": 96,
+      "avg_completion_rate": 94
+    },
+    "learning_history": {
+      "subject_avg_scores": {"국어": 93, "수학": 94, "사회": 95, "과학": 97},
+      "subject_completion_rates": {"국어": 93, "수학": 92, "사회": 94, "과학": 95}
+    },
+    "learning_pattern": {
+      "wrong_content_rate": 85,
+      "wrong_content_total": 2,
+      "wrong_content_done": 2,
+      "skipping_habit": false,
+      "guessing_habit": false,
+      "careless_habit": false
+    },
+    "wrong_answer_pattern": {
+      "frequent_wrong_type": "자료 해석",
+      "repeated_wrong_subjects": ["과학"],
+      "wrong_cause": "실수"
+    },
+    "today_tasks": [
+      {
+        "subject": "과학",
+        "unit": "생태계와 환경",
+        "problem_ids": ["upper_science_ecosystem_001"],
+        "problem_id": "upper_science_ecosystem_001",
+        "problem_count": 5,
+        "estimated_time": 12,
+        "difficulty": "상",
+        "ai_predicted_score": 96
+      },
+      {
+        "subject": "수학",
+        "unit": "비율과 비례식",
+        "problem_ids": ["math_ratio_saltwater_001"],
+        "problem_id": "math_ratio_saltwater_001",
+        "problem_count": 4,
+        "estimated_time": 15,
+        "difficulty": "상",
+        "ai_predicted_score": 94
+      },
+      {
+        "subject": "국어",
+        "unit": "주장과 근거 파악하기",
+        "problem_ids": ["upper_korean_argument_001"],
+        "problem_id": "upper_korean_argument_001",
+        "problem_count": 5,
+        "estimated_time": 12,
+        "difficulty": "중",
+        "ai_predicted_score": 93
+      },
+      {
+        "subject": "사회",
+        "unit": "세계 여러 나라의 환경",
+        "problem_ids": ["upper_social_environment_001"],
+        "problem_id": "upper_social_environment_001",
+        "problem_count": 5,
+        "estimated_time": 12,
+        "difficulty": "중",
+        "ai_predicted_score": 95
       }
     ]
   }

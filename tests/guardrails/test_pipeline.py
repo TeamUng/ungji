@@ -11,6 +11,7 @@ GuardrailContext now uses ChatState-aligned fields:
 
 from __future__ import annotations
 
+import logging
 from unittest.mock import AsyncMock, MagicMock
 
 import pytest
@@ -213,6 +214,26 @@ class TestGuardrailPipeline:
         out = await pipeline.check_output("틀렸어.", make_context())
         assert not out.passed
         assert out.fallback_response is None
+
+    @pytest.mark.asyncio
+    async def test_warned_output_logs_warning_not_error(self, caplog):
+        verdict = {**ALL_PASS_OUTPUT, "tone": {"passed": False, "reason": "harsh"}}
+        pipeline = self.make_pipeline(output_verdict=verdict)
+
+        with caplog.at_level(logging.WARNING, logger="app.guardrails.pipeline"):
+            out = await pipeline.check_output("틀렸어.", make_context())
+
+        assert not out.passed
+        assert any(
+            record.levelno == logging.WARNING
+            and "Output quality WARN" in record.getMessage()
+            for record in caplog.records
+        )
+        assert not any(
+            record.levelno >= logging.ERROR
+            and record.name == "app.guardrails.pipeline"
+            for record in caplog.records
+        )
 
     @pytest.mark.asyncio
     async def test_upper_grade_blocked_message_has_no_emoji(self):

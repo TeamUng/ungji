@@ -1,38 +1,37 @@
 """
-Async LLM judge — thin wrapper around Upstage Solar Pro.
+Async LLM judge — thin wrapper around the central fallback LLM client.
 
 Sends a single structured prompt and parses the JSON response.
 Each guard composes its own system prompt and calls `evaluate()`.
 
 Error handling
 --------------
-- If the API is unreachable or returns a bad response, `evaluate()` raises
+- If all configured LLM providers are unreachable, `evaluate()` raises
   `LLMJudgeError`.  Guards catch this and apply their configured fallback
   policy (fail-open for input pre-screen, fail-safe for output evaluation).
-- Temperature is fixed at 0 for deterministic verdicts.
+- Temperature is requested as 0 for deterministic verdicts.
 """
 
 from __future__ import annotations
 
 import json
 import logging
+import re
 
-import httpx
+from langchain_core.messages import HumanMessage, SystemMessage
 
-from app.core.config import settings
+from app.clients.llm import LLMCallError, llm
 
 logger = logging.getLogger(__name__)
 
-_TIMEOUT = httpx.Timeout(10.0, connect=3.0)
-
 
 class LLMJudgeError(Exception):
-    """Raised when the Solar Pro call fails or returns unparseable output."""
+    """Raised when the judge call fails or returns unparseable output."""
 
 
 class LLMJudge:
     """
-    Calls Upstage Solar Pro with a structured evaluation prompt and
+    Calls the central fallback LLM with a structured evaluation prompt and
     returns the parsed JSON verdict dict.
 
     Usage::
@@ -50,10 +49,8 @@ class LLMJudge:
         # }
     """
 
-    def __init__(self, model: str = "solar-pro") -> None:
-        self.model    = model
-        self.base_url = settings.UPSTAGE_BASE_URL.rstrip("/")
-        self.api_key  = settings.UPSTAGE_API_KEY
+    def __init__(self, chat_model=None) -> None:
+        self._llm = chat_model or llm
 
     async def evaluate(
         self,
@@ -61,44 +58,74 @@ class LLMJudge:
         content: str,
     ) -> dict:
         """
-        Send *content* to Solar Pro with *system_prompt* as the system message.
+        Send *content* with *system_prompt* as the system message.
         The system prompt must instruct the model to reply with JSON only.
 
         Returns the parsed JSON dict.
         Raises LLMJudgeError on any failure.
         """
-        payload = {
-            "model": self.model,
-            "temperature": 0,
-            "response_format": {"type": "json_object"},
-            "messages": [
-                {"role": "system",  "content": system_prompt},
-                {"role": "user",    "content": content},
-            ],
-        }
-
         try:
-            async with httpx.AsyncClient(timeout=_TIMEOUT) as client:
-                response = await client.post(
-                    f"{self.base_url}/chat/completions",
-                    headers={
-                        "Authorization": f"Bearer {self.api_key}",
-                        "Content-Type":  "application/json",
-                    },
-                    json=payload,
-                )
-                response.raise_for_status()
-        except httpx.HTTPStatusError as exc:
-            raise LLMJudgeError(
-                f"Solar Pro returned HTTP {exc.response.status_code}"
-            ) from exc
-        except httpx.RequestError as exc:
-            raise LLMJudgeError(f"Solar Pro request failed: {exc}") from exc
+            response = await self._llm.ainvoke(
+                [
+                    SystemMessage(content=system_prompt),
+                    HumanMessage(content=content),
+                ],
+                temperature=0,
+            )
+        except LLMCallError as exc:
+            raise LLMJudgeError(f"LLM judge request failed: {exc}") from exc
+        except Exception as exc:
+            raise LLMJudgeError(f"LLM judge failed: {exc}") from exc
 
-        raw = response.json()
+        raw_text = getattr(response, "content", "")
         try:
-            text = raw["choices"][0]["message"]["content"]
-            return json.loads(text)
-        except (KeyError, IndexError, json.JSONDecodeError) as exc:
-            logger.warning("LLM judge returned unparseable output: %s", raw)
+            return json.loads(_extract_json_object(raw_text))
+        except json.JSONDecodeError as exc:
+            logger.warning("LLM judge returned unparseable output: %s", raw_text)
             raise LLMJudgeError("Could not parse LLM judge response") from exc
+
+
+def _extract_json_object(text: str) -> str:
+    text = text.strip()
+    if text.startswith("```"):
+        text = re.sub(r"^```(?:json)?\s*", "", text, flags=re.IGNORECASE)
+        text = re.sub(r"\s*```$", "", text)
+        text = text.strip()
+
+    if text.startswith("{") and text.endswith("}"):
+        return text
+
+    return _first_balanced_json_object(text) or text
+
+
+def _first_balanced_json_object(text: str) -> str | None:
+    start = text.find("{")
+    if start == -1:
+        return None
+
+    depth = 0
+    in_string = False
+    escaped = False
+    for index in range(start, len(text)):
+        char = text[index]
+
+        if escaped:
+            escaped = False
+            continue
+        if char == "\\":
+            escaped = True
+            continue
+        if char == '"':
+            in_string = not in_string
+            continue
+        if in_string:
+            continue
+
+        if char == "{":
+            depth += 1
+        elif char == "}":
+            depth -= 1
+            if depth == 0:
+                return text[start:index + 1]
+
+    return None

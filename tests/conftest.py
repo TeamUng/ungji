@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 import sys
 import types
 from collections.abc import Callable, Iterator
@@ -8,6 +9,10 @@ from typing import Any
 
 import pytest
 from fastapi.testclient import TestClient
+
+os.environ.setdefault("LANGCHAIN_TRACING_V2", "false")
+os.environ.setdefault("LANGSMITH_TRACING", "false")
+os.environ.setdefault("UNGJI_DISABLE_LANGSMITH_TRACING", "true")
 
 from app.core.enums import (
     Difficulty,
@@ -220,6 +225,9 @@ def make_chat_state() -> Callable[..., ChatState]:
             "today_tasks": today_tasks,
             "completed_tasks": completed,
             "current_task": current_task or (today_tasks[0] if today_tasks else None),
+            "current_problem": None,
+            "tp4_phase": "awaiting_problem",
+            "tp4_turn_count": 0,
             "has_wrong_answers": learning_pattern["wrong_content_total"] > 0,
             "wrong_content_done_today": (
                 learning_pattern["wrong_content_total"] > 0

@@ -1,11 +1,12 @@
 from __future__ import annotations
 
+from langchain_core.messages import AIMessage
 from langgraph.checkpoint.memory import InMemorySaver
-from langgraph.graph import END, START, StateGraph
+from langgraph.graph import START, StateGraph
 
 from app.core.enums import Touchpoint, UseCase
 from app.core.logging import get_logger
-from app.schemas.chat import ChatState
+from app.schemas.chat import ChatResponse, ChatState
 from app.services.nodes.classify import classify
 from app.services.nodes.common import make_chat_response
 from app.services.nodes.helper import helper
@@ -13,22 +14,41 @@ from app.services.nodes.motivator import motivator
 
 logger = get_logger(__name__)
 
-# ─── LangGraph 노드 래퍼 ──────────────────────────────────────────────────────
 
 def _motivator_node(state: ChatState) -> dict:
-    return {"response": motivator(state)}
+    response = motivator(state)
+    return {
+        "response": response,
+        "chat_history": [AIMessage(content=_response_to_chat_text(response))],
+    }
 
 
 def _helper_node(state: ChatState) -> dict:
     result = helper(state)
-    messages = result["helper_response"]
-    extra = {"response": make_chat_response(state["thread_id"], messages)}
-    if "current_problem" in result:
-        extra["current_problem"] = result["current_problem"]
+    response = make_chat_response(state["thread_id"], result["helper_response"])
+    extra = {
+        "response": response,
+        "chat_history": [AIMessage(content=_response_to_chat_text(response))],
+    }
+    for key in ("current_problem", "tp4_phase", "tp4_turn_count"):
+        if key in result:
+            extra[key] = result[key]
     return extra
 
 
-# ─── 라우팅 함수 ──────────────────────────────────────────────────────────────
+def _response_to_chat_text(response: ChatResponse) -> str:
+    chunks: list[str] = []
+    for message in response.messages:
+        if message.type == "text":
+            chunks.append(message.content)
+        elif message.type == "choices":
+            chunks.append("\n".join(f"- {item.id}: {item.label}" for item in message.items))
+        elif message.type == "hint_card":
+            chunks.append("\n".join(f"{step.step}. {step.content}" for step in message.steps))
+        elif message.type == "image_card":
+            chunks.append(f"[image] {message.caption}")
+    return "\n\n".join(chunk for chunk in chunks if chunk)
+
 
 def _route(state: ChatState) -> str:
     use_case = state["use_case"]
@@ -37,7 +57,7 @@ def _route(state: ChatState) -> str:
     if use_case == UseCase.LEARNING:
         if touchpoint != Touchpoint.TP4:
             raise ValueError(
-                f"use_case=learning은 tp4만 허용됩니다. 받은 값: {touchpoint}"
+                f"use_case=learning only allows tp4. Received: {touchpoint}"
             )
         return "helper"
 
@@ -47,25 +67,18 @@ def _route(state: ChatState) -> str:
         return "motivator"
 
     if touchpoint == Touchpoint.TP4:
-        raise ValueError(
-            f"use_case=talk에서 tp4는 허용되지 않습니다."
-        )
+        raise ValueError("use_case=talk does not allow tp4.")
     if touchpoint in (Touchpoint.TP1, Touchpoint.TP2, Touchpoint.TP3, Touchpoint.TP5):
         return "motivator"
 
-    raise ValueError(f"지원하지 않는 touchpoint: {touchpoint}")
+    raise ValueError(f"Unsupported touchpoint: {touchpoint}")
 
-
-# ─── 진입 라우팅 ─────────────────────────────────────────────────────────────
 
 def _entry_route(state: ChatState) -> str:
-    """첫 턴(student_profile 없음)이면 classify, 이후 턴이면 바로 노드로."""
     if state.get("student_profile") is None:
         return "classify"
     return _route(state)
 
-
-# ─── 그래프 조립 ──────────────────────────────────────────────────────────────
 
 _builder = StateGraph(ChatState)
 

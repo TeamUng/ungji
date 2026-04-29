@@ -70,10 +70,16 @@ def _situation_tp1(state: ChatState) -> str:
     pattern = state["learning_pattern"]
 
     task_lines = []
-    for i, task in enumerate(today_tasks, 1):
-        score_info = f", AI 예상점수 {task['ai_predicted_score']}점" if task.get("ai_predicted_score") else ""
+    for index, task in enumerate(today_tasks, 1):
+        score_info = (
+            f", AI 예상점수 {task['ai_predicted_score']}점"
+            if task.get("ai_predicted_score")
+            else ""
+        )
         task_lines.append(
-            f"{i}. {task['subject']} - {task['unit']} (난이도: {task['difficulty']}{score_info})"
+            f"{index}. {task['subject']} - {task['unit']} "
+            f"(난이도 {task['difficulty']}, {task['problem_count']}문제, "
+            f"{task['estimated_time']}분{score_info})"
         )
 
     habits = [
@@ -87,15 +93,17 @@ def _situation_tp1(state: ChatState) -> str:
     ]
 
     habit_line = f"학습 습관: {', '.join(habits)}\n" if habits else ""
-    tasks = "\n".join(task_lines) if task_lines else "오늘 배정된 과제가 없습니다."
+    tasks = "\n".join(task_lines) if task_lines else "오늘 홈화면에 표시할 단원이 없습니다."
 
     return (
         f"학생 {profile['name']} ({profile['grade']}학년)이 홈화면에 진입했습니다.\n"
         f"최근 평균 점수: {profile['recent_avg_score']}점 / "
         f"선호 과목: {profile['preferred_subject']} / 강한 과목: {profile['strong_subject']}\n"
         f"{habit_line}"
-        f"오늘의 과제:\n{tasks}\n\n"
-        "인사하고, 오늘 과제 중 이 학생에게 가장 적합한 것 하나를 구체적인 이유와 함께 추천하세요."
+        "학생 홈화면에는 아래 4개 단원 카드가 보입니다.\n"
+        f"{tasks}\n\n"
+        "이 4개 중 지금 시작하기 가장 좋은 단원 하나를 골라 추천하세요. "
+        "학생에게 4개 전체를 다시 선택지처럼 나열하지 말고, 추천 단원 하나와 이유를 짧게 말하세요."
     )
 
 
@@ -107,7 +115,7 @@ def _situation_tp2(state: ChatState) -> str:
 
     completed_str = ", ".join(task["subject"] for task in completed_tasks) or "없음"
     remaining_lines = [
-        f"- {task['subject']}: {task['unit']} (난이도: {task['difficulty']})"
+        f"- {task['subject']}: {task['unit']} (난이도 {task['difficulty']})"
         for task in remaining
     ]
 
@@ -120,7 +128,7 @@ def _situation_tp2(state: ChatState) -> str:
     else:
         situation = (
             f"모든 과제 완료! ({len(today_tasks)}/{len(today_tasks)}개)\n\n"
-            "모든 과제를 마친 학생에게 크게 칭찬하고 북클럽 코너로 안내하세요."
+            "모든 과제를 마친 학생에게 짧게 칭찬하고 북클럽 코너로 안내하세요."
         )
 
     return f"학생: {profile['name']} ({profile['grade']}학년)\n{situation}"
@@ -141,7 +149,7 @@ def _situation_tp3(state: ChatState) -> str:
         f"학생 {profile['name']} ({profile['grade']}학년)이 학습 중에 이탈하려 합니다.\n"
         f"{task_info}"
         f"남은 과제: {remaining_count}개\n\n"
-        "강요하지 말고 공감하며, 쉬고 돌아오거나 아주 작은 행동 하나를 선택할 수 있게 도와주세요. "
+        "강요하지 말고 공감하며, 쉽고 돌아오기 좋은 작은 행동 하나를 제안하세요. "
         "응답은 2~3문장으로 작성하고 선택지를 주세요."
     )
 
@@ -159,7 +167,7 @@ def _situation_tp5(state: ChatState) -> str:
         f"오답 현황: {wrong_summary}\n"
         f"오늘 평균 점수: {state['today_score']}점\n\n"
         "오늘 학습을 진심으로 마무리해주세요. "
-        "오답이 남아 있다면 부드럽게 복습을 권유하고, 없으면 크게 칭찬하세요."
+        "오답이 남아 있다면 부드럽게 복습을 권유하고, 없으면 짧게 칭찬하세요."
     )
 
 

@@ -1,3 +1,6 @@
+import os
+import sys
+
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -25,6 +28,7 @@ class Settings(BaseSettings):
     LLM_TIMEOUT_SECONDS: int = 60
     LANGSMITH_API_KEY: str = ""
     LANGSMITH_PROJECT: str = "ungji"
+    UNGJI_DISABLE_LANGSMITH_TRACING: bool = False
     GOOGLE_API_KEY: str = ""
     SUPABASE_URL: str = ""
     SUPABASE_ANON_KEY: str = ""
@@ -32,3 +36,25 @@ class Settings(BaseSettings):
 
 
 settings = Settings()
+
+
+def configure_langsmith_tracing() -> None:
+    """Enable LangSmith tracing before LangChain/LangGraph cache env lookups."""
+    if not settings.LANGSMITH_API_KEY or settings.UNGJI_DISABLE_LANGSMITH_TRACING:
+        return
+
+    os.environ["LANGCHAIN_API_KEY"] = settings.LANGSMITH_API_KEY
+    os.environ["LANGSMITH_API_KEY"] = settings.LANGSMITH_API_KEY
+    os.environ["LANGCHAIN_PROJECT"] = settings.LANGSMITH_PROJECT
+    os.environ["LANGSMITH_PROJECT"] = settings.LANGSMITH_PROJECT
+    os.environ["LANGCHAIN_TRACING_V2"] = "true"
+    os.environ["LANGSMITH_TRACING"] = "true"
+
+    langsmith_utils = sys.modules.get("langsmith.utils")
+    if langsmith_utils is not None:
+        cache_clear = getattr(getattr(langsmith_utils, "get_env_var", None), "cache_clear", None)
+        if callable(cache_clear):
+            cache_clear()
+
+
+configure_langsmith_tracing()

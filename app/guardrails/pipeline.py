@@ -82,7 +82,7 @@ class GuardrailPipeline:
             failed = [r for r in results if not r.passed]
             dims    = [d for r in failed for d in r.metadata.get("failed_dimensions", [])]
             reasons = "; ".join(r.reason for r in failed if r.reason)
-            logger.error(
+            logger.warning(
                 "Output quality WARN | session=%s touchpoint=%s grade=%s segment=%s"
                 " | dims=%s | reasons=%s | response_excerpt=%r",
                 context.session_id,

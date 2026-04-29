@@ -33,7 +33,21 @@ async def chat(request: ChatRequest) -> StreamingResponse:
         ),
         "response": None,
     }
-    config = {"configurable": {"thread_id": request.thread_id}}
+    config = {
+        "configurable": {"thread_id": request.thread_id},
+        "run_name": f"chat:{request.current_touchpoint.value}:{request.student_id}",
+        "tags": [
+            "chat-api",
+            request.use_case.value,
+            request.current_touchpoint.value,
+            request.student_id,
+        ],
+        "metadata": {
+            "student_id": request.student_id,
+            "use_case": request.use_case.value,
+            "touchpoint": request.current_touchpoint.value,
+        },
+    }
 
     async def generate():
         try:
