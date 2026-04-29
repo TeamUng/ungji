@@ -230,7 +230,7 @@ class TestHelperCoachingConversation:
         prompt_text = "\n".join(message.content for message in messages)
         assert isinstance(messages[0], SystemMessage)
         assert isinstance(messages[1], HumanMessage)
-        assert "TP4 코칭 규칙" in prompt_text
+        assert "Helper의 책임" in messages[0].content
         assert "고정된 백엔드 분류값" in prompt_text
         assert "원인 선택지는" in prompt_text
 

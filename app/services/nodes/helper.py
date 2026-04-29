@@ -109,16 +109,7 @@ def _coach_tp4(state: ChatState, problem: dict, llm) -> list[ResponseMessage]:
     history = _format_recent_history(state.get("chat_history", []))
     turn_count = int(state.get("tp4_turn_count") or 0)
 
-    system_prompt = build_system_prompt(grade_group, segment, HELPER_ROLE) + (
-        "\n\nTP4 코칭 규칙:\n"
-        "- 전체 대화 흐름을 보고 이어서 답한다.\n"
-        "- 아이의 최신 메시지를 고정된 백엔드 분류값처럼 다루지 않는다.\n"
-        "- 원인 선택지는 아이가 막힌 이유를 말로 설명하기 어려울 때만 쓰는 발판이다.\n"
-        "- 아이가 선택지를 고르거나, 다른 이유를 말하거나, 마음을 바꾸거나, 풀이를 시도하면 그 말에서 자연스럽게 이어간다.\n"
-        "- 한 번에 작은 질문이나 힌트 하나로 단계적으로 돕고, 최종 정답, 계산 결과, 공식 전체로 바로 뛰어가지 않는다.\n"
-        "- 도구를 사용할 때는 실제 tool call만 사용하고, 본문에 send_text(...), JSON, 선택 이유, 내부 설명을 쓰지 않는다.\n"
-        "- 상황에 맞게 send_causes, send_text, send_hint_card, send_image_card 중 하나를 사용한다."
-    )
+    system_prompt = build_system_prompt(grade_group, segment, HELPER_ROLE)
     if problem:
         system_prompt += (
             "\n\n코치 참고용 정답/해설입니다. 아이에게 그대로 말하지 말고 힌트 방향을 잡는 데만 사용하세요:\n"
@@ -129,12 +120,12 @@ def _coach_tp4(state: ChatState, problem: dict, llm) -> list[ResponseMessage]:
     if turn_count == 0:
         phase_request = (
             "나는 아직 어디서 막혔는지 말하지 않았어. "
-            "문제 ID만 눌렀으니 바로 풀어주지 말고, 내가 막힌 이유를 고를 수 있게 짧은 선택지를 보여줘."
+            "문제 ID만 눌렀어. 내가 막힌 이유를 고를 수 있게 도와줘."
         )
     else:
         phase_request = (
-            "내가 방금 말한 막힌 지점에서 이어서 한 단계만 도와줘. "
-            "정답이나 계산 결과를 한 번에 말하지 말고, 다음에 볼 것 하나만 물어봐줘."
+            "내가 방금 말한 막힌 지점에서 이어서 도와줘. "
+            "다음에 뭘 보면 좋을지 하나만 물어봐줘."
         )
 
     call_name = _student_call_name(str(profile.get("name", "")))
