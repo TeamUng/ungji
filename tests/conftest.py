@@ -275,7 +275,7 @@ class FakeLLM:
 @pytest.fixture
 def mock_llm(monkeypatch) -> FakeLLM:
     fake_llm = FakeLLM()
-    fake_module = types.ModuleType("app.clients.upstage")
+    fake_module = types.ModuleType("app.clients.llm")
     fake_module.llm = fake_llm
-    monkeypatch.setitem(sys.modules, "app.clients.upstage", fake_module)
+    monkeypatch.setitem(sys.modules, "app.clients.llm", fake_module)
     return fake_llm
