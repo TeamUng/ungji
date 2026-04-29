@@ -34,7 +34,8 @@ def test_upstage_client_initializes_chat_upstage_with_settings(monkeypatch):
     assert upstage.llm is FakeChatUpstage.instances[0]
     assert upstage.llm.kwargs == {
         "api_key": "test-upstage-key",
-        "model": "solar-pro",
+        "model": "solar-pro2",
+        "timeout": 30,
     }
 
 

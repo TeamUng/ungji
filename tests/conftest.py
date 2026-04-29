@@ -246,16 +246,21 @@ def client() -> Iterator[TestClient]:
 @dataclass
 class FakeLLMResponse:
     content: str
+    tool_calls: list = field(default_factory=list)
 
 
 @dataclass
 class FakeLLM:
     response_content: str = "테스트용 AI 코치 응답입니다."
+    next_tool_calls: list = field(default_factory=list)
     calls: list[dict[str, Any]] = field(default_factory=list)
 
     def invoke(self, messages, **kwargs) -> FakeLLMResponse:
         self.calls.append({"messages": messages, "kwargs": kwargs})
-        return FakeLLMResponse(content=self.response_content)
+        return FakeLLMResponse(content=self.response_content, tool_calls=list(self.next_tool_calls))
+
+    def bind_tools(self, tools) -> "FakeLLM":
+        return self
 
     async def ainvoke(self, messages, **kwargs) -> FakeLLMResponse:
         return self.invoke(messages, **kwargs)

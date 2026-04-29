@@ -55,7 +55,6 @@ def test_case1_home_screen_returns_sse(client, case1_student, mock_llm):
 
     msg_types = [m["type"] for m in events[0]["messages"]]
     assert "text" in msg_types
-    assert "choices" in msg_types
 
 
 def test_case1_home_screen_thread_id_in_response(client, case1_student, mock_llm):
@@ -75,6 +74,17 @@ def test_case1_home_screen_thread_id_in_response(client, case1_student, mock_llm
 # ─── 케이스 2: 학습 중 도움 요청 e2e ─────────────────────────────────────────
 
 def test_case2_learning_tp4_returns_sse(client, case2_student, mock_llm):
+    mock_llm.next_tool_calls = [
+        {
+            "name": "send_causes",
+            "args": {
+                "items": [
+                    {"id": "no_concept", "label": "개념을 모르겠어요"},
+                    {"id": "hard_calc", "label": "계산이 어려워요"},
+                ]
+            },
+        }
+    ]
     p1, p2 = _patch_student(case2_student)
     with p1, p2:
         response = _post_chat(
@@ -87,7 +97,7 @@ def test_case2_learning_tp4_returns_sse(client, case2_student, mock_llm):
     events = _parse_sse(response.text)
     assert len(events) >= 1
 
-    # 원인 미선택 → 진단 선택지 응답
+    # 원인 미선택 → send_causes 도구 응답 → choices 메시지
     msg_types = [m["type"] for m in events[0]["messages"]]
     assert "choices" in msg_types
 
