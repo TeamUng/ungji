@@ -1,8 +1,8 @@
 from __future__ import annotations
 
-from langchain_core.messages import HumanMessage
+from langchain_core.messages import AIMessage, HumanMessage, SystemMessage
 
-from app.core.enums import GradeGroup, Segment, Touchpoint
+from app.core.enums import GradeGroup, Segment, Touchpoint, UseCase
 from app.services.nodes.motivator import motivator
 from app.services.prompts.personas import get_persona
 
@@ -51,6 +51,22 @@ def test_situation_contains_student_and_task_info(case1_student, make_chat_state
     assert case1_student["today_tasks"][0]["unit"] in prompt_text
 
 
+def test_touchpoint_context_is_sent_as_child_user_message(case1_student, make_chat_state, mock_llm):
+    state = make_chat_state(
+        case1_student,
+        segment=Segment.LOW_LAZY,
+        grade_group=GradeGroup.LOWER,
+        touchpoint=Touchpoint.TP1,
+    )
+    motivator(state)
+
+    messages = mock_llm.calls[0]["messages"]
+    assert isinstance(messages[0], SystemMessage)
+    assert isinstance(messages[-1], HumanMessage)
+    assert "안녕, 나는" in messages[-1].content
+    assert "홈 화면" in messages[-1].content
+
+
 def test_chat_history_is_passed_to_llm(case1_student, make_chat_state, mock_llm):
     state = make_chat_state(
         case1_student,
@@ -64,6 +80,28 @@ def test_chat_history_is_passed_to_llm(case1_student, make_chat_state, mock_llm)
 
     contents = [message.content for message in mock_llm.calls[0]["messages"]]
     assert "오늘은 국어부터 할래요" in contents
+
+
+def test_chat_followup_gets_child_context_with_tasks(case1_student, make_chat_state, mock_llm):
+    state = make_chat_state(
+        case1_student,
+        segment=Segment.LOW_LAZY,
+        grade_group=GradeGroup.LOWER,
+        use_case=UseCase.CHAT,
+        touchpoint=Touchpoint.TP1,
+    )
+    state["chat_history"] = [
+        AIMessage(content="국어 - 받침이 있는 낱말 읽기를 추천해."),
+        HumanMessage(content="좋아요, 받침이 있는 낱말 읽기부터 해볼게요."),
+    ]
+
+    motivator(state)
+
+    context_message = mock_llm.calls[0]["messages"][-1]
+    assert isinstance(context_message, HumanMessage)
+    assert case1_student["profile"]["name"] in context_message.content
+    assert case1_student["today_tasks"][0]["unit"] in context_message.content
+    assert "내가 추천한 단원을 해보겠다고 했어" in context_message.content
 
 
 def test_response_does_not_expose_segment_name(case1_student, make_chat_state, mock_llm):

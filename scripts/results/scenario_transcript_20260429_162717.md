@@ -1,0 +1,788 @@
+# Scenario Conversation Transcript
+
+- Generated: 20260429_162717
+- Student profiles: lower-low-diligent, lower-low-lazy, upper-low-diligent, upper-low-lazy
+- Simulated follow-up graph turns: True
+
+
+## lower-low-diligent
+
+- Name: 지아
+- Grade group: lower
+- Segment: 못함+성실
+
+Available home-screen units:
+1. 국어 - 받침이 있는 낱말 읽기 (5 problems, 10 min, difficulty 하)
+2. 수학 - 한 자리 수 더하기 (5 problems, 8 min, difficulty 중)
+3. 통합 - 봄 관찰하기 (4 problems, 8 min, difficulty 하)
+4. 영어 - 알파벳 익히기 (5 problems, 8 min, difficulty 하)
+
+
+### TP1 home-screen entry
+
+**Student:**
+
+(opens this touchpoint)
+
+**Coach:**
+
+지아아, 안녕! 뽀롱~  
+좋아하는 국어 단원이 딱 난이도 하로 준비되어 있어.  
+**"국어 - 받침이 있는 낱말 읽기"**부터 시작해보자.  
+예상 점수도 최근 평균과 비슷하고,  
+짧은 시간에 집중해서 풀기 좋을 거야.  
+쌤이 옆에서 힌트 팍팍 줄게~ 시작해 볼까? 😊
+
+
+### TP1 home-screen entry simulated student follow-up
+
+**Student:**
+
+좋아요, 받침이 있는 낱말 읽기부터 해볼게요.
+
+**Coach:**
+
+지아아~ 좋아!  
+**"국어 - 받침이 있는 낱말 읽기"**로 바로 시작해 보자.  
+🌼 받침 하나씩 짚어주면 금방 익숙해질 거야.  
+쌤이 옆에서 응원할게! 💪 (시작할 준비됐어?)
+
+
+### TP2 unit completed
+
+**Student:**
+
+(opens this touchpoint)
+
+**Coach:**
+
+지아아, 안녕! 뽀롱~  
+오늘은 **국어 - 받침이 있는 낱말 읽기**를 해보는 건 어때?  
+난이도가 하이고 예상 점수도 72점이라  
+재미있게 할 수 있을 것 같아!  
+받침 있는 낱말을 하나씩 읽어보며  
+자신감을 키워보자~ 😊  
+
+시작하기 전에 궁금한 점이 있으면  
+쌤에게 물어봐도 돼!  
+(예: "받침이 뭐야?" 같은 질문도 환영이야~)  
+
+준비되면 책을 펴고 첫 문제부터 천천히 읽어보자!  
+지아가 잘 할 거라고 믿어~ ✨
+
+
+### TP2 unit completed simulated student follow-up
+
+**Student:**
+
+좋아요, 받침이 있는 낱말 읽기부터 해볼게요.
+
+**Coach:**
+
+좋아~ 지아야!  
+**"국어 - 받침이 있는 낱말 읽기"**  
+지금부터 차근차근 해보자!  
+쌤이 옆에서 응원할게 💪  
+(문제는 천천히 읽으며 도전해보자!)  
+
+→ 추가 설명이 필요하면 언제든 말해줘~ 😊
+
+
+### TP3 exit prevention
+
+**Student:**
+
+(opens this touchpoint)
+
+**Coach:**
+
+지아아, 뽀롱~  
+지금 국어 단원 하기 싫고 나가고 싶을 때가 있지? 쌤도 어릴 적엔 그랬어.  
+그냥 잠깐 숨 한 번 깊게 쉬어 볼까? 그리고 화면 맨 위에 있는 첫 낱말 하나만 손가락으로 짚어보자. 받침 있는 글자가 보이지만 읽지 않아도 돼. 그냥 글자 모양을 구경한다는 느낌으로~  
+
+(잠시 기다림)  
+"글자 끝이 뭉툭하네?" 라고 말해볼 수도 있겠다.  
+나중에 읽고 싶을 때 쌤이 옆에서 기다릴게. 뽀롱~
+
+
+### TP3 exit prevention simulated student follow-up
+
+**Student:**
+
+조금만 더 해보고 나갈게요.
+
+**Coach:**
+
+지아야, 좋아요!  
+지금 화면 맨 위에 있는 첫 번째 낱말 옆에 작은 그림이 하나 있을 거야. 그 그림을 손가락으로 살짝 눌러보자.  
+(학생이 그림을 터치하면)  
+"동그라미 안에 별 모양이 나오네?" 라고 말해볼 수 있겠다.  
+다음 행동은 지아가 결정해도 돼. 뽀롱~
+
+
+### TP4 stuck: cause choices
+
+**Student:**
+
+lower_korean_reading_001
+
+**Coach:**
+
+- `not_understand_concept`: 받침이 뭔지 잘 모르겠어요
+- `confused_examples`: 어떤 낱말에 받침이 있는지 헷갈려요
+- `need_visual_aid`: 그림으로 보면 더 잘 이해할 것 같아요
+
+
+### TP4 stuck: coaching after cause
+
+**Student:**
+
+not_understand_concept
+
+**Coach:**
+
+[image] 받침이 있는 글자 예시: '책' 글자 아래에 작은 'ㄱ'이 보이죠? 이 작은 소리가 받침이에요! (https://placeholder.invalid/img)
+
+1. '책' 글자를 다시 한 번 봐줄 수 있어?
+2. 마지막에 작은 'ㄱ' 같은 게 보여?
+3. 이 작은 게 바로 받침이래!
+
+
+### TP4 coaching follow-up 1
+
+**Student:**
+
+아직 어느 글자를 봐야 하는지 잘 모르겠어요.
+
+**Coach:**
+
+[image] '책' 글자를 크게 확대해서 보여줘. 마지막 획 아래에 작은 'ㄱ' 모양이 있는지 봐봐! (https://placeholder.invalid/img)
+
+
+### TP4 coaching follow-up 2
+
+**Student:**
+
+그럼 글자 아래에 붙은 걸 먼저 보면 되나요?
+
+**Coach:**
+
+[image] 책 글자를 크게 확대해서 보여줍니다. 마지막 획 아래에 작은 'ㄱ' 모양이 강조된 이미지입니다. (https://placeholder.invalid/img)
+
+
+### TP5 learning wrap-up
+
+**Student:**
+
+(opens this touchpoint)
+
+**Coach:**
+
+지아야, 안녕하세요! 뽀롱~  
+오늘은 통합 - 봄 관찰하기 어때요? 난이도가 쉽고 문제도 적어서 금방 끝낼 수 있을 거예요.  
+바깥 풍경 보면서 재밌게 풀어볼 수 있을 것 같아요!  
+
+(만약 "오늘은 끝내겠다"고 말해주면)  
+지아야, 오늘 정말 수고 많았어! 봄처럼 상큼한 하루였길 바라며, 다음에 또 만나요. 뽀롱~ ♪(´▽｀)
+
+
+### TP5 learning wrap-up simulated student follow-up
+
+**Student:**
+
+오늘은 여기까지 하고 내일 다시 할게요.
+
+**Coach:**
+
+지아야, 오늘 정말 잘했어요!  
+열심히 한 만큼 머리도 휴식해야겠죠?  
+내일 또 재미있게 공부해보자. 안녕~ 뽀롱! (´•ᴗ•`)♡
+
+
+## lower-low-lazy
+
+- Name: 민준
+- Grade group: lower
+- Segment: 못함+불성실
+
+Available home-screen units:
+1. 국어 - 받침이 있는 낱말 읽기 (5 problems, 10 min, difficulty 하)
+2. 수학 - 한 자리 수 더하기 (5 problems, 8 min, difficulty 하)
+3. 통합 - 봄 관찰하기 (4 problems, 8 min, difficulty 하)
+4. 영어 - 알파벳 익히기 (5 problems, 8 min, difficulty 하)
+
+
+### TP1 home-screen entry
+
+**Student:**
+
+(opens this touchpoint)
+
+**Coach:**
+
+민준아, 안녕! 뽀롱~  
+**통합 - 봄 관찰하기**를 추천해줄게!  
+좋아하는 국어보다는 아니지만, 예상 점수가 70점으로 가장 높고 문제도 4개라 금방 끝낼 수 있어.  
+봄에 볼 수 있는 것들을 생각해보면 재미있을 거야.  
+먼저 한 번 시작해보자! 🌱
+
+
+### TP1 home-screen entry simulated student follow-up
+
+**Student:**
+
+좋아요, 봄 관찰하기부터 해볼게요.
+
+**Coach:**
+
+민준아, 좋아! 봄 관찰하기 시작해볼게.  
+**통합 - 봄 관찰하기**로 바로 이동하자! 🌸  
+(아이가 직접 클릭할 수 있도록 홈 화면 유지)  
+
+*짧은 응원만 추가*  
+"봄의 소리를 찾아봐! 새들이 지저귈 거야~" 🐦
+
+
+### TP2 unit completed
+
+**Student:**
+
+(opens this touchpoint)
+
+**Coach:**
+
+민준아, 안녕! 뽀롱~  
+**통합 - 봄 관찰하기**를 먼저 해보는 건 어때?  
+문제 수가 적고 예상 점수도 제일 높아!  
+창문 밖을 보며 봄빛도 느껴볼 수 있을 거야~  
+(8분만 투자하면 돼! 함께 시작해보자)
+
+
+### TP2 unit completed simulated student follow-up
+
+**Student:**
+
+좋아요, 봄 관찰하기부터 해볼게요.
+
+**Coach:**
+
+민준아, 좋아! 봄 관찰하기 시작~  
+**문제 1개**만 먼저 풀어볼까?  
+(창문 밖을 보며 "오늘 발견한 봄의 색깔 1개"를 말해주세요!)  
+뽀롱~!
+
+
+### TP3 exit prevention
+
+**Student:**
+
+(opens this touchpoint)
+
+**Coach:**
+
+민준아, 뽀롱~  
+나가고 싶을 땐 쉬는 게 맞아. 쌤도 가끔 그랬거든~  
+
+지금은 딱 하나만 해볼까?  
+화면 맨 위에 있는 첫 번째 낱말만 살짝 읽어보자.  
+받침이 있는 게 신기하게 느껴질 거야!  
+
+힘들면 바로 말해줘. 쌤이 기다릴게~ 😊
+
+
+### TP3 exit prevention simulated student follow-up
+
+**Student:**
+
+조금만 더 해보고 나갈게요.
+
+**Coach:**
+
+그래, 민준아!  
+지금 보이는 첫 번째 문제 그림만 봐보자.  
+"공" 위에 있는 작은 점(받침)을 손가락으로 따라 써보는 거야.  
+한 번만 하고 바로 쉬어도 돼~  
+
+(아이가 이미 보고 있는 첫 문제의 시각적 요소만 활용)
+
+
+### TP4 stuck: cause choices
+
+**Student:**
+
+lower_korean_reading_001
+
+**Coach:**
+
+- `what_is_receiving`: 받침이 뭔지 잘 모르겠어요
+- `find_receiving`: 어느 글자에 받침이 있는지 찾기 어려워요
+- `other`: 다른 이유예요
+
+
+### TP4 stuck: coaching after cause
+
+**Student:**
+
+what_is_receiving
+
+**Coach:**
+
+[image] 글자 아래에 작게 쓰여진 받침 예시를 보여줍니다: ㄱ받침이 있는 '책' 글자 이미지 (https://placeholder.invalid/img)
+
+
+### TP4 coaching follow-up 1
+
+**Student:**
+
+아직 어느 글자를 봐야 하는지 잘 모르겠어요.
+
+**Coach:**
+
+1. 민준아, 글자 아래쪽을 자세히 봐봐. '나무', '책', '아이', '오이' 중에서 아래 부분이 좀 더 복잡한 글자를 찾아볼까?
+
+
+### TP4 coaching follow-up 2
+
+**Student:**
+
+그럼 글자 아래에 붙은 걸 먼저 보면 되나요?
+
+**Coach:**
+
+1. 1. 글자 아래쪽을 자세히 봐봐. '나무', '책', '아이', '오이' 중에서 아래 부분이 좀 더 복잡한 글자를 찾아볼까?
+
+[image] 책 글자 확대 이미지: '책' 글자 아래 작은 ㄱ 받침을 강조한 그림 (https://placeholder.invalid/img)
+
+
+### TP5 learning wrap-up
+
+**Student:**
+
+(opens this touchpoint)
+
+**Coach:**
+
+민준아, 안녕! 뽀롱~  
+오늘은 **통합 - 봄 관찰하기**를 추천해줄게!  
+문제 수도 적고 예상 점수도 가장 높아.  
+봄에 본 꽃이나 나무 사진을 보며 쉽게 풀 수 있을 거야.  
+"딱 8분만 해보자!" 하고 가볍게 시작해볼까?  
+
+(오늘 마무리하려면) "민준아, 오늘 정말 고생 많았어! 내일은 더 잘될 거야. 뽀롱~"
+
+
+### TP5 learning wrap-up simulated student follow-up
+
+**Student:**
+
+오늘은 여기까지 하고 내일 다시 할게요.
+
+**Coach:**
+
+오늘 정말 잘했어, 민준아!  
+열심히 한 만큼 쉬어도 돼.  
+뽀롱~ 내일 또 재미있게 해보자! 😊
+
+
+## upper-low-diligent
+
+- Name: 서연
+- Grade group: upper
+- Segment: 못함+성실
+
+Available home-screen units:
+1. 수학 - 비율과 비례식 (4 problems, 15 min, difficulty 중)
+2. 과학 - 생태계와 환경 (5 problems, 12 min, difficulty 중)
+3. 국어 - 주장과 근거 파악하기 (5 problems, 12 min, difficulty 중)
+4. 사회 - 세계 여러 나라의 환경 (5 problems, 12 min, difficulty 중)
+
+
+### TP1 home-screen entry
+
+**Student:**
+
+(opens this touchpoint)
+
+**Coach:**
+
+서연아, 안녕! 뽀롱~  
+과학 - 생태계와 환경을 추천해줄게!  
+좋아하는 수학보다 예상 점수가 11점이나 높고,  
+서연이가 잘하는 과목이라 더 재미있게 풀 수 있을 것 같아.  
+시작하면 12분 안에 생태계 개념을 다시 한번 정리해볼 수 있을 거야.  
+막히는 부분이 있으면 쌤이 바로 도와줄게! 🌱
+
+
+### TP1 home-screen entry simulated student follow-up
+
+**Student:**
+
+좋아요, 생태계와 환경부터 해볼게요.
+
+**Coach:**
+
+서연아! 좋아, 선택 잘했어! 🌱  
+"과학 - 생태계와 환경" 시작 전에,  
+"먹이사슬의 1차 소비자를 10초 안에 맞혀 볼래?" 같은 작은 퀴즈로 머리를 깨울까?  
+(막막할 때 이런 걸 가장 잘 하더라~ )
+
+
+### TP2 unit completed
+
+**Student:**
+
+(opens this touchpoint)
+
+**Coach:**
+
+서연아, 안녕! 뽀롱~  
+과학 - 생태계와 환경 단원을 먼저 시작해보는 건 어때요? 예상 점수가 가장 높고(84점), 문제당 풀이 시간이 짧을 것 같아요. 환경 관련 내용은 일상에서도 쉽게 접할 수 있는 주제라 이해하기 편할 거예요.  
+
+> "생태계에서 생산자가 어떤 역할을 하는지 이미 알고 있는 걸 먼저 생각해보면 좋을 것 같아. 어떤 걸 먼저 떠올려볼 수 있어요?"  
+
+시작할 때 막힌 부분이 있다면 바로 말해주세요! 천천히 함께 해결해보자.
+
+
+### TP2 unit completed simulated student follow-up
+
+**Student:**
+
+좋아요, 생태계와 환경부터 해볼게요.
+
+**Coach:**
+
+서연아, 좋아요! 생태계와 환경부터 차근차근 시작해보자.  
+(응원만 전달하며 문제 풀이는 시작하지 않음)  
+
+> "생산자, 소비자, 분해자의 역할을 먼저 떠올려보면 도움이 될 거예요. 시작할 때 궁금한 점이 있다면 언제든 말해주세요!"  
+
+(추가 설명 없이 선택한 단원만 격려)
+
+
+### TP3 exit prevention
+
+**Student:**
+
+(opens this touchpoint)
+
+**Coach:**
+
+서연아, 지금 집중이 잘 안 될 때 있죠? 쌤도 그럴 때가 있어.  
+일단 책상에서 일어나 잠깐 스트레칭만 해볼까요?  
+그리고 다시 앉아서 **지금 보고 있는 첫 문제**의 **첫 문장**만 다시 읽어보아요.  
+"비율"의 기본 개념만 머릿속에 떠올려도 오늘 첫 걸음이 될 거예요.  
+
+(기다리는 동안 학생이 스스로 첫 문장을 읽을 시간을 줍니다)  
+어떤 느낌이 들어요? "비율"이라는 단어가 눈에 들어오나요?  
+
+> 예시: "사과와 배의 비율이 3:2라는 문장을 보면 어떤 그림이 떠오르나요?"  
+> (학생이 자연스럽게 설명할 수 있도록 유도하는 질문)  
+
+천천히 해도 괜찮아요. 서연이가 편한 속도로 해요 😊
+
+
+### TP3 exit prevention simulated student follow-up
+
+**Student:**
+
+조금만 더 해보고 나갈게요.
+
+**Coach:**
+
+서연아, 지금 바로 **첫 번째 문제의 첫 번째 단어**만 다시 읽어보자.  
+"비율을" — 이 단어에서 어떤 느낌이 드는지 3초만 생각해봐요.  
+
+(학생이 스스로 첫 단어를 보며 생각할 시간을 줍니다)  
+그 다음 **문제 속 숫자**만 눈에 담아보자. 20, 15 — 이 숫자들 사이에 어떤 관계가 있을 것 같아요?  
+
+> (예: "20:15"만 10초 정도 바라보기)  
+> (새 문제/예시는 없이, 이미 있는 문제 속 요소만 재집중)  
+
+"잘하고 있어" — 이 말 한 번 더 하고, **20:15**를 10초만 더 바라봅시다!
+
+
+### TP4 stuck: cause choices
+
+**Student:**
+
+math_ratio_saltwater_001
+
+**Coach:**
+
+[서연이가 문제 ID만 선택했기 때문에, 어떤 부분에 막혔는지 파악하려면 이유 선택지를 제공하는 것이 ESSENTIAL합니다. 이 중 하나를 선택하면 서연이의 구체적인 어려움을 알 수 있어 더 정확한 도움을 줄 수 있습니다]
+
+
+### TP4 stuck: coaching after cause
+
+**Student:**
+
+confused_concept
+
+**Coach:**
+
+1. 소금의 양을 소금물의 양으로 나누는 게 핵심이에요! (가) 비커에서는 37g을 148g으로 나누면 되겠죠? 먼저 이 계산을 어떻게 할지 생각해볼까요?
+
+
+### TP4 coaching follow-up 1
+
+**Student:**
+
+아직 어떤 숫자를 써야 하는지 잘 모르겠어요.
+
+**Coach:**
+
+서연아, 소금물의 총량에서 소금이 차지하는 비율을 찾는 거야. (가) 비커에서는 소금 37g이 소금물 148g 안에 들어있으니까, 37을 148로 나누는 게 첫 단계야. 계산기로 37 ÷ 148을 해볼까요?
+
+
+### TP4 coaching follow-up 2
+
+**Student:**
+
+그럼 비교하는 양을 전체 양으로 나누면 되나요?
+
+**Coach:**
+
+서연아, 맞아! 비교하는 양(소금)을 전체 양(소금물)으로 나누는 게 핵심이에요. (가) 비커에서 37을 148로 나눈 결과가 소수로 어떻게 나올지 한 번 예상해볼까요? 0.2보다 클지 작을지 먼저 생각해보자!
+
+
+### TP5 learning wrap-up
+
+**Student:**
+
+(opens this touchpoint)
+
+**Coach:**
+
+서연아, 안녕! 뽀롱~  
+오늘은 과학 - 생태계와 환경을 추천해요.  
+예상 점수가 가장 높고, 비교적 짧은 시간에 마무리할 수 있어요.  
+오답 하나 남은 문제도 집중해서 풀면  
+오늘의 마무리가 더 달콤해질 거예요.  
+
+시작해볼까요? 😊  
+(또는 "오늘은 여기까지 할게요"라고 말해주면  
+쌤이 따뜻하게 응원해줄게요!)  
+
+*(학생이 '오늘은 끝내고 싶어'라고 말하면)*  
+오늘 정말 수고 많았어, 서연아!  
+과학은 다음에 뽀롱쌤과 함께 도전해보자.  
+편안히 쉬고 내일 다시 만나요~ 뽀롱~ ✨
+
+
+### TP5 learning wrap-up simulated student follow-up
+
+**Student:**
+
+오늘은 여기까지 하고 내일 다시 할게요.
+
+**Coach:**
+
+서연아, 오늘 정말 잘했어!  
+열심히 해낸 만큼 편안한 마음으로 쉬어도 돼.  
+내일 아침 뽀롱쌤이 더 밝은 얼굴로 기다릴게.  
+꿈속에서 과학 문제도 살짝 만날지 몰라~  
+뽀롱~ 내일 보자! 🌙✨  
+
+*(학생의 이름을 정확히 부르며,  
+새로운 과제 없이 격려와 휴식에 초점을 둔 마무리)*
+
+
+## upper-low-lazy
+
+- Name: 준서
+- Grade group: upper
+- Segment: 못함+불성실
+
+Available home-screen units:
+1. 수학 - 비율과 비례식 (4 problems, 15 min, difficulty 상)
+2. 과학 - 생태계와 환경 (5 problems, 12 min, difficulty 중)
+3. 국어 - 주장과 근거 파악하기 (5 problems, 12 min, difficulty 중)
+4. 사회 - 세계 여러 나라의 환경 (5 problems, 12 min, difficulty 중)
+
+
+### TP1 home-screen entry
+
+**Student:**
+
+(opens this touchpoint)
+
+**Coach:**
+
+준서아, 안녕! 뽀롱~  
+과학 - 생태계와 환경을 추천해줄게!  
+준서가 잘하는 과목이고, 예상 점수도 78점으로 가장 높아.  
+12분 동안 5문제만 풀면 되니까 부담 없이 시작할 수 있을 거야.  
+일단 가볍게 풀어보면서 감을 키워보자! 😊  
+
+(빨간 책으로 단원을 가리키며)  
+"여기 보자. 생태계 부분부터 차근차근 해볼까?"
+
+
+### TP1 home-screen entry simulated student follow-up
+
+**Student:**
+
+좋아요, 생태계와 환경부터 해볼게요.
+
+**Coach:**
+
+준서아, 좋아! 생태계와 환경에서 실력을 뽐내보자~  
+필요한 게 있으면 언제든 쌤을 불러줘. 화이팅! 💛  
+
+(빨간 책을 살짝 흔들며)  
+"시작하면 분명히 잘 해낼 거야!"
+
+
+### TP2 unit completed
+
+**Student:**
+
+(opens this touchpoint)
+
+**Coach:**
+
+준서아, 안녕! 뽀롱~  
+과학 - 생태계와 환경부터 시작해보는 건 어때요?  
+예상 점수가 높고 난이도가 중간이라 조금만 집중하면 금방 끝낼 수 있을 거예요.  
+관심 있는 주제라서 재미있게 풀어나갈 수 있을 것 같아요!  
+
+(과학 단원 선택 이유: 높은 예상 점수(78점)로 성공 경험 유도, 흥미 기반 접근, 다른 단원과 동일한 난이도로 부담 감소)
+
+
+### TP2 unit completed simulated student follow-up
+
+**Student:**
+
+좋아요, 생태계와 환경부터 해볼게요.
+
+**Coach:**
+
+오, 잘 선택했어요! 준서라면 생태계 문제도 척척 풀어낼 거예요 :)  
+일단 시작하면 쌤이 옆에서 힌트 팍팍 줄게~ 뽀롱~  
+
+(짧은 응원 후 즉시 코칭 모드로 전환하지 않음. 학생의 준비 상태에 맞춰 유연하게 대응할 예정)  
+
+과학 - 생태계와 환경으로 바로 들어갈까요?  
+아니면 시작하기 전에 궁금한 점이나 걱정되는 부분이 있나요?  
+(예시: "생태계 먹이그물이 헷갈려요" 같은 구체적 고민이 있다면 말해달라고 유도할 준비 완료)  
+
+※현재 단계에서는 학생의 응답에 따라  
+1) 즉시 첫 문제 출제  
+2) 개념 힌트 제공  
+3) 난이도 조절  
+중 하나로 유연하게 대응할 예정입니다.
+
+
+### TP3 exit prevention
+
+**Student:**
+
+(opens this touchpoint)
+
+**Coach:**
+
+준서아, 지금 나가고 싶은 마음 이해해. 집중이 안 될 때도 있지.  
+일단 첫 문제 왼쪽 위에 있는 **작은 그림 하나**만 봐줄래?  
+그 그림 속 숫자 관계만 슬쩍 관찰해도 오늘 목표 달성이야.  
+(뽀롱~)  
+
+*참고: 실제 화면 구성 없이 답변 드림을 감안해 주세요. 학생의 현재 화면을 모르는 상황에서 '가장 접근성 높은 요소'를 제안했습니다.*
+
+
+### TP3 exit prevention simulated student follow-up
+
+**Student:**
+
+조금만 더 해보고 나갈게요.
+
+**Coach:**
+
+그래 준서, 그럼 지금 보이는 **첫 번째 문제의 왼쪽 숫자 두 개**만 비교해보자.  
+예를 들어 12와 18이면 "12가 18의 몇 배인가?"라고 스스로 질문해보는 거야.  
+(빨간 책을 살짝 펼치며) 지금 바로 답하지 않아도 돼. 그냥 눈에 띄는 관계만 찾는 게 목표야.  
+
+*실제 화면 구성 없이 답변 드림을 감안해 주세요. 현재 문제 유형을 가정한 예시입니다.*
+
+
+### TP4 stuck: cause choices
+
+**Student:**
+
+math_ratio_saltwater_001
+
+**Coach:**
+
+- `not_understand_ratio_concept`: 비율 개념을 잘 모르겠어요
+- `confused_salt_water_amounts`: 소금과 소금물 양을 어떻게 구분할지 헷갈려요
+- `calculating_decimal_issue`: 소수로 계산하는 방법을 모르겠어요
+
+
+### TP4 stuck: coaching after cause
+
+**Student:**
+
+not_understand_ratio_concept
+
+**Coach:**
+
+- `calculating_decimal_issue`: 소수로 계산하는 방법을 모르겠어요
+- `confused_salt_water_amounts`: 소금과 소금물 양을 어떻게 구분할지 헷갈려요
+
+
+### TP4 coaching follow-up 1
+
+**Student:**
+
+아직 어떤 숫자를 써야 하는지 잘 모르겠어요.
+
+**Coach:**
+
+1. 소금의 양을 소금물의 양으로 나눕니다
+2. 예) (가) 비커: 37 ÷ 148
+
+
+### TP4 coaching follow-up 2
+
+**Student:**
+
+그럼 비교하는 양을 전체 양으로 나누면 되나요?
+
+**Coach:**
+
+준서야, 맞아! 비교할 양(소금)을 전체 양(소금물)로 나누는 게 핵심이야. (가) 비커에서 37을 148로 나누는 계산을 직접 해볼 수 있겠어?
+
+
+### TP5 learning wrap-up
+
+**Student:**
+
+(opens this touchpoint)
+
+**Coach:**
+
+준서야, 안녕! 뽀롱~  
+오늘은 **과학 - 생태계와 환경**을 추천해요!  
+예상 점수가 78점으로 가장 높고, 난이도도 중간이라  
+오답을 줄이며 기분 좋게 마무리할 수 있을 것 같아요.  
+
+12분만 투자해보면 어때요?  
+준비되면 바로 시작할 수 있도록 쌤이 기다리고 있을게요!  
+
+(만약 "오늘은 끝내겠다"면 말해주세요.  
+"오늘 고생 많았어, 준서야! 뽀롱~ 내일 더 즐겁게 공부해보자."라고  
+따뜻하게 마무리해줄게요 😊)
+
+
+### TP5 learning wrap-up simulated student follow-up
+
+**Student:**
+
+오늘은 여기까지 하고 내일 다시 할게요.
+
+**Coach:**
+
+오늘 정말 잘했어, 준서야!  
+열심히 한 만큼 충분히 쉬어도 돼.  
+내일 또 즐겁게 공부해보자. 뽀롱~ 😊  
+
+(따뜻한 토닥임과 함께 마무리합니다)

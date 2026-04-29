@@ -15,14 +15,14 @@ Error handling
 from __future__ import annotations
 
 import json
-import logging
 import re
 
 from langchain_core.messages import HumanMessage, SystemMessage
 
 from app.clients.llm import LLMCallError, llm
+from app.core.logging import get_logger
 
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 
 
 class LLMJudgeError(Exception):
@@ -66,6 +66,32 @@ class LLMJudge:
         """
         try:
             response = await self._llm.ainvoke(
+                [
+                    SystemMessage(content=system_prompt),
+                    HumanMessage(content=content),
+                ],
+                temperature=0,
+            )
+        except LLMCallError as exc:
+            raise LLMJudgeError(f"LLM judge request failed: {exc}") from exc
+        except Exception as exc:
+            raise LLMJudgeError(f"LLM judge failed: {exc}") from exc
+
+        raw_text = getattr(response, "content", "")
+        try:
+            return json.loads(_extract_json_object(raw_text))
+        except json.JSONDecodeError as exc:
+            logger.warning("LLM judge returned unparseable output: %s", raw_text)
+            raise LLMJudgeError("Could not parse LLM judge response") from exc
+
+    def evaluate_sync(
+        self,
+        system_prompt: str,
+        content: str,
+    ) -> dict:
+        """Synchronous variant for LangGraph sync nodes."""
+        try:
+            response = self._llm.invoke(
                 [
                     SystemMessage(content=system_prompt),
                     HumanMessage(content=content),

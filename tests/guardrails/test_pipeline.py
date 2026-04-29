@@ -19,7 +19,7 @@ import pytest
 from app.guardrails.models import GuardrailContext, Severity
 from app.guardrails.pipeline import GuardrailPipeline
 from app.guardrails.guards.safety_check import SafetyCheck
-from app.guardrails.guards.response_evaluator import ResponseEvaluator
+from app.guardrails.guards.response_evaluator import ResponseEvaluator, _SYSTEM_PROMPT_TEMPLATE
 
 
 # ---------------------------------------------------------------------------
@@ -148,6 +148,11 @@ class TestSafetyCheckWithMock:
 # ---------------------------------------------------------------------------
 
 class TestResponseEvaluatorWithMock:
+    def test_prompt_flags_judgmental_messages(self):
+        assert "판단하는 표현" in _SYSTEM_PROMPT_TEMPLATE
+        assert "게으르다" in _SYSTEM_PROMPT_TEMPLATE
+        assert "안 하려고 하는 거 알아" in _SYSTEM_PROMPT_TEMPLATE
+
     @pytest.mark.asyncio
     async def test_good_response_passes(self):
         guard = ResponseEvaluator(judge=mock_judge(ALL_PASS_OUTPUT))

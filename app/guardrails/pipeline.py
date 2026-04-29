@@ -20,8 +20,7 @@ Usage (inside a route handler)
 
 from __future__ import annotations
 
-import logging
-
+from app.core.logging import get_logger
 from app.guardrails.models import (
     GuardrailContext,
     InputCheckResult,
@@ -29,7 +28,7 @@ from app.guardrails.models import (
     Severity,
 )
 
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 
 _BLOCKED_MESSAGES: dict[str, str] = {
     "lower":  "앗! 공부 관련 이야기만 도와줄 수 있어. 다시 물어봐줘! 😊",
@@ -43,7 +42,7 @@ class GuardrailPipeline:
     Holds a list of input guards and output guards and runs them in order.
 
     - Input guards: fail-fast — the first BLOCK stops the chain immediately.
-    - Output guards: run all and aggregate — WARN-only, response always delivered.
+    - Output guards: run all and aggregate — WARN-only at pipeline level.
     - The pipeline is stateless; instantiate once and reuse across requests.
     """
 
@@ -71,7 +70,7 @@ class GuardrailPipeline:
         return InputCheckResult(passed=True, guard_results=results)
 
     async def check_output(self, text: str, context: GuardrailContext) -> OutputCheckResult:
-        """Run all output guards. All WARN-only — response always delivered."""
+        """Run all output guards. Callers decide whether to repair or deliver."""
         results = []
         for guard in self._output_guards:
             result = await guard.check(text, context)
@@ -89,6 +88,36 @@ class GuardrailPipeline:
                 context.touchpoint,
                 context.grade_group,
                 context.segment or "unknown",
+                dims,
+                reasons,
+                text[:200],
+            )
+
+        return OutputCheckResult(passed=overall_passed, guard_results=results)
+
+    def check_output_sync(self, text: str, context: GuardrailContext) -> OutputCheckResult:
+        """Synchronous output check for sync LangGraph nodes."""
+        results = []
+        for guard in self._output_guards:
+            if hasattr(guard, "check_sync"):
+                result = guard.check_sync(text, context)
+            else:
+                raise TypeError(f"Guard {guard.name} does not support sync output checks")
+            results.append(result)
+        overall_passed = all(r.passed for r in results)
+
+        if not overall_passed:
+            failed = [r for r in results if not r.passed]
+            dims = [d for r in failed for d in r.metadata.get("failed_dimensions", [])]
+            reasons = "; ".join(r.reason for r in failed if r.reason)
+            logger.warning(
+                "Output quality WARN | session=%s touchpoint=%s grade=%s segment=%s agent=%s"
+                " | dims=%s | reasons=%s | response_excerpt=%r",
+                context.session_id,
+                context.touchpoint,
+                context.grade_group,
+                context.segment or "unknown",
+                context.agent_name or "unknown",
                 dims,
                 reasons,
                 text[:200],

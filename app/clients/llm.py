@@ -1,13 +1,12 @@
-import os
-
 from langchain_openai import ChatOpenAI
 
-from app.core.config import settings
+from app.core.config import configure_langsmith_tracing, settings
 
-if settings.LANGSMITH_API_KEY:
-    os.environ.setdefault("LANGCHAIN_API_KEY", settings.LANGSMITH_API_KEY)
-    os.environ.setdefault("LANGCHAIN_PROJECT", settings.LANGSMITH_PROJECT)
-    os.environ.setdefault("LANGCHAIN_TRACING_V2", "true")
+configure_langsmith_tracing()
+
+
+class LLMCallError(RuntimeError):
+    """Raised when the shared LLM client cannot complete a request."""
 
 
 _OPENROUTER_HEADERS = {
@@ -33,3 +32,7 @@ motivator_llm = _build_openrouter_llm(settings.MOTIVATOR_MODEL)
 
 # helper: TP4 문제 막힘 진단/코칭 노드용
 helper_llm = _build_openrouter_llm(settings.HELPER_MODEL)
+
+# Guardrail judge compatibility alias. The product-facing nodes use the split
+# motivator/helper models, while guardrail evaluation keeps the existing llm name.
+llm = helper_llm
