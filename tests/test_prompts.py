@@ -3,6 +3,7 @@ from __future__ import annotations
 import pytest
 
 from app.core.enums import GradeGroup, Segment
+from app.services.prompts.agents import MOTIVATOR_ROLE, build_system_prompt
 from app.services.prompts.coaching import get_coaching_strategy
 from app.services.prompts.personas import get_persona
 
@@ -21,6 +22,14 @@ def test_get_coaching_strategy_returns_prompt_for_every_segment(segment):
 
     assert isinstance(strategy, str)
     assert strategy.strip()
+
+
+def test_build_system_prompt_combines_persona_strategy_and_role():
+    prompt = build_system_prompt(GradeGroup.LOWER, Segment.LOW_LAZY, MOTIVATOR_ROLE)
+
+    assert get_persona(GradeGroup.LOWER) in prompt
+    assert get_coaching_strategy(Segment.LOW_LAZY) in prompt
+    assert MOTIVATOR_ROLE in prompt
 
 
 def test_case_1_lower_low_lazy_prompt_matches_prd_direction():

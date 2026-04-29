@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import Annotated, Literal, TypedDict, Union
 
 from pydantic import BaseModel, Field
+from langgraph.graph.message import add_messages
 
 from app.core.enums import (
     Difficulty,
@@ -32,7 +33,7 @@ class Task(TypedDict):
     problem_count: int       # 문제 수
     estimated_time: int      # 예상 소요시간 (분)
     difficulty: str          # Difficulty enum 값 ("상" | "중" | "하")
-    ai_predicted_score: int  # AI 예상점수 (0~100)
+    ai_predicted_score: int  # AI 예상점수 (0~100, 수학만 의미 있음)
 
 
 class ChatState(TypedDict):
@@ -50,6 +51,7 @@ class ChatState(TypedDict):
     today_tasks: list[Task]         # 오늘 배정된 전체 태스크
     completed_tasks: list[Task]     # 오늘 완료한 태스크
     current_task: Task | None       # 현재 진행 중인 태스크 (TP4 코칭용)
+    current_problem: dict | None    # TP4에서 로드한 현재 문제 데이터
     has_wrong_answers: bool         # 오늘 틀린 문제가 있는지
     wrong_content_done_today: bool  # 오늘 오답 콘텐츠를 진행했는지
     today_score: int                # 오늘의 학습 문항 평균 점수 (0~100)
@@ -58,7 +60,7 @@ class ChatState(TypedDict):
     use_case: UseCase
     grade_group: GradeGroup
     segment: Segment
-    chat_history: list[BaseMessage]  # add_messages reducer로 자동 누적
+    chat_history: Annotated[list[BaseMessage], add_messages]  # add_messages reducer로 자동 누적
 
     # ─── 노드 라우팅용 ───
     current_touchpoint: Touchpoint
