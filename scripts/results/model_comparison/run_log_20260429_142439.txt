@@ -1,0 +1,746 @@
+
+========================================================================
+  모델 비교 실험
+  모델 6 × 시나리오 7 × 반복 10
+  총 호출 (원인선택지 워밍업 제외): 420
+  출력: C:\Users\sesac1\Ungji\scripts\results\model_comparison\2026-04-29
+========================================================================
+
+▶ gpt-5.4-mini  (openrouter · openai/gpt-5.4-mini)
+  [OK ] TP1_뽀롱쌤_인사_저학년_불성실 #1: 민준아, 안녕! 뽀롱~    오늘은 **통합 - 봄 관찰하기**부터 해보자.   민준이가 좋아하고, **금방
+  [OK ] TP1_뽀롱쌤_인사_저학년_불성실 #2: 민준아, 안녕! 뽀롱~    오늘은 **통합 - 봄 관찰하기**부터 해보자.   민준이가 좋아하고, **금방
+  [OK ] TP1_뽀롱쌤_인사_저학년_불성실 #3: 민준아, 안녕! 뽀롱~    오늘은 **통합 - 봄 관찰하기**부터 해보자.   민준아가 **좋아하고, 잘하
+  [OK ] TP1_뽀롱쌤_인사_저학년_불성실 #4: 민준아, 안녕! 뽀롱~  오늘은 **통합 - 봄 관찰하기**부터 해보자.  이건 **네가 좋아하는 과목**이
+  [OK ] TP1_뽀롱쌤_인사_저학년_불성실 #5: 민준아, 안녕! 뽀롱~    오늘은 **통합 - 봄 관찰하기**부터 해보자.   민준이가 좋아하는 과목이고,
+  [OK ] TP1_뽀롱쌤_인사_저학년_불성실 #6: 민준아, 안녕! 뽀롱~    오늘은 **통합 - 봄 관찰하기**부터 해보자.   민준이가 **잘하는 과목**
+  [OK ] TP1_뽀롱쌤_인사_저학년_불성실 #7: 민준아, 안녕! 뽀롱~   오늘은 **통합 - 봄 관찰하기**부터 해보자.    민준이가 **잘할 수 있는 
+  [OK ] TP1_뽀롱쌤_인사_저학년_불성실 #8: 민준아, 안녕! 뽀롱~  오늘은 **통합 - 봄 관찰하기**부터 해보자. 민준이가 **좋아하고 잘하는 과목*
+  [OK ] TP1_뽀롱쌤_인사_저학년_불성실 #9: 민준아, 안녕! 뽀롱~   오늘은 **통합 - 봄 관찰하기**부터 해보자.    민준이가 좋아하는 과목이라 
+  [OK ] TP1_뽀롱쌤_인사_저학년_불성실 #10: 민준아, 안녕! 뽀롱~   오늘은 **통합 ‘봄 관찰하기’**부터 해보자.   민준이가 잘하는 과목이고, 금
+  [OK ] TP1_뽀롱쌤_인사_고학년_성실 #1: 채원아, 안녕! 뽀롱~  오늘은 수학의 **비율과 비례식**부터 시작하는 게 좋아 보여. 이미 수학이 강하고
+  [OK ] TP1_뽀롱쌤_인사_고학년_성실 #2: 채원아, 안녕! 뽀롱~   오늘은 수학부터 시작해보면 좋아요. 특히 **비율과 비례식**은 이미 잘하는 힘을
+  [OK ] TP1_뽀롱쌤_인사_고학년_성실 #3: 채원아, 안녕! 뽀롱~   오늘은 **수학 비율과 비례식**부터 시작해보자. 채원이는 수학이 강해서, 이 단
+  [OK ] TP1_뽀롱쌤_인사_고학년_성실 #4: 채원아, 안녕! 뽀롱~   오늘은 수학부터 시작해보면 좋아요. 비율과 비례식은 채원아가 강한 수학 감각을 한
+  [OK ] TP1_뽀롱쌤_인사_고학년_성실 #5: 채원아, 안녕! 뽀롱~   오늘은 수학 감각이 좋은 만큼 **비율과 비례식**부터 시작해보면 좋아요. 이미 
+  [OK ] TP1_뽀롱쌤_인사_고학년_성실 #6: 채원아, 안녕! 뽀롱~   오늘은 수학부터 시작해보는 게 좋아 보여. 비율과 비례식은 채원이가 강한 수학 안
+  [OK ] TP1_뽀롱쌤_인사_고학년_성실 #7: 채원아, 안녕! 뽀롱~    오늘은 수학부터 들어가도 좋겠어. 비율과 비례식은 채원이처럼 수학이 강한 학생에
+  [OK ] TP1_뽀롱쌤_인사_고학년_성실 #8: 채원아, 안녕! 뽀롱~    오늘은 수학이 제일 잘 맞지만, 바로 비율과 비례식으로 들어가면 대충 푸는 습관
+  [OK ] TP1_뽀롱쌤_인사_고학년_성실 #9: 채원아, 안녕! 뽀롱~   오늘은 수학이 이미 강하니까, **수학 - 비율과 비례식**부터 시작해보는 게 좋
+  [OK ] TP1_뽀롱쌤_인사_고학년_성실 #10: 채원아, 안녕! 뽀롱~    오늘은 수학이 제일 먼저 눈에 들어와요. 특히 **비율과 비례식**은 이미 잘하
+  [OK ] TP2_단원완료_피드백_저학년 #1: 민준아, 잘했어! 뽀롱~   다음은 **국어**부터 해보자.   이건 금방 끝낼 수 있어!
+  [OK ] TP2_단원완료_피드백_저학년 #2: 민준아, 잘했어! 뽀롱~    다음은 **국어**부터 해보자.   이건 금방 끝낼 수 있어!    준비되면 
+  [OK ] TP2_단원완료_피드백_저학년 #3: 민준아, 뽀롱~   잘 끝냈어! 잘했어!    다음은 **국어**부터 해보자.   이건 금방 끝낼 수 있어.
+  [OK ] TP2_단원완료_피드백_저학년 #4: 민준아, 잘했어! 뽀롱~    가장 빨리 끝나는 **국어**부터 해보자.   **받침이 있는 낱말 읽기**야
+  [OK ] TP2_단원완료_피드백_저학년 #5: 민준아, 잘했어! 뽀롱~   다음은 **국어**부터 해보자.   이건 금방 끝낼 수 있어.   준비되면 바로
+  [OK ] TP2_단원완료_피드백_저학년 #6: 민준아, 잘했어! 뽀롱~   지금은 **국어**부터 해보자.   이건 금방 끝낼 수 있어!   준비되면 눌러
+  [OK ] TP2_단원완료_피드백_저학년 #7: 민준아, 잘했어! 뽀롱~   이제 **국어**부터 해보자.   받침 있는 낱말 읽기는 **금방 끝낼 수 있어
+  [OK ] TP2_단원완료_피드백_저학년 #8: 민준아, 잘했어! 뽀롱~    이제 **국어**부터 해보자.   이건 금방 끝낼 수 있어!
+  [OK ] TP2_단원완료_피드백_저학년 #9: 민준아, 잘했어! 뽀롱~   이제 **국어**부터 해보자.   이건 금방 끝낼 수 있어!
+  [OK ] TP2_단원완료_피드백_저학년 #10: 민준아, 잘했어! 뽀롱~   이제 **국어**부터 해보자.   받침이 있는 낱말 읽기, 금방 끝낼 수 있어!
+  [OK ] TP3_이탈방지_저학년_불성실 #1: 민준아, 잠깐 쉬었다가 와도 괜찮아.   아주 하나만 할까? **다음 낱말 1개만 눌러보기** / **쉬고 
+  [OK ] TP3_이탈방지_저학년_불성실 #2: 민준아, 잠깐 쉬어도 괜찮아.   그 대신 아주 작은 것 하나만 해볼까? **남은 것 중 제일 쉬운 1개만 
+  [OK ] TP3_이탈방지_저학년_불성실 #3: 민준아, 괜찮아. 잠깐 쉬었다가 다시 와도 돼!   아니면 딱 하나만 해볼까? **남은 것 1개만 눌러보기*
+  [OK ] TP3_이탈방지_저학년_불성실 #4: 민준아, 잠깐 쉬어도 돼.   쌤이랑 **한 개만** 해볼까, 아니면 **잠깐 쉬고 다시 올까?**
+  [OK ] TP3_이탈방지_저학년_불성실 #5: 민준아, 잠깐 쉬었다 와도 괜찮아.   돌아오면 **딱 1개만** 해볼까? **읽기 시작하기**를 누를래, 
+  [OK ] TP3_이탈방지_저학년_불성실 #6: 민준아, 잠깐 쉬어도 괜찮아.   돌아오면 **남은 것 4개 중 1개만** 같이 해보자.   **지금 다시 
+  [OK ] TP3_이탈방지_저학년_불성실 #7: 민준아, 잠깐 쉬어도 괜찮아.   돌아오면 **국어 1개만** 먼저 해볼까, 아니면 **잠깐 쉬었다가 다시 
+  [OK ] TP3_이탈방지_저학년_불성실 #8: 민준아, 잠깐 쉬어도 괜찮아.   다시 할 거면 **남은 4개 중 1개만** 먼저 눌러볼까?
+  [OK ] TP3_이탈방지_저학년_불성실 #9: 민준아, 잠깐 쉬어도 돼. 뽀롱~   다시 할 거면 **낱말 1개만** 골라볼까, 아니면 **조금 쉬고 돌아
+  [OK ] TP3_이탈방지_저학년_불성실 #10: 민준아, 잠깐 쉬어도 괜찮아.   돌아오면 **남은 것 4개 중 1개만** 같이 해보자.   **지금 1개만
+  [OK ] TP4_막힘_원인선택지_고학년 #1: 어느 부분이 어려웠나요?
+  [OK ] TP4_막힘_원인선택지_고학년 #2: 어느 부분이 어려웠나요?
+  [OK ] TP4_막힘_원인선택지_고학년 #3: 어느 부분이 어려웠나요?
+  [OK ] TP4_막힘_원인선택지_고학년 #4: 어느 부분이 어려웠나요?
+  [OK ] TP4_막힘_원인선택지_고학년 #5: 어느 부분이 어려웠나요?
+  [OK ] TP4_막힘_원인선택지_고학년 #6: 어느 부분이 어려웠나요?
+  [OK ] TP4_막힘_원인선택지_고학년 #7: 어느 부분이 어려웠나요?
+  [OK ] TP4_막힘_원인선택지_고학년 #8: 어느 부분이 어려웠나요?Deserializing unregistered type app.core.enums.UseCase from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'UseCase')]
+Deserializing unregistered type app.core.enums.Touchpoint from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'Touchpoint')]
+Deserializing unregistered type app.schemas.chat.ChatResponse from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.schemas.chat', 'ChatResponse')]
+Deserializing unregistered type app.core.enums.Segment from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'Segment')]
+Deserializing unregistered type app.core.enums.GradeGroup from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'GradeGroup')]
+Deserializing unregistered type app.core.enums.UseCase from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'UseCase')]
+Deserializing unregistered type app.core.enums.Touchpoint from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'Touchpoint')]
+Deserializing unregistered type app.schemas.chat.ChatResponse from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.schemas.chat', 'ChatResponse')]
+Deserializing unregistered type app.core.enums.Segment from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'Segment')]
+Deserializing unregistered type app.core.enums.GradeGroup from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'GradeGroup')]
+Deserializing unregistered type app.core.enums.UseCase from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'UseCase')]
+Deserializing unregistered type app.core.enums.Touchpoint from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'Touchpoint')]
+Deserializing unregistered type app.schemas.chat.ChatResponse from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.schemas.chat', 'ChatResponse')]
+Deserializing unregistered type app.core.enums.Segment from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'Segment')]
+Deserializing unregistered type app.core.enums.GradeGroup from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'GradeGroup')]
+Deserializing unregistered type app.core.enums.UseCase from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'UseCase')]
+Deserializing unregistered type app.core.enums.Touchpoint from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'Touchpoint')]
+Deserializing unregistered type app.schemas.chat.ChatResponse from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.schemas.chat', 'ChatResponse')]
+Deserializing unregistered type app.core.enums.Segment from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'Segment')]
+Deserializing unregistered type app.core.enums.GradeGroup from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'GradeGroup')]
+Deserializing unregistered type app.core.enums.UseCase from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'UseCase')]
+Deserializing unregistered type app.core.enums.Touchpoint from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'Touchpoint')]
+Deserializing unregistered type app.schemas.chat.ChatResponse from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.schemas.chat', 'ChatResponse')]
+Deserializing unregistered type app.core.enums.Segment from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'Segment')]
+Deserializing unregistered type app.core.enums.GradeGroup from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'GradeGroup')]
+Deserializing unregistered type app.core.enums.UseCase from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'UseCase')]
+Deserializing unregistered type app.core.enums.Touchpoint from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'Touchpoint')]
+Deserializing unregistered type app.schemas.chat.ChatResponse from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.schemas.chat', 'ChatResponse')]
+Deserializing unregistered type app.core.enums.Segment from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'Segment')]
+Deserializing unregistered type app.core.enums.GradeGroup from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'GradeGroup')]
+Deserializing unregistered type app.core.enums.UseCase from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'UseCase')]
+Deserializing unregistered type app.core.enums.Touchpoint from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'Touchpoint')]
+Deserializing unregistered type app.schemas.chat.ChatResponse from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.schemas.chat', 'ChatResponse')]
+Deserializing unregistered type app.core.enums.Segment from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'Segment')]
+Deserializing unregistered type app.core.enums.GradeGroup from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'GradeGroup')]
+Deserializing unregistered type app.core.enums.UseCase from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'UseCase')]
+Deserializing unregistered type app.core.enums.Touchpoint from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'Touchpoint')]
+Deserializing unregistered type app.schemas.chat.ChatResponse from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.schemas.chat', 'ChatResponse')]
+Deserializing unregistered type app.core.enums.Segment from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'Segment')]
+Deserializing unregistered type app.core.enums.GradeGroup from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'GradeGroup')]
+Deserializing unregistered type app.core.enums.UseCase from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'UseCase')]
+Deserializing unregistered type app.core.enums.Touchpoint from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'Touchpoint')]
+Deserializing unregistered type app.schemas.chat.ChatResponse from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.schemas.chat', 'ChatResponse')]
+Deserializing unregistered type app.core.enums.Segment from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'Segment')]
+Deserializing unregistered type app.core.enums.GradeGroup from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'GradeGroup')]
+Deserializing unregistered type app.core.enums.UseCase from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'UseCase')]
+Deserializing unregistered type app.core.enums.Touchpoint from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'Touchpoint')]
+Deserializing unregistered type app.schemas.chat.ChatResponse from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.schemas.chat', 'ChatResponse')]
+Deserializing unregistered type app.core.enums.Segment from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'Segment')]
+Deserializing unregistered type app.core.enums.GradeGroup from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'GradeGroup')]
+
+  [OK ] TP4_막힘_원인선택지_고학년 #9: 어느 부분이 어려웠나요?
+  [OK ] TP4_막힘_원인선택지_고학년 #10: 어느 부분이 어려웠나요?
+  [OK ] TP4_막힘_코칭응답_고학년 #1: 문제를 한 번에 다 보지 말고, 조건에 표시해요. 문장에서 '무엇을 구하라'를 먼저 찾고, 그다음 필요한 값
+  [OK ] TP4_막힘_코칭응답_고학년 #2: 문제를 한 줄씩만 읽고, 조건에 밑줄을 그어보자. 이미 아는 정보와 구해야 하는 정보를 나눠보자. 계산이 길
+  [OK ] TP4_막힘_코칭응답_고학년 #3: 문제를 한 번에 끝까지 보지 말고, 조건부터 짧게 나눠 읽어요. 지문에서 ‘무엇을 구하라’만 먼저 표시해 봐
+  [OK ] TP4_막힘_코칭응답_고학년 #4: 문제를 한 번에 풀려 하지 말고, 조건을 작은 부분으로 나눠 보자. 문장에서 알려 주는 값과 구해야 하는 값
+  [OK ] TP4_막힘_코칭응답_고학년 #5: 문제를 한 번에 끝까지 읽기보다, 조건에 밑줄을 그어보자. 무엇을 먼저 구하는지, 마지막에 묻는 것이 무엇인
+  [OK ] TP4_막힘_코칭응답_고학년 #6: 문장을 한 번에 다 보지 말고, 조건을 먼저 찾기 핵심 정보에 밑줄을 그어 보기 식이나 풀이를 짧은 단계로 
+  [OK ] TP4_막힘_코칭응답_고학년 #7: 문장을 한 번에 읽지 말고, 뜻이 비슷한 묶음으로 나눠 보기 먼저 조건어와 물음 대상만 표시해 보기 나머지 
+  [OK ] TP4_막힘_코칭응답_고학년 #8: 문제를 한 번에 다 보지 말고, 조건과 물음을 나눠서 읽어보자. 문장마다 핵심 단어에 밑줄 친다고 생각하고,
+  [OK ] TP4_막힘_코칭응답_고학년 #9: 문제를 한 번에 다 보지 말고, 핵심 조건만 먼저 표시해요. 문장을 짧은 뜻 덩어리로 나눠서 차례대로 읽어요
+  [OK ] TP4_막힘_코칭응답_고학년 #10: 채원아, 문제를 한 번에 다 보지 말고 조건부터 짚어보자. 문장에서 ‘꼭 필요한 정보’에 밑줄을 그어보자. 
+  [OK ] TP5_학습종료_피드백_저학년 #1: 민준아, 뽀롱~   오늘 남은 건 **오답 복습**부터 해보자.   이건 금방 끝낼 수 있어!    먼저 *
+  [OK ] TP5_학습종료_피드백_저학년 #2: 민준아, 오늘 마무리해보자! 뽀롱~   오답부터 하나만 다시 보자.   가장 쉬운 것부터 같이 해볼까?
+  [OK ] TP5_학습종료_피드백_저학년 #3: 민준아, 오늘은 **가장 쉬운 것부터** 하나만 해보자. 뽀롱~  **오답 3개가 남아 있어.**   쌤이랑
+  [OK ] TP5_학습종료_피드백_저학년 #4: 민준아, 뽀롱~   오늘은 **오답부터 하나만** 같이 보자.    **가장 쉬운 오답 1개**를 눌러볼까?
+  [OK ] TP5_학습종료_피드백_저학년 #5: 민준아, 뽀롱~   오늘은 **가장 쉬운 것부터** 해보자.    **오답 1개만 먼저 다시 볼까?**
+  [OK ] TP5_학습종료_피드백_저학년 #6: 민준아, 뽀롱~   오늘은 **오답 3개**부터 같이 보자.    **복습부터 하나 눌러볼까?**   가장 
+  [OK ] TP5_학습종료_피드백_저학년 #7: 민준아, 오늘은 **오답부터 하나만** 다시 보자.   가장 금방 끝낼 수 있어.    **오답 1개 눌러볼
+  [OK ] TP5_학습종료_피드백_저학년 #8: 민준아, 뽀롱~   오늘은 **오답부터 하나만** 다시 보자.   금방 끝낼 수 있어!    **가장 쉬운 
+  [OK ] TP5_학습종료_피드백_저학년 #9: 민준아, 뽀롱~   오늘은 **오답부터 하나** 같이 보자.    쌤이랑 **가장 쉬운 오답 1개**부터 시
+  [OK ] TP5_학습종료_피드백_저학년 #10: 민준아, 안녕! 뽀롱~   오늘은 **오답부터 하나만** 같이 보자.   이건 짧게 끝낼 수 있어!    *
+
+▶ gpt-5.4-nano  (openrouter · openai/gpt-5.4-nano)
+  [OK ] TP1_뽀롱쌤_인사_저학년_불성실 #1: 민준아, 안녕! 뽀롱~   오늘은 **수학 한 자리 더하기**부터 하자!    **이유:**   - 난이도 
+  [OK ] TP1_뽀롱쌤_인사_저학년_불성실 #2: 민준아, 안녕! 뽀롱~   오늘은 **수학(한 자리 수 더하기)**부터 하자!    **이유**: 난이도 하
+  [OK ] TP1_뽀롱쌤_인사_저학년_불성실 #3: 민준아, 안녕! 뽀롱~   오늘은 **수학(한 자리 수 더하기)**부터 하자.  이유: **난이도 하**고,
+  [OK ] TP1_뽀롱쌤_인사_저학년_불성실 #4: 민준아, 안녕! 뽀롱~   오늘은 **수학(한 자리 수 더하기)**부터 하자!    이유는 딱 두 가지야. 
+  [OK ] TP1_뽀롱쌤_인사_저학년_불성실 #5: 민준아, 안녕! 뽀롱~   오늘은 **수학 한 자리 수 더하기**부터 하자!  왜냐면 **난이도 하**고, 
+  [OK ] TP1_뽀롱쌤_인사_저학년_불성실 #6: 민준아, 안녕! 뽀롱~   오늘은 **수학 ‘한 자리 수 더하기’**부터 하자!  - 난이도 **하**라서 
+  [OK ] TP1_뽀롱쌤_인사_저학년_불성실 #7: 민준아, 안녕! 뽀롱~   오늘은 **수학(한 자리 수 더하기)** 먼저 하자!  - 난이도도 하라서 **금
+  [OK ] TP1_뽀롱쌤_인사_저학년_불성실 #8: 민준아, 안녕! 뽀롱~    오늘은 **수학**부터 해보자.   한 자리 수 더하기는 **난이도도 하**고,
+  [OK ] TP1_뽀롱쌤_인사_저학년_불성실 #9: 민준아, 안녕! 뽀롱~   오늘은 **수학 “한 자리 수 더하기”**부터 하자!  이유는 딱 하나야:   *
+  [OK ] TP1_뽀롱쌤_인사_저학년_불성실 #10: 민준아, 안녕! 뽀롱~   오늘은 **수학 한 자리 수 더하기**부터 해보자!    - 난이도 **하**라서
+  [OK ] TP1_뽀롱쌤_인사_고학년_성실 #1: 채원아, 안녕! 뽀롱~   오늘은 수학부터 가자. 난이도 상이지만 채원이는 수학을 강하게 하고 평균도 높아서
+  [OK ] TP1_뽀롱쌤_인사_고학년_성실 #2: 채원아, 안녕! 뽀롱~   오늘은 **수학(비율과 비례식)**부터 하자! 쌤이 보기엔 채원은 수학을 강하게 
+  [OK ] TP1_뽀롱쌤_인사_고학년_성실 #3: 채원아, 안녕! 뽀롱~   오늘은 수학부터 잡자. 비율과 비례식이 난이도 상인데도 채원은 수학을 특히 잘해서
+  [OK ] TP1_뽀롱쌤_인사_고학년_성실 #4: 채원아, 안녕! 뽀롱~   오늘은 수학부터 해보자. 비율과 비례식이 난이도 상이긴 한데, 채원이는 수학 강하
+  [OK ] TP1_뽀롱쌤_인사_고학년_성실 #5: 채원아, 안녕! 뽀롱~   오늘은 수학부터 시작하자! 비율과 비례식이 난이도가 상이지만, 채원은 수학을 특히
+  [OK ] TP1_뽀롱쌤_인사_고학년_성실 #6: 채원아, 안녕 뽀롱~! 오늘은 수학 실력이 강하니까, 1번에 휙 넘어가기보다 **2번 수학(비율과 비례식)*
+  [OK ] TP1_뽀롱쌤_인사_고학년_성실 #7: 채원아, 안녕! 뽀롱~   오늘은 수학부터 시작하자! 비율과 비례식이 난이도도 상인데, 채원은 수학에 강하고
+  [OK ] TP1_뽀롱쌤_인사_고학년_성실 #8: 채원아, 안녕! 뽀롱~   오늘은 수학부터 추천할게! 비율이랑 비례식은 난이도가 상이라 점수 관리에 딱 좋아
+  [OK ] TP1_뽀롱쌤_인사_고학년_성실 #9: 채원아, 안녕 뽀롱~! 홈에 잘 왔네!  오늘은 수학(비율과 비례식)부터 가자. 난이도는 상이라도, 채원이는
+  [OK ] TP1_뽀롱쌤_인사_고학년_성실 #10: 채원아, 안녕! 뽀롱~   오늘 과제 중에 쌤이 제일 먼저는 수학 “비율과 비례식” 추천할게. 난이도는 상이
+  [OK ] TP2_단원완료_피드백_저학년 #1: 민준아, 다 해낸 거 없어도 괜찮아! 지금 바로 1개만 찍어보자~ 뽀롱!  가장 쉬운 거부터 할까?   **
+  [OK ] TP2_단원완료_피드백_저학년 #2: 민준아, 아직 완료가 0/4야!   그래도 여기까지 들어온 것 자체로 잘했어!  지금은 **가장 빨리 끝낼 
+  [OK ] TP2_단원완료_피드백_저학년 #3: 민준아, 아직 0/4라서 지금 첫 걸음만 딱 하자!   먼저 **수학: 한 자리 수 더하기**부터 해볼까? 
+  [OK ] TP2_단원완료_피드백_저학년 #4: 민준아, 아직 0/4개였지!   국어부터 바로 해보자.    **국어: 받침이 있는 낱말 읽기** 1개만 먼Deserializing unregistered type app.core.enums.UseCase from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'UseCase')]
+Deserializing unregistered type app.core.enums.Touchpoint from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'Touchpoint')]
+Deserializing unregistered type app.schemas.chat.ChatResponse from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.schemas.chat', 'ChatResponse')]
+Deserializing unregistered type app.core.enums.Segment from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'Segment')]
+Deserializing unregistered type app.core.enums.GradeGroup from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'GradeGroup')]
+Deserializing unregistered type app.core.enums.UseCase from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'UseCase')]
+Deserializing unregistered type app.core.enums.Touchpoint from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'Touchpoint')]
+Deserializing unregistered type app.schemas.chat.ChatResponse from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.schemas.chat', 'ChatResponse')]
+Deserializing unregistered type app.core.enums.Segment from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'Segment')]
+Deserializing unregistered type app.core.enums.GradeGroup from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'GradeGroup')]
+Deserializing unregistered type app.core.enums.UseCase from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'UseCase')]
+Deserializing unregistered type app.core.enums.Touchpoint from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'Touchpoint')]
+Deserializing unregistered type app.schemas.chat.ChatResponse from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.schemas.chat', 'ChatResponse')]
+Deserializing unregistered type app.core.enums.Segment from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'Segment')]
+Deserializing unregistered type app.core.enums.GradeGroup from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'GradeGroup')]
+Deserializing unregistered type app.core.enums.UseCase from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'UseCase')]
+Deserializing unregistered type app.core.enums.Touchpoint from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'Touchpoint')]
+Deserializing unregistered type app.schemas.chat.ChatResponse from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.schemas.chat', 'ChatResponse')]
+Deserializing unregistered type app.core.enums.Segment from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'Segment')]
+Deserializing unregistered type app.core.enums.GradeGroup from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'GradeGroup')]
+Deserializing unregistered type app.core.enums.UseCase from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'UseCase')]
+Deserializing unregistered type app.core.enums.Touchpoint from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'Touchpoint')]
+Deserializing unregistered type app.schemas.chat.ChatResponse from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.schemas.chat', 'ChatResponse')]
+Deserializing unregistered type app.core.enums.Segment from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'Segment')]
+Deserializing unregistered type app.core.enums.GradeGroup from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'GradeGroup')]
+Deserializing unregistered type app.core.enums.UseCase from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'UseCase')]
+Deserializing unregistered type app.core.enums.Touchpoint from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'Touchpoint')]
+Deserializing unregistered type app.schemas.chat.ChatResponse from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.schemas.chat', 'ChatResponse')]
+Deserializing unregistered type app.core.enums.Segment from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'Segment')]
+Deserializing unregistered type app.core.enums.GradeGroup from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'GradeGroup')]
+Deserializing unregistered type app.core.enums.UseCase from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'UseCase')]
+Deserializing unregistered type app.core.enums.Touchpoint from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'Touchpoint')]
+Deserializing unregistered type app.schemas.chat.ChatResponse from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.schemas.chat', 'ChatResponse')]
+Deserializing unregistered type app.core.enums.Segment from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'Segment')]
+Deserializing unregistered type app.core.enums.GradeGroup from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'GradeGroup')]
+Deserializing unregistered type app.core.enums.UseCase from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'UseCase')]
+Deserializing unregistered type app.core.enums.Touchpoint from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'Touchpoint')]
+Deserializing unregistered type app.schemas.chat.ChatResponse from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.schemas.chat', 'ChatResponse')]
+Deserializing unregistered type app.core.enums.Segment from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'Segment')]
+Deserializing unregistered type app.core.enums.GradeGroup from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'GradeGroup')]
+Deserializing unregistered type app.core.enums.UseCase from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'UseCase')]
+Deserializing unregistered type app.core.enums.Touchpoint from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'Touchpoint')]
+Deserializing unregistered type app.schemas.chat.ChatResponse from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.schemas.chat', 'ChatResponse')]
+Deserializing unregistered type app.core.enums.Segment from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'Segment')]
+Deserializing unregistered type app.core.enums.GradeGroup from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'GradeGroup')]
+Deserializing unregistered type app.core.enums.UseCase from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'UseCase')]
+Deserializing unregistered type app.core.enums.Touchpoint from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'Touchpoint')]
+Deserializing unregistered type app.schemas.chat.ChatResponse from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.schemas.chat', 'ChatResponse')]
+Deserializing unregistered type app.core.enums.Segment from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'Segment')]
+Deserializing unregistered type app.core.enums.GradeGroup from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'GradeGroup')]
+
+  [OK ] TP2_단원완료_피드백_저학년 #5: 민준아, 아직 0/4라서 오늘 시작 딱 잘 잡자!   먼저 **수학: 한 자리 수 더하기**부터 해보자.  
+  [OK ] TP2_단원완료_피드백_저학년 #6: 민준아, 아직 0/4였는데도 시작하려고 한 거 대단해!   바로 “수학: 한 자리 수 더하기”부터 하자.  
+  [OK ] TP2_단원완료_피드백_저학년 #7: 민준아, 아직 0/4개라서!   지금 하나만 바로 해보자.  국어부터 해볼까?   **받침이 있는 낱말 읽기
+  [OK ] TP2_단원완료_피드백_저학년 #8: 민준아, 오늘 시작 잘했어! 아직 0/4라서, 먼저 아주 쉬운 거부터 딱 하나만 해보자.  **수학: 한 자
+  [OK ] TP2_단원완료_피드백_저학년 #9: 민준아, 잘해줬어! 아직 4개 중 0개구나, 괜찮아~   이제 **가장 빨리 끝낼 수 있는 거**부터 하자.
+  [OK ] TP2_단원완료_피드백_저학년 #10: 민준아, 아직 0/4개였지?   먼저 딱 하나만! 제일 쉬운 거부터 같이 가보자.    지금 **수학: 한 
+  [OK ] TP3_이탈방지_저학년_불성실 #1: 민준아, 지금 국어 낱말 읽기가 좀 지치는구나~ 괜찮아, 쉬었다가도 돼!   남은 게 4개뿐이야. 지금은 *
+  [OK ] TP3_이탈방지_저학년_불성실 #2: 민준아, 지금 국어 받침 읽기 때문에 힘들었구나.   남은 건 4개뿐이야—오늘은 딱 하나만 골라서 시작해보자
+  [OK ] TP3_이탈방지_저학년_불성실 #3: 민준아, 조금만 쉬었다가 다시 해도 돼~ 지금 남은 건 4개만이야.   딱 하나만 고르면 바로 같이 시작하자
+  [OK ] TP3_이탈방지_저학년_불성실 #4: 민준아, 국어 받침 읽기 4개 남았구나~ 지금은 좀 힘든 마음인가 봐.   그럼 아주 작게만 해보자: **1
+  [OK ] TP3_이탈방지_저학년_불성실 #5: 민준아, 지금 국어 받침 읽기에서 조금 지친 거 같아~ 괜찮아, 4개만 남았어!   지금 바로 “하나만” 할
+  [OK ] TP3_이탈방지_저학년_불성실 #6: 민준아, 지금 국어 받침 읽기가 좀 힘들구나~ 괜찮아.   남은 건 4개만이니까, **1)** 제일 쉬운 1
+  [OK ] TP3_이탈방지_저학년_불성실 #7: 민준아, 지금 힘든 거 당연해~ 받아쓰기처럼 느껴질 수 있지. 국어 낱말 읽기 4개 중에 **딱 한 가지만*
+  [OK ] TP3_이탈방지_저학년_불성실 #8: 민준아, 국어 받침 낱말 읽기 이탈하고 싶은 거구나. 괜찮아~ 지금은 딱 1개만 골라서 “하나 읽고” 끝내보
+  [OK ] TP3_이탈방지_저학년_불성실 #9: 민준아, 지금 국어 받침 낱말 읽기 딱 4개 남았네. 4개가 부담이면 **하나만** 먼저 읽고 쉬자—어느 낱
+  [OK ] TP3_이탈방지_저학년_불성실 #10: 민준아, 지금 조금 지치나 봐… 괜찮아, 쌤이랑 딱 한 가지만 해보자.   남은 게 4개뿐이니까, **① 오
+  [OK ] TP4_막힘_원인선택지_고학년 #1: 어느 부분이 어려웠나요?
+  [OK ] TP4_막힘_원인선택지_고학년 #2: 어느 부분이 어려웠나요?
+  [OK ] TP4_막힘_원인선택지_고학년 #3: 어느 부분이 어려웠나요?
+  [OK ] TP4_막힘_원인선택지_고학년 #4: 어느 부분이 어려웠나요?
+  [OK ] TP4_막힘_원인선택지_고학년 #5: 어느 부분이 어려웠나요?
+  [OK ] TP4_막힘_원인선택지_고학년 #6: 어느 부분이 어려웠나요?
+  [OK ] TP4_막힘_원인선택지_고학년 #7: 어느 부분이 어려웠나요?
+  [OK ] TP4_막힘_원인선택지_고학년 #8: 어느 부분이 어려웠나요?
+  [OK ] TP4_막힘_원인선택지_고학년 #9: 어느 부분이 어려웠나요?
+  [OK ] TP4_막힘_원인선택지_고학년 #10: 어느 부분이 어려웠나요?
+  [OK ] TP4_막힘_코칭응답_고학년 #1: 채원아, 괜찮아. 문장이 길어서 핵심이 흐려질 때는 ‘조건만’ 먼저 뽑으면 풀기 쉬워져요. 지금 문제에서 핵
+  [OK ] TP4_막힘_코칭응답_고학년 #2: 좋은 시작이야. 일단 문제를 ‘조건’이랑 ‘묻는 말’만 따로 적어보자. 긴 문장은 핵심 단어만 남기고 줄여 
+  [OK ] TP4_막힘_코칭응답_고학년 #3: 채원아, 글이 길어서 핵심을 놓치지 않게 쪼개보자. 먼저 문제에서 ‘무엇을 구하라는지(목표)’ 한 줄만 찾아
+  [OK ] TP4_막힘_코칭응답_고학년 #4: 좋아, 채원아. 문장이 길 때는 ‘조건’부터 딱 뽑아보자. 문제에서 숫자/키워드/관계(예: 더해, 곱해, 같
+  [OK ] TP4_막힘_코칭응답_고학년 #5: 좋아 채원아, 긴 문장은 ‘조건’만 먼저 떼어내자. 문제에서 숫자/단위, 핵심 단어(예: 합, 차, 비, 속
+  [OK ] TP4_막힘_코칭응답_고학년 #6: 좋아, 문장이 길면 핵심만 추려보자. 문제에서 조건(무엇을 주는지)만 먼저 찾아봐요. 다음으로 묻는 것(무엇
+  [OK ] TP4_막힘_코칭응답_고학년 #7: 채원아, 길게 쓰인 문제는 먼저 ‘조건만’ 짧게 뽑아보면 빨라져요. 여기 보자: (1) 무엇을 구하라는지 (
+  [OK ] TP4_막힘_코칭응답_고학년 #8: 좋아 채원아, 긴 문제는 ‘조건’만 먼저 따로 적어보자. 문단/문제에서 수치·단위·요구(구하라/비교하라)만 
+  [OK ] TP4_막힘_코칭응답_고학년 #9: 좋아 채원아, 글이 길어서 버거운 거구나. 먼저 문제를 한 줄로 요약해보자. 조건(숫자/단위/관계)만 동그라
+  [OK ] TP4_막힘_코칭응답_고학년 #10: 채원아, 지금 막히는 게 내용이 길어서 그런 것 같아. 가만히 있어보자. 먼저 문제(또는 지시문)에서 ‘조건
+  [OK ] TP5_학습종료_피드백_저학년 #1: 민준아, 안녕 뽀롱~   아직 과제 0/4야. 근데 오답이 3개나 남아 있지?  이제 **오답 1개만** 골
+  [OK ] TP5_학습종료_피드백_저학년 #2: 민준아, 안녕! 뽀롱~   아직 과제 0/4고 오답이 3개나 남아 있네. 같이 딱 하나만 하자!  **지금 
+  [OK ] TP5_학습종료_피드백_저학년 #3: 민준아, 아직 과제 0/4야.   쌤이랑 딱 **하나만** 먼저 끝내보자!  오답이 3개 남아있으니, 오늘은
+  [OK ] TP5_학습종료_피드백_저학년 #4: 민준아, 안녕! 뽀롱~   오늘은 과제를 0개 했네. 대신 오답이 3개나 남아있지?    우선 **가장 쉬운
+  [OK ] TP5_학습종료_피드백_저학년 #5: 민준아, 뽀롱쌤이 여기 있어!   오답이 3개나 남아 있네. 근데 오늘은 **하나만** 고쳐보자~  지금 화
+  [OK ] TP5_학습종료_피드백_저학년 #6: 민준아, 안녕! 뽀롱~   오늘 과제 0개야. 오답이 3개 남아있고, 이거부터 잡자!  지금 딱 1개만 해보
+  [OK ] TP5_학습종료_피드백_저학년 #7: 민준아, 안녕! 뽀롱~    오늘은 아직 0개라서, **가장 빨리 끝나는 것부터** 가보자.   오답이 3개
+  [OK ] TP5_학습종료_피드백_저학년 #8: 민준아, 쌤이 지금 딱 하나만 같이 하자~   오늘 오답이 3개 남아 있잖아.  **먼저 1번 오답부터** 
+  [OK ] TP5_학습종료_피드백_저학년 #9: 민준아, 안녕! 뽀롱~   오늘 4개 중 0개 아직이구, 오답이 3개 남았지?  자, **제일 쉬운 거 하나
+  [OK ] TP5_학습종료_피드백_저학년 #10: 민준아, 뽀롱~ 지금은 “복습”부터 딱 1개만 해보자!  오답이 3개나 남았지? 그중 **제일 쉬운 1개**
+
+▶ gemini-2.5-flash  (openrouter · google/gemini-2.5-flash)
+  [OK ] TP1_뽀롱쌤_인사_저학년_불성실 #1: 민준아, 안녕! 뽀롱~ 😊  오늘도 뽀롱쌤이랑 같이 재미있는 공부 해볼까?  음~ 쌤이 보니까 민준이는 통합
+  [OK ] TP1_뽀롱쌤_인사_저학년_불성실 #2: 민준아, 안녕! 뽀롱~ 😊  오늘도 뽀롱쌤이랑 같이 재미있게 공부해볼까? 쌤이 보니까 민준이는 통합 과목을 
+  [OK ] TP1_뽀롱쌤_인사_저학년_불성실 #3: 민준아, 안녕! 뽀롱~ 😊  오늘도 뽀롱쌤이랑 같이 재미있게 공부해볼까?  음~ 가만 있어보자. 쌤이 민준이
+  [OK ] TP1_뽀롱쌤_인사_저학년_불성실 #4: 민준아, 안녕! 뽀롱~  오늘 뽀롱쌤이랑 재미있는 공부 같이 해볼까? 😊  음~ 어디 보자. 쌤은 민준이가 
+  [OK ] TP1_뽀롱쌤_인사_저학년_불성실 #5: 민준아, 안녕! 뽀롱~ 😊  오늘 민준이랑 같이 공부할 게 많네! 쌤이 보니까 민준이가 통합 과목을 참 좋아
+  [OK ] TP1_뽀롱쌤_인사_저학년_불성실 #6: 민준아, 안녕! 뽀롱~ 😊  오늘도 뽀롱쌤이랑 즐겁게 공부해볼까? 쌤이 보니까, 민준이가 통합 과목을 정말 
+  [OK ] TP1_뽀롱쌤_인사_저학년_불성실 #7: 민준아, 안녕! 뽀롱~ 😊  오늘 쌤이랑 같이 재미있게 공부해볼까?  민준이가 좋아하는 통합 과목에 '봄 관
+  [OK ] TP1_뽀롱쌤_인사_저학년_불성실 #8: 민준아, 안녕! 뽀롱~ 😊  오늘도 뽀롱쌤이랑 즐겁게 공부해볼까? 쌤이 민준이를 위해 준비한 오늘의 공부도 
+  [OK ] TP1_뽀롱쌤_인사_저학년_불성실 #9: 민준아, 안녕! 뽀롱~  오늘 뽀롱쌤이랑 재미있는 공부 같이 해볼까?  음~ 쌤이 보니까 민준이는 통합 과목
+  [OK ] TP1_뽀롱쌤_인사_저학년_불성실 #10: 민준아, 안녕! 뽀롱~ 😊  오늘도 뽀롱쌤이랑 신나게 공부해 볼까? 쌤이 민준이한테 딱 맞는 오늘의 공부를 
+  [OK ] TP1_뽀롱쌤_인사_고학년_성실 #1: 채원아, 안녕! 뽀롱~  오늘도 뽀롱쌤이랑 열심히 공부해볼 준비됐니? 채원이는 평소에 수학을 정말 잘하고 좋
+  [OK ] TP1_뽀롱쌤_인사_고학년_성실 #2: 채원아, 안녕! 뽀롱~  오늘도 뽀롱쌤이랑 열심히 공부해볼까? 채원이는 학교 공부도 잘하고, 특히 수학은 정
+  [OK ] TP1_뽀롱쌤_인사_고학년_성실 #3: 채원아, 안녕! 뽀롱~  오늘도 뽀롱쌤이랑 열심히 공부해볼 준비 됐나요? 채원이는 수학을 좋아하고 또 잘하는
+  [OK ] TP1_뽀롱쌤_인사_고학년_성실 #4: 채원아, 안녕! 뽀롱~  오늘도 뽀롱쌤이랑 즐겁게 공부 시작해볼까? 채원이는 평소에 수학을 정말 좋아하고 잘
+  [OK ] TP1_뽀롱쌤_인사_고학년_성실 #5: 채원아, 안녕! 뽀롱~ 오늘도 뽀롱쌤이랑 같이 공부할 준비됐니?  어디 보자, 채원이는 지난번에 수학을 정말
+  [OK ] TP1_뽀롱쌤_인사_고학년_성실 #6: 채원아, 안녕! 뽀롱~  오늘도 뽀롱쌤이랑 같이 공부할 준비 됐니? 채원이는 평소에 수학을 정말 잘하고 좋아
+  [OK ] TP1_뽀롱쌤_인사_고학년_성실 #7: 채원아, 안녕! 뽀롱~  오늘도 학습하러 왔구나! 쌤이 채원이의 학습 기록을 꼼꼼히 살펴봤는데, 수학을 특히
+  [OK ] TP1_뽀롱쌤_인사_고학년_성실 #8: 채원아, 안녕! 뽀롱~  오늘도 학습을 시작하러 왔구나! 쌤이 채원이의 홈 화면을 보니까, 역시 수학은 꾸준
+  [OK ] TP1_뽀롱쌤_인사_고학년_성실 #9: 채원아, 안녕! 뽀롱~  오늘도 학습하러 와주었구나! 쌤이 채원이의 학습 데이터를 보니까, 채원이는 수학을 
+  [OK ] TP1_뽀롱쌤_인사_고학년_성실 #10: 채원아, 안녕! 뽀롱~  오늘도 쌤이랑 열심히 공부해 볼 준비 됐니? 채원이는 수학을 좋아하고 또 잘하니까 
+  [OK ] TP2_단원완료_피드백_저학년 #1: 민준아, 안녕! 뽀롱~  오늘 공부할 것들이 이렇게 있네! 민준이가 좋아하는 과목부터 같이 해볼까?  어떤 
+  [OK ] TP2_단원완료_피드백_저학년 #2: 민준아, 안녕! 뽀롱~  민준이가 오늘 뽀롱쌤이랑 처음 만났구나! 우리 같이 재미있게 공부해 보자!  지금부
+  [OK ] TP2_단원완료_피드백_저학년 #3: 민준아, 안녕! 뽀롱~ 😊  오늘의 학습을 아직 시작하지 않았구나! 괜찮아, 지금부터 쌤이랑 하나씩 해나가면
+  [OK ] TP2_단원완료_피드백_저학년 #4: 민준아, 안녕! 뽀롱~  민준이가 오늘 해야 할 과제들을 쌤이 가져왔어! 국어, 수학, 영어, 통합 이렇게 
+  [OK ] TP2_단원완료_피드백_저학년 #5: 민준아, 뽀롱~ 안녕!  민준이가 오늘 할 공부가 4개 있는데, 아직 시작을 안 했네. 괜찮아! 쌤이 옆에서
+  [OK ] TP2_단원완료_피드백_저학년 #6: 민준아, 안녕! 뽀롱~  오늘 공부할 것들이 이렇게 있네! 민준이가 좋아하는 과목부터 해볼까? 아니면 가장 
+  [OK ] TP2_단원완료_피드백_저학년 #7: 민준아, 안녕! 뽀롱~  민준이가 오늘 할 과제 4개 중에 아직 시작한 건 없네! 괜찮아, 뽀롱쌤이랑 같이 
+  [OK ] TP2_단원완료_피드백_저학년 #8: 민준아, 안녕! 뽀롱~ 😊  오늘의 학습 4개 중에 아직 시작한 건 없었네! 괜찮아, 지금부터 쌤이랑 하나씩
+  [OK ] TP2_단원완료_피드백_저학년 #9: 민준아, 안녕! 뽀롱~  오늘 공부할 것 중에 아직 하나도 안 했네? 괜찮아, 쌤이 옆에서 도와줄게! 😊  
+  [OK ] TP2_단원완료_피드백_저학년 #10: 민준아, 안녕! 뽀롱~  오늘 공부할 것 중에 가장 쉬운 것부터 같이 해볼까? 민준이가 좋아하는 **국어**
+  [OK ] TP3_이탈방지_저학년_불성실 #1: 민준아, 안녕! 뽀롱~  민준이가 지금 좀 쉬고 싶구나? 괜찮아! 쌤이 민준이 마음 다 알아.  지금 바로 
+  [OK ] TP3_이탈방지_저학년_불성실 #2: 민준아, 뽀롱~ 힘든지 쌤이 아까부터 지켜보고 있었어. 😥  민준이가 지금 좀 쉬고 싶으면 쉬어도 괜찮아! 
+  [OK ] TP3_이탈방지_저학년_불성실 #3: 민준아, 안녕! 뽀롱~  민준이 쉬고 싶은 마음이 드는구나. 괜찮아. 쌤이 민준이 마음 잘 알아. 😊  잠깐
+  [OK ] TP3_이탈방지_저학년_불성실 #4: 민준아, 뽀롱~ 힘들어 보여서 쌤 마음이 아프네. 😔  지금 잠시 쉬고 싶으면 쉬어도 괜찮아. 아니면 우리 
+  [OK ] TP3_이탈방지_저학년_불성실 #5: 민준아, 뽀롱~ 지금 학습이 좀 힘들구나? 쌤이 민준이 마음 다 알아.  잠깐 쉬었다가 다시 해볼까? 아니면
+  [OK ] TP3_이탈방지_저학년_불성실 #6: 민준아, 뽀롱~ 지금 국어 공부하다가 좀 쉬고 싶구나? 괜찮아, 쌤이 알아.  그럼 잠깐 쉬었다가 다시 해볼
+  [OK ] TP3_이탈방지_저학년_불성실 #7: 민준아, 안녕! 뽀롱~  민준이가 지금 좀 쉬고 싶구나? 괜찮아! 쌤이 민준이 마음 잘 알아. 😊  잠깐 쉬
+  [OK ] TP3_이탈방지_저학년_불성실 #8: 민준아, 안녕! 뽀롱~  민준이가 지금 좀 쉬고 싶구나? 괜찮아! 쌤이 민준이 마음 다 알아.  지금 바로 
+  [OK ] TP3_이탈방지_저학년_불성실 #9: 민준아, 뽀롱~ 힘내서 공부하다가 잠깐 쉬고 싶어졌구나! 쌤이 민준이 마음 잘 알아. 😊  잠깐 쉬었다 갈까
+  [OK ] TP3_이탈방지_저학년_불성실 #10: 민준아, 뽀롱~! 지금 잠깐 쉬고 싶구나? 쌤이 민준이 마음 알아.  그럼 잠시 푹 쉬었다가 다시 해볼까? 
+  [OK ] TP4_막힘_원인선택지_고학년 #1: 주장이 무엇인지 헷갈려요 / 주장을 뒷받침하는 근거를 찾기 어려워요 / 주장과 근거가 어떻게 연결되는지 잘 
+  [OK ] TP4_막힘_원인선택지_고학년 #2: 주장을 정확히 찾는 게 어려웠어요 / 근거가 주장을 뒷받침하는지 헷갈렸어요 / 사실과 의견을 구분하기 어려웠
+  [OK ] TP4_막힘_원인선택지_고학년 #3: 주장이 무엇인지 정확히 찾는 게 어려워요. / 주장과 연결되는 근거를 구별하기가 힘들어요. / 사실과 주장을
+  [OK ] TP4_막힘_원인선택지_고학년 #4: 주장과 근거가 헷갈려요. / 글의 핵심 주장을 찾기 어려워요. / 주장에 맞는 근거를 찾기 어려워요. / 글
+  [OK ] TP4_막힘_원인선택지_고학년 #5: 주장과 근거가 뭔지 모르겠어요 / 근거를 어디서 찾아야 할지 모르겠어요 / 주장과 근거 중에서 중요한 내용을
+  [OK ] TP4_막힘_원인선택지_고학년 #6: 주장이 무엇인지 헷갈려요 / 근거가 주장이랑 관련 있는지 모르겠어요 / 사실이랑 의견을 구별하기 어려워요 /
+  [OK ] TP4_막힘_원인선택지_고학년 #7: 주장이 무엇인지 찾기 어려워요 / 근거가 주장을 어떻게 뒷받침하는지 모르겠어요 / 사실과 의견을 구분하기 헷Deserializing unregistered type app.core.enums.UseCase from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'UseCase')]
+Deserializing unregistered type app.core.enums.Touchpoint from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'Touchpoint')]
+Deserializing unregistered type app.schemas.chat.ChatResponse from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.schemas.chat', 'ChatResponse')]
+Deserializing unregistered type app.core.enums.Segment from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'Segment')]
+Deserializing unregistered type app.core.enums.GradeGroup from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'GradeGroup')]
+Deserializing unregistered type app.core.enums.UseCase from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'UseCase')]
+Deserializing unregistered type app.core.enums.Touchpoint from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'Touchpoint')]
+Deserializing unregistered type app.schemas.chat.ChatResponse from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.schemas.chat', 'ChatResponse')]
+Deserializing unregistered type app.core.enums.Segment from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'Segment')]
+Deserializing unregistered type app.core.enums.GradeGroup from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'GradeGroup')]
+Deserializing unregistered type app.core.enums.UseCase from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'UseCase')]
+Deserializing unregistered type app.core.enums.Touchpoint from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'Touchpoint')]
+Deserializing unregistered type app.schemas.chat.ChatResponse from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.schemas.chat', 'ChatResponse')]
+Deserializing unregistered type app.core.enums.Segment from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'Segment')]
+Deserializing unregistered type app.core.enums.GradeGroup from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'GradeGroup')]
+Deserializing unregistered type app.core.enums.UseCase from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'UseCase')]
+Deserializing unregistered type app.core.enums.Touchpoint from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'Touchpoint')]
+Deserializing unregistered type app.schemas.chat.ChatResponse from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.schemas.chat', 'ChatResponse')]
+Deserializing unregistered type app.core.enums.Segment from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'Segment')]
+Deserializing unregistered type app.core.enums.GradeGroup from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'GradeGroup')]
+Deserializing unregistered type app.core.enums.UseCase from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'UseCase')]
+Deserializing unregistered type app.core.enums.Touchpoint from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'Touchpoint')]
+Deserializing unregistered type app.schemas.chat.ChatResponse from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.schemas.chat', 'ChatResponse')]
+Deserializing unregistered type app.core.enums.Segment from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'Segment')]
+Deserializing unregistered type app.core.enums.GradeGroup from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'GradeGroup')]
+Deserializing unregistered type app.core.enums.UseCase from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'UseCase')]
+Deserializing unregistered type app.core.enums.Touchpoint from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'Touchpoint')]
+Deserializing unregistered type app.schemas.chat.ChatResponse from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.schemas.chat', 'ChatResponse')]
+Deserializing unregistered type app.core.enums.Segment from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'Segment')]
+Deserializing unregistered type app.core.enums.GradeGroup from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'GradeGroup')]
+Deserializing unregistered type app.core.enums.UseCase from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'UseCase')]
+Deserializing unregistered type app.core.enums.Touchpoint from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'Touchpoint')]
+Deserializing unregistered type app.schemas.chat.ChatResponse from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.schemas.chat', 'ChatResponse')]
+Deserializing unregistered type app.core.enums.Segment from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'Segment')]
+Deserializing unregistered type app.core.enums.GradeGroup from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'GradeGroup')]
+Deserializing unregistered type app.core.enums.UseCase from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'UseCase')]
+Deserializing unregistered type app.core.enums.Touchpoint from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'Touchpoint')]
+Deserializing unregistered type app.schemas.chat.ChatResponse from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.schemas.chat', 'ChatResponse')]
+Deserializing unregistered type app.core.enums.Segment from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'Segment')]
+Deserializing unregistered type app.core.enums.GradeGroup from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'GradeGroup')]
+Deserializing unregistered type app.core.enums.UseCase from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'UseCase')]
+Deserializing unregistered type app.core.enums.Touchpoint from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'Touchpoint')]
+Deserializing unregistered type app.schemas.chat.ChatResponse from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.schemas.chat', 'ChatResponse')]
+Deserializing unregistered type app.core.enums.Segment from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'Segment')]
+Deserializing unregistered type app.core.enums.GradeGroup from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'GradeGroup')]
+Deserializing unregistered type app.core.enums.UseCase from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'UseCase')]
+Deserializing unregistered type app.core.enums.Touchpoint from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'Touchpoint')]
+Deserializing unregistered type app.schemas.chat.ChatResponse from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.schemas.chat', 'ChatResponse')]
+Deserializing unregistered type app.core.enums.Segment from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'Segment')]
+Deserializing unregistered type app.core.enums.GradeGroup from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'GradeGroup')]
+
+  [OK ] TP4_막힘_원인선택지_고학년 #8: 주장이 무엇인지 모르겠어요 / 근거들이 주장을 어떻게 뒷받침하는지 헷갈려요 / 사실과 의견을 구분하기 어려워
+  [OK ] TP4_막힘_원인선택지_고학년 #9: 주장과 근거가 헷갈려요. / 글의 핵심 주장을 못 찾겠어요. / 어떤 문장이 근거인지 모르겠어요. / 모르는
+  [OK ] TP4_막힘_원인선택지_고학년 #10: 주장과 근거가 헷갈려요. / 근거를 어디서 찾아야 할지 모르겠어요. / 주장이 여러 개 같아요. / 어떤 근
+  [OK ] TP4_막힘_코칭응답_고학년 #1: 채원아, 안녕! 뽀롱~ 문제가 길어서 어디서부터 시작해야 할지 막막했던 거구나. 괜찮아, 쌤이 옆에서 같이 
+  [OK ] TP4_막힘_코칭응답_고학년 #2: 채원아, 안녕! 뽀롱~ 문제가 너무 길어서 어디서부터 시작해야 할지 막막한가 보구나. 괜찮아, 쌤이 옆에서 
+  [OK ] TP4_막힘_코칭응답_고학년 #3: 채원아, 안녕! 뽀롱~ 문제가 너무 길어서 어디서부터 시작해야 할지 막막한 기분이 들었구나. 괜찮아, 쌤이 
+  [OK ] TP4_막힘_코칭응답_고학년 #4: 채원아, 안녕! 뽀롱~ 문제가 너무 길어서 어디서부터 시작해야 할지 막막했던 거구나? 괜찮아, 쌤이랑 같이 
+  [OK ] TP4_막힘_코칭응답_고학년 #5: 채원아, 안녕! 뽀롱~ 문제가 너무 길어서 어디서부터 시작해야 할지 막막한 기분이 들었구나. 괜찮아, 긴 문
+  [OK ] TP4_막힘_코칭응답_고학년 #6: 채원아, 안녕! 뽀롱~ 문제가 너무 길어서 어디서부터 시작해야 할지 막막한 기분이 들 수도 있겠네. 괜찮아,
+  [OK ] TP4_막힘_코칭응답_고학년 #7: 채원아, 안녕! 뽀롱~ 문제가 너무 길어서 어디서부터 시작해야 할지 막막한 기분이 들 수 있지. 쌤이 채원이
+  [OK ] TP4_막힘_코칭응답_고학년 #8: 채원아, 안녕! 뽀롱~ 지문이 너무 길어서 읽기 힘들었구나. 괜찮아, 쌤이 채원이가 문제의 핵심을 잘 파악할
+  [OK ] TP4_막힘_코칭응답_고학년 #9: 채원아, 안녕! 뽀롱~ 문제가 너무 길어서 어디서부터 시작해야 할지 막막할 때가 있지? 쌤이 그럴 때 도움이
+  [OK ] TP4_막힘_코칭응답_고학년 #10: 채원아, 안녕! 뽀롱~ 문제가 너무 길어서 어디서부터 시작해야 할지 막막한 기분이 들 수도 있지. 그럴 때는
+  [OK ] TP5_학습종료_피드백_저학년 #1: 민준아, 뽀롱~ 오늘 학습 정말 열심히 했어! 쌤이 다 지켜봤지. 😊  아직 오답이 3개 남아있네? 쌤이랑 
+  [OK ] TP5_학습종료_피드백_저학년 #2: 민준아, 뽀롱~ 오늘 학습을 마무리할 시간이 왔네! 짝짝짝! 👏  오늘 남은 오답이 세 개 있어. 쌤이 옆에
+  [OK ] TP5_학습종료_피드백_저학년 #3: 민준아, 뽀롱~ 오늘 공부하느라 정말 수고 많았어! 😊  아직 오늘 오답이 남아있는데, 쌤이랑 같이 복습해 
+  [OK ] TP5_학습종료_피드백_저학년 #4: 민준아, 안녕! 뽀롱~ 😊  오늘 학습은 정말 잘했어! 쌤이 보니까 민준이가 오답 3개 중에 아직 3개가 남
+  [OK ] TP5_학습종료_피드백_저학년 #5: 민준아, 뽀롱~ 오늘 학습 다 끝내려고 하는구나! 정말 멋지다!   우리 민준이가 오늘 학습한 것 중에 아쉽
+  [OK ] TP5_학습종료_피드백_저학년 #6: 민준아, 뽀롱~! 오늘 학습을 마무리할 시간이 되었네! 😊  아직 오답이 3개 남아있는데, 쌤이랑 같이 복습
+  [OK ] TP5_학습종료_피드백_저학년 #7: 민준아, 안녕! 뽀롱~  오늘 학습을 끝내고 싶구나! 쌤이 도와줄게! 😊  민준이가 오늘 해야 할 학습이 4
+  [OK ] TP5_학습종료_피드백_저학년 #8: 민준아, 안녕! 뽀롱~  오늘 공부하느라 정말 수고 많았어! 쌤이 민준이가 열심히 한 거 다 알고 있지! 😊
+  [OK ] TP5_학습종료_피드백_저학년 #9: 민준아, 안녕! 뽀롱~ 😊  오늘 학습을 마무리하려고 하는구나! 정말 잘했어! 쌤이 민준이를 칭찬해 주고 싶
+  [OK ] TP5_학습종료_피드백_저학년 #10: 민준아, 안녕! 뽀롱~  오늘 학습을 마무리하고 싶구나! 쌤이 도와줄게! 😊  아직 오늘 학습 과제 4개 중
+
+▶ gemini-2.5-flash-lite  (openrouter · google/gemini-2.5-flash-lite)
+  [OK ] TP1_뽀롱쌤_인사_저학년_불성실 #1: 민준아, 안녕! 뽀롱~ 👋  오늘 할 공부가 몇 가지 있는데, 민준이가 제일 잘하고 좋아하는 **통합 - 봄
+  [OK ] TP1_뽀롱쌤_인사_저학년_불성실 #2: 민준아, 안녕! 뽀롱~ 😊  오늘은 뭘 제일 먼저 해볼까? 민준이가 요즘 제일 좋아하는 **통합** 과목부터
+  [OK ] TP1_뽀롱쌤_인사_저학년_불성실 #3: 민준아, 안녕! 뽀롱~ 😊  오늘 민준이가 할 수 있는 재미있는 공부들이 잔뜩 있네! 특히 민준이가 좋아하는
+  [OK ] TP1_뽀롱쌤_인사_저학년_불성실 #4: 민준아, 안녕! 뽀롱~ 😊  오늘 민준이가 할 공부는 이렇게 네 가지야! 1. 국어 - 받침이 있는 낱말 읽
+  [OK ] TP1_뽀롱쌤_인사_저학년_불성실 #5: 민준아, 안녕! 뽀롱~ 👋  오늘 민준이가 제일 잘 할 수 있는 '통합 - 봄 관찰하기'부터 시작해볼까? 🌸
+  [OK ] TP1_뽀롱쌤_인사_저학년_불성실 #6: 민준아, 안녕! 뽀롱~ 👋  오늘 민준이가 할 수 있는 재미있는 공부가 잔뜩 있네! 😊  음~ 민준이는 '통
+  [OK ] TP1_뽀롱쌤_인사_저학년_불성실 #7: 민준아, 안녕! 뽀롱~ 👋  오늘 우리 같이 해볼 과제들이 몇 가지 있네! 민준이가 제일 좋아하는 '통합' 
+  [OK ] TP1_뽀롱쌤_인사_저학년_불성실 #8: 민준아, 안녕! 뽀롱~  오늘 할 공부 중에 민준이가 제일 잘하는 **통합**부터 같이 해볼까? 봄에 대해 
+  [OK ] TP1_뽀롱쌤_인사_저학년_불성실 #9: 민준아, 안녕! 뽀롱~ 😊  오늘 민준이가 할 공부 중에 '통합 - 봄 관찰하기'가 있어! 민준이가 통합 과
+  [OK ] TP1_뽀롱쌤_인사_저학년_불성실 #10: 민준아, 안녕! 뽀롱~ 👋  오늘 할 공부 중에 민준이가 제일 좋아하는 **통합** 과목부터 같이 해볼까? 
+  [OK ] TP1_뽀롱쌤_인사_고학년_성실 #1: 채원아, 안녕! 뽀롱~  오늘 홈화면에 왔구나! 지난번에도 수학 문제를 정말 꼼꼼하게 풀었던 거 기억나? 평
+  [OK ] TP1_뽀롱쌤_인사_고학년_성실 #2: 채원아, 안녕! 뽀롱~ 😄  오늘도 열심히 학습할 준비가 되었구나! 최고야! 😊  채원이가 평균 점수도 높고
+  [OK ] TP1_뽀롱쌤_인사_고학년_성실 #3: 채원아, 안녕! 뽀롱~  오늘도 열심히 달려볼 준비가 되었구나! 채원이가 평소 수학을 좋아하고 잘 하는 편인
+  [OK ] TP1_뽀롱쌤_인사_고학년_성실 #4: 채원아, 안녕! 뽀롱~  오늘 홈 화면에 들어왔구나! 채원이가 요즘 수학을 정말 잘하고 있어서, 오늘 과제 
+  [OK ] TP1_뽀롱쌤_인사_고학년_성실 #5: 채원아, 안녕! 뽀롱~  오늘도 열심히 학습할 준비가 되었구나! 채원이가 평균 94점으로 꾸준히 좋은 성적을
+  [OK ] TP1_뽀롱쌤_인사_고학년_성실 #6: 채원아, 안녕! 뽀롱~  오늘도 홈화면에 들어왔구나! 채원이가 수학을 정말 잘하고, 꾸준히 좋은 점수를 받고
+  [OK ] TP1_뽀롱쌤_인사_고학년_성실 #7: 채원아, 안녕! 뽀롱~ 😊  오늘 홈화면으로 와주었네! 채원이는 수학을 정말 좋아하고 잘하는구나. 지난번 수
+  [OK ] TP1_뽀롱쌤_인사_고학년_성실 #8: 채원아, 안녕! 뽀롱~ 😊  오늘도 열심히 학습할 준비가 되었구나! 채원이는 수학을 정말 좋아하고 잘하는 과
+  [OK ] TP1_뽀롱쌤_인사_고학년_성실 #9: 채원아, 안녕! 뽀롱~ 😊  오늘 홈화면에 왔구나! 채원이가 얼마나 열심히 공부하는지 쌤도 잘 알고 있어. 
+  [OK ] TP1_뽀롱쌤_인사_고학년_성실 #10: 채원아, 안녕! 뽀롱~  오늘도 만나서 반가워! 채원이가 수학을 정말 좋아하고 잘하는 만큼, 오늘은 수학 과Deserializing unregistered type app.core.enums.UseCase from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'UseCase')]
+Deserializing unregistered type app.core.enums.Touchpoint from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'Touchpoint')]
+Deserializing unregistered type app.schemas.chat.ChatResponse from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.schemas.chat', 'ChatResponse')]
+Deserializing unregistered type app.core.enums.Segment from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'Segment')]
+Deserializing unregistered type app.core.enums.GradeGroup from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'GradeGroup')]
+Deserializing unregistered type app.core.enums.UseCase from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'UseCase')]
+Deserializing unregistered type app.core.enums.Touchpoint from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'Touchpoint')]
+Deserializing unregistered type app.schemas.chat.ChatResponse from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.schemas.chat', 'ChatResponse')]
+Deserializing unregistered type app.core.enums.Segment from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'Segment')]
+Deserializing unregistered type app.core.enums.GradeGroup from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'GradeGroup')]
+Deserializing unregistered type app.core.enums.UseCase from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'UseCase')]
+Deserializing unregistered type app.core.enums.Touchpoint from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'Touchpoint')]
+Deserializing unregistered type app.schemas.chat.ChatResponse from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.schemas.chat', 'ChatResponse')]
+Deserializing unregistered type app.core.enums.Segment from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'Segment')]
+Deserializing unregistered type app.core.enums.GradeGroup from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'GradeGroup')]
+Deserializing unregistered type app.core.enums.UseCase from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'UseCase')]
+Deserializing unregistered type app.core.enums.Touchpoint from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'Touchpoint')]
+Deserializing unregistered type app.schemas.chat.ChatResponse from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.schemas.chat', 'ChatResponse')]
+Deserializing unregistered type app.core.enums.Segment from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'Segment')]
+Deserializing unregistered type app.core.enums.GradeGroup from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'GradeGroup')]
+Deserializing unregistered type app.core.enums.UseCase from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'UseCase')]
+Deserializing unregistered type app.core.enums.Touchpoint from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'Touchpoint')]
+Deserializing unregistered type app.schemas.chat.ChatResponse from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.schemas.chat', 'ChatResponse')]
+Deserializing unregistered type app.core.enums.Segment from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'Segment')]
+Deserializing unregistered type app.core.enums.GradeGroup from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'GradeGroup')]
+Deserializing unregistered type app.core.enums.UseCase from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'UseCase')]
+Deserializing unregistered type app.core.enums.Touchpoint from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'Touchpoint')]
+Deserializing unregistered type app.schemas.chat.ChatResponse from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.schemas.chat', 'ChatResponse')]
+Deserializing unregistered type app.core.enums.Segment from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'Segment')]
+Deserializing unregistered type app.core.enums.GradeGroup from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'GradeGroup')]
+Deserializing unregistered type app.core.enums.UseCase from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'UseCase')]
+Deserializing unregistered type app.core.enums.Touchpoint from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'Touchpoint')]
+Deserializing unregistered type app.schemas.chat.ChatResponse from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.schemas.chat', 'ChatResponse')]
+Deserializing unregistered type app.core.enums.Segment from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'Segment')]
+Deserializing unregistered type app.core.enums.GradeGroup from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'GradeGroup')]
+Deserializing unregistered type app.core.enums.UseCase from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'UseCase')]
+Deserializing unregistered type app.core.enums.Touchpoint from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'Touchpoint')]
+Deserializing unregistered type app.schemas.chat.ChatResponse from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.schemas.chat', 'ChatResponse')]
+Deserializing unregistered type app.core.enums.Segment from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'Segment')]
+Deserializing unregistered type app.core.enums.GradeGroup from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'GradeGroup')]
+Deserializing unregistered type app.core.enums.UseCase from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'UseCase')]
+Deserializing unregistered type app.core.enums.Touchpoint from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'Touchpoint')]
+Deserializing unregistered type app.schemas.chat.ChatResponse from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.schemas.chat', 'ChatResponse')]
+Deserializing unregistered type app.core.enums.Segment from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'Segment')]
+Deserializing unregistered type app.core.enums.GradeGroup from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'GradeGroup')]
+Deserializing unregistered type app.core.enums.UseCase from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'UseCase')]
+Deserializing unregistered type app.core.enums.Touchpoint from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'Touchpoint')]
+Deserializing unregistered type app.schemas.chat.ChatResponse from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.schemas.chat', 'ChatResponse')]
+Deserializing unregistered type app.core.enums.Segment from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'Segment')]
+Deserializing unregistered type app.core.enums.GradeGroup from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'GradeGroup')]
+
+  [OK ] TP2_단원완료_피드백_저학년 #1: 민준아, 안녕! 뽀롱~ 👋  와! 민준이가 오늘 첫 번째 과제를 뚝딱 끝냈네! 정말 잘했어! 뽀로롱?! 👍 
+  [OK ] TP2_단원완료_피드백_저학년 #2: 민준아, 안녕! 뽀롱~  오늘 첫 번째 과제, 아주 잘 해냈네! 뽀로롱?! 민준이가 이렇게 열심히 하니까 쌤
+  [OK ] TP2_단원완료_피드백_저학년 #3: 민준아, 안녕! 뽀롱~  국어 '받침이 있는 낱말 읽기' 정말 잘했어! 뽀로롱?! 👍  이번에는 뭘 같이 해
+  [OK ] TP2_단원완료_피드백_저학년 #4: 민준아, 안녕! 뽀롱~ 오늘 국어, 벌써 다 끝냈구나! 정말 잘했어! 짝짝짝! 👍  이제 다음으로 뭘 해볼까
+  [OK ] TP2_단원완료_피드백_저학년 #5: 민준아, 안녕! 뽀롱~ 😊 와! 첫 번째 과제, '받침이 있는 낱말 읽기'를 다 끝냈구나! 정말 잘했어! 👍
+  [OK ] TP2_단원완료_피드백_저학년 #6: 민준아, 안녕! 뽀롱~  오늘 첫 번째 과제를 정말 잘 끝냈구나! 짝짝짝! 😊  이제 다음 과제를 하나 같이
+  [OK ] TP2_단원완료_피드백_저학년 #7: 민준아, 안녕! 뽀롱~  오늘도 정말 잘했어! 뽀롱~ 👍  이제 뭘 해볼까? 민준이가 제일 신나게 할 수 있
+  [OK ] TP2_단원완료_피드백_저학년 #8: 민준아, 안녕! 뽀롱~  오늘 국어, 수학, 영어, 통합까지 네 가지 과제를 모두 잘 끝내면 정말 뿌듯할 거
+  [OK ] TP2_단원완료_피드백_저학년 #9: 민준아, 안녕! 뽀롱~ 😊  와, 민준이가 오늘 첫 번째 과제를 다 끝냈구나! 정말 잘했어! 짝짝짝! 👍  
+  [OK ] TP2_단원완료_피드백_저학년 #10: 민준아, 안녕! 뽀롱~  와, 민준이가 첫 번째 과제를 멋지게 끝냈네! 정말 잘했어! 뽀로롱?! 👍  이제 
+  [OK ] TP3_이탈방지_저학년_불성실 #1: 민준아, 안녕! 뽀롱~  지금 조금 힘들구나. 괜찮아~ 잠시 쉬었다가 올까? 아니면 아주 쉬운 말 하나만 같
+  [OK ] TP3_이탈방지_저학년_불성실 #2: 민준아, 안녕! 뽀롱~ 공부하다가 조금 힘들구나. 괜찮아! 잠시 쉬었다가 와도 돼.  아니면, 아주 쉬운 문
+  [OK ] TP3_이탈방지_저학년_불성실 #3: 민준아, 오늘 국어 공부 중에 조금 지쳤구나. 괜찮아~ 😊  잠깐 쉬었다가 다시 해볼까? 아니면, 딱 하나만
+  [OK ] TP3_이탈방지_저학년_불성실 #4: 민준아, 안녕! 뽀롱~ 오늘은 국어 공부 중에 잠시 쉬고 싶구나. 괜찮아~ 😊  여기 쉬운 문제 하나만 더 
+  [OK ] TP3_이탈방지_저학년_불성실 #5: 민준아, 힘든가 보구나. 뽀롱쌤이 옆에 있어. 😊  잠깐 쉬었다가 다시 할까, 아니면 아주아주 쉬운 거 하나
+  [OK ] TP3_이탈방지_저학년_불성실 #6: 민준아, 안녕! 뽀롱~ 😊  지금 좀 힘들구나. 괜찮아. 잠시 쉬었다 와도 좋고, 아니면 딱 하나만 더 해볼
+  [OK ] TP3_이탈방지_저학년_불성실 #7: 민준아, 잠시 쉬고 싶구나. 괜찮아! 😊  오늘 할 국어 공부 중에, '받침이 있는 낱말 읽기'가 4개 남았
+  [OK ] TP3_이탈방지_저학년_불성실 #8: 민준아, 안녕! 뽀롱~ 😊  지금 좀 힘들구나. 괜찮아, 천천히 해도 돼. 잠깐 쉬었다 와도 좋고, 아니면 
+  [OK ] TP3_이탈방지_저학년_불성실 #9: 민준아, 잠시 쉬고 싶구나. 괜찮아. 😊  혹시 지금 바로 할 수 있는 아주 쉬운 거 하나만 해볼까? 아니면
+  [OK ] TP3_이탈방지_저학년_불성실 #10: 민준아, 잠깐 쉬고 싶구나. 괜찮아! 😊  우리 같이 잠깐 숨 고르고, 쉬운 문제 하나만 더 풀어볼까? 아니
+  [OK ] TP4_막힘_원인선택지_고학년 #1: 채원아, 안녕! 뽀롱~ 😊  채원이가 '주장과 근거 파악하기' 문제를 푸는데 조금 막히는 부분이 있구나. 어
+  [OK ] TP4_막힘_원인선택지_고학년 #2: 채원아, 안녕! 뽀롱~ 😊  주장과 근거를 파악하는 문제에서 조금 막혔구나. 채원이는 평소에 학습을 정말 성
+  [OK ] TP4_막힘_원인선택지_고학년 #3: 채원아, 안녕! 뽀롱~ 😊 오늘 국어 공부 중에 '주장과 근거 파악하기' 문제를 풀다가 조금 막혔구나. 괜찮
+  [OK ] TP4_막힘_원인선택지_고학년 #4: 주장 찾기 어려움 / 근거와 주장의 연결 헷갈림 / 불필요한 정보 때문에 헷갈림 / 다른 개념과 혼동
+  [OK ] TP4_막힘_원인선택지_고학년 #5: 주장이 여러 개 보여서 헷갈렸어요. / 근거가 주장을 뒷받침하는지 확실하지 않아요. / 주장과 근거를 구분하
+  [OK ] TP4_막힘_원인선택지_고학년 #6: 채원아, 안녕! 뽀롱~ 😊  국어 '주장과 근거 파악하기' 문제를 풀다가 막혔구나. 채원이는 평소에도 학습을
+  [OK ] TP4_막힘_원인선택지_고학년 #7: 주장과 근거를 헷갈렸어요. / 글의 핵심 내용을 파악하기 어려웠어요. / 근거가 부족하거나 빈약하다고 느꼈어
+  [OK ] TP4_막힘_원인선택지_고학년 #8: 주장과 근거가 헷갈려서 / 글의 핵심 내용을 파악하기 어려워서 / 주장과 근거를 뒷받침하는 세부 내용을 찾기
+  [OK ] TP4_막힘_원인선택지_고학년 #9: 채원아, 안녕! 뽀롱~ 😊 주장과 근거를 파악하는 문제에서 조금 막혔구나. 채원이가 평소에 얼마나 성실하게 
+  [OK ] TP4_막힘_원인선택지_고학년 #10: 채원아, 안녕! 뽀롱~ 😊  주장과 근거를 파악하는 문제에서 조금 막혔구나. 괜찮아! 그럴 때도 있지. 채원
+  [OK ] TP4_막힘_코칭응답_고학년 #1: 채원아, 안녕! 뽀롱~ 😊  문제가 너무 길어서 막혔구나. 이런 문제는 중요한 정보가 여러 군데 흩어져 있어
+  [OK ] TP4_막힘_코칭응답_고학년 #2: 채원아, 안녕! 뽀롱~ 😊  문제가 길어서 막혔구나. 괜찮아! 긴 문제도 쌤이랑 같이 차근차근 보면 어렵지 
+  [OK ] TP4_막힘_코칭응답_고학년 #3: 채원아, 안녕! 뽀롱~ 문제가 길어서 어디서부터 시작해야 할지 막막하게 느껴질 수 있지. 쌤이 긴 문제를 차
+  [OK ] TP4_막힘_코칭응답_고학년 #4: 채원아, 안녕! 뽀롱~ 😊 문제가 너무 길어서 막혔구나. 그럴 땐 문제를 여러 조각으로 나눠서 생각하면 도움
+  [OK ] TP4_막힘_코칭응답_고학년 #5: 채원아, 문제에 너무 길어서 막혔구나. 쌤이랑 같이 차근차근 뜯어보자!  우선, 문제에서 가장 중요하다고 생
+  [OK ] TP4_막힘_코칭응답_고학년 #6: 채원아, 안녕! 뽀롱~ 😊  문제가 길어서 어디서부터 봐야 할지 막막했구나. 괜찮아! 쌤이랑 같이 하나씩 차
+  [OK ] TP4_막힘_코칭응답_고학년 #7: 채원아, 안녕! 뽀롱~ 😊  문제가 길어서 막혔구나! 괜찮아. 긴 글을 만났을 때, 어디에 집중해야 할지 함
+  [OK ] TP4_막힘_코칭응답_고학년 #8: 채원아, 안녕! 뽀롱~ 😊 'too_long'을 선택했구나. 문제가 길어서 어디서부터 봐야 할지 막막하게 느
+  [OK ] TP4_막힘_코칭응답_고학년 #9: 채원아, 안녕! 뽀롱~  문제가 길어서 어디서부터 봐야 할지 막막했구나. 쌤이 채원이가 어떤 부분을 놓쳤는지
+  [OK ] TP4_막힘_코칭응답_고학년 #10: 채원아, 안녕! 뽀롱~ 😊  길이가 긴 문제를 만났을 때 막히는구나! 괜찮아. 쌤이랑 같이 차근차근 보면 돼
+  [OK ] TP5_학습종료_피드백_저학년 #1: 민준아, 안녕! 뽀롱~ 😊  오늘 학습을 마무리할 시간이야. 오늘 배운 것 중에 민준이가 풀고 싶은 문제가 
+  [OK ] TP5_학습종료_피드백_저학년 #2: 민준아, 오늘 학습 마무리할 시간이야! 뽀롱~ 😊  우리 오늘 같이 공부한 내용 중에서, 아직 풀리지 않은 
+  [OK ] TP5_학습종료_피드백_저학년 #3: 민준아, 안녕! 뽀롱~  오늘 학습을 마무리할 시간이야! 민준이가 오늘 배운 내용을 다시 한번 꼼꼼히 살펴보
+  [OK ] TP5_학습종료_피드백_저학년 #4: 민준아, 안녕! 뽀롱~  오늘 학습을 정말 열심히 마무리하려는구나! 쌤도 민준이가 끝까지 잘 해낼 거라고 믿
+  [OK ] TP5_학습종료_피드백_저학년 #5: 민준아, 안녕! 뽀롱~ 😊  오늘 학습을 거의 다 마쳤네! 정말 대단해! 👍  혹시 아직 남은 문제가 있다면
+  [OK ] TP5_학습종료_피드백_저학년 #6: 민준아, 안녕! 뽀롱~ 😊  오늘 학습을 거의 다 마무리했구나! 정말 잘했어! 👍  남아있는 문제들을 같이 
+  [OK ] TP5_학습종료_피드백_저학년 #7: 민준아, 안녕! 뽀롱~ 😊  오늘 학습을 거의 다 끝냈네! 정말 잘했어! 👍  오답이 3개 남았다고 하니, 
+  [OK ] TP5_학습종료_피드백_저학년 #8: 민준아, 안녕! 뽀롱~  오늘 학습을 끝내려면 시간이 조금 남았네! 😊  지금까지 4개 중에 0개를 마쳤고,
+  [OK ] TP5_학습종료_피드백_저학년 #9: 민준아, 오늘 학습 마무리할 시간이야! 뽀롱~ 🤩  벌써 오늘 학습을 끝낼 시간이 되었네! 민준이가 오늘 배
+  [OK ] TP5_학습종료_피드백_저학년 #10: 민준아, 안녕! 뽀롱~ 😊  오늘 학습을 거의 다 마쳤네! 와, 정말 대단하다! 👍  혹시 오늘 배운 것 중
+
+▶ solar-pro3  (openrouter · upstage/solar-pro-3)
+  [OK ] TP1_뽀롱쌤_인사_저학년_불성실 #1: 민준아, 안녕! 뽀롱~   오늘 과제 중에서 **통합 - 봄 관찰하기**를 먼저 해보는 건 어때?   봄은 
+  [OK ] TP1_뽀롱쌤_인사_저학년_불성실 #2: 민준아, 안녕! 뽀롱~ 오늘 과제 중 **통합 - 봄 관찰하기**가 가장 쉬울 거야. 너가 좋아하는 과목이기
+  [OK ] TP1_뽀롱쌤_인사_저학년_불성실 #3: (학생 민준아, 안녕! 뽀롱~)   오늘 과제 중에서 **통합 - 봄 관찰하기**가 제일 쉬울 거야.   네
+  [OK ] TP1_뽀롱쌤_인사_저학년_불성실 #4: 민준아, 안녕! 뽀롱~  오늘 과제 중에 가장 쉬운 건 **통합 - 봄 관찰하기**야. 네가 좋아하는 과목이
+  [OK ] TP1_뽀롱쌤_인사_저학년_불성실 #5: 민준아, 안녕! 뽀롱~  오늘 제일 먼저 할 건 통합 '봄 관찰하기'야.   봄꽃 사진이랑 소리 들려줄게. 
+  [OK ] TP1_뽀롱쌤_인사_저학년_불성실 #6: 민준아, 안녕! 뽀롱~ 네가 좋아하는 통합 과목부터 해볼까? 봄 관찰하기, 그림도 많고 쉬워서 금방 끝낼 수
+  [OK ] TP1_뽀롱쌤_인사_저학년_불성실 #7: 민준아, 안녕! 뽀롱~   오늘 네가 가장 잘할 수 있는 건 **통합 - 봄 관찰하기**야.   통합은 네가
+  [OK ] TP1_뽀롱쌤_인사_저학년_불성실 #8: 민준아, 안녕! 뽀롱~  오늘 학습 중에서 **통합 - 봄 관찰하기**가 가장 쉬워.   너가 좋아하는 과목
+  [OK ] TP1_뽀롱쌤_인사_저학년_불성실 #9: 민준아, 안녕! 뽀롱~  오늘 민준이가 좋아하는 통합 과목부터 시작하면 금방 끝낼 수 있어.   봄 관찰하기
+  [OK ] TP1_뽀롱쌤_인사_저학년_불성실 #10: 민준아, 안녕! 뽀롱~  오늘 통합 과목이 가장 쉬워서 금방 끝낼 수 있어. 민준이가 제일 좋아하는 과목이기
+  [OK ] TP1_뽀롱쌤_인사_고학년_성실 #1: 채원아, 안녕! 뽀롱~  오늘 과제 중에서 **수학 - 비율과 비례식**을 먼저 시작하는 게 좋을 것 같아.
+  [OK ] TP1_뽀롱쌤_인사_고학년_성실 #2: 채원아, 안녕! 뽀롱~  오늘 네 과제 중에서 **수학 - 비율과 비례식**이 가장 적합해 보여. 이유는 네
+  [OK ] TP1_뽀롱쌤_인사_고학년_성실 #3: 채원아, 안녕! 뽀롱~  오늘은 수학 과제가 가장 잘 맞아 보여.   왜냐하면 지금까지 풀이 과정이 깔끔하고
+  [OK ] TP1_뽀롱쌤_인사_고학년_성실 #4: 채원아, 안녕! 뽀롱~  오늘 과제 중에 수학 - 비율과 비례식이 네 점수가 높은 너에게 딱 맞아. 난이도가
+  [OK ] TP1_뽀롱쌤_인사_고학년_성실 #5: 채원아, 안녕! 뽀롱~  오늘 과제 중에서 **수학 - 비율과 비례식**을 먼저 해보는 건 어때요?   이미
+  [OK ] TP1_뽀롱쌤_인사_고학년_성실 #6: 채원아, 안녕! 뽀롱~  요즘 채원이가 수학에서 꾸준히 높은 점수를 받고 있죠? 특히 복잡한 문제에도 잘 도
+  [OK ] TP1_뽀롱쌤_인사_고학년_성실 #7: 민준아, 안녕! 뽀롱~   오늘은 수학 과제 중 **비율과 비례식**을 먼저 해볼까요?   이미 평균 점수가
+  [OK ] TP1_뽀롱쌤_인사_고학년_성실 #8: 채원아, 안녕! 뽀롱~  오늘 학습 콘텐츠를 살펴볼 때, **수학 - 비율과 비례식**이 가장 잘 맞을 것 
+  [OK ] TP1_뽀롱쌤_인사_고학년_성실 #9: 채원아, 안녕! 뽀롱~   오늘은 **수학 – 비율과 비례식**이 가장 잘 어울릴 것 같아. 성취도가 높고 
+  [OK ] TP1_뽀롱쌤_인사_고학년_성실 #10: 민준아, 안녕! 뽀롱~   오늘 학습 과제를 살펴볼게요. 채원 학생은 수학 점수가 높고, 특히 비율·비례식 
+  [OK ] TP2_단원완료_피드백_저학년 #1: 민준아, 안녕! 뽀롱~  오늘 벌써 네 개 중 하나 끝냈다니 대단해! 잘했어! 다음엔 뭐부터 해볼까? 가장 
+  [OK ] TP2_단원완료_피드백_저학년 #2: 민준아, 안녕! 뽀롱~   오늘 잘했어, 잘했어!    다음으로는 **한 자리 수 더하기**를 먼저 해볼까?
+  [OK ] TP2_단원완료_피드백_저학년 #3: 민준아, 안녕! 뽀롱~   오늘 과제 다 했어? 잘했어!   다음에 뭘 할까?   가장 쉬운 것부터 해볼래?
+  [OK ] TP2_단원완료_피드백_저학년 #4: 민준아, 안녕! 뽀롱~   오늘은 **받침이 있는 낱말 읽기**부터 시작해볼까?   이건 네가 가장 잘할 수
+  [OK ] TP2_단원완료_피드백_저학년 #5: 민준아, 안녕! 뽀롱~  오늘 잘했어!   받침 있는 낱말 읽기부터 해볼까?   쉽고 금방 끝낼 수 있어! 
+  [OK ] TP2_단원완료_피드백_저학년 #6: 민준아, 안녕! 뽀롱~  오늘 첫 과제 잘 시작했어!   국어, 수학, 영어, 통합 중에   가장 쉽고 빨리
+  [OK ] TP2_단원완료_피드백_저학년 #7: 민준아, 안녕! 뽀롱~   오늘 받침 낱말 읽기를 잘했어! 잘했어!    다음엔 수학 한 자리 더하기 어때?
+  [OK ] TP2_단원완료_피드백_저학년 #8: 민준아, 안녕! 뽀롱~  오늘 첫 과제 잘했어! 🎉  다음엔 수학 한 자리 수 더하기 어때?   가장 빨리 
+  [OK ] TP2_단원완료_피드백_저학년 #9: 민준아, 안녕! 뽀롱~   오늘 모두 잘했어!    다음에 쉬워서 금방 끝낼 수 있는 과제를 골라볼까?   
+  [OK ] TP2_단원완료_피드백_저학년 #10: 민준아, 안녕! 뽀롱~   오늘 잘했어!   다음에 한 가지씩 해볼까?   가장 쉬운 것부터 해보자.   어
+  [OK ] TP3_이탈방지_저학년_불성실 #1: 민준아, 안녕! 뽀롱~   오늘은 받침 있는 낱말 읽기, 4개가 남았지? 쉬고 싶으면 5분만 쉬어도 괜찮아.
+  [OK ] TP3_이탈방지_저학년_불성실 #2: 민준아, 지금 좀 힘들구나? 😔   쉬는 것도 괜찮아! 혹시 가장 쉬운 **받침 낱말** 하나만 골라볼까? 
+  [OK ] TP3_이탈방지_저학년_불성실 #3: 민준아, 오늘은 받침 읽기 연습이 남았네.   조금 힘들어? 그럼 쉬었다가 다시 시작해도 괜찮아.   가장 
+  [OK ] TP3_이탈방지_저학년_불성실 #4: 안녕, 민준아~   학습 중에 힘들었겠다. 🌟   잠깐 쉬어도 괜찮아, 혹은 가장 쉬운 낱말 하나만 골라볼까
+  [OK ] TP3_이탈방지_저학년_불성실 #5: 민준아, 조금 힘들었구나. 쉬었다가 다시 해볼까?  1. 잠깐 쉬었다가 한 문제만 더 풀어볼래?   2. 쉬
+  [OK ] TP3_이탈방지_저학년_불성실 #6: 민준아, 지금 조금 지쳤구나? 😊   쉬고 다시 올 때는 **받침 없는 낱말 하나**만 읽어볼까?   그게 
+  [OK ] TP3_이탈방지_저학년_불성실 #7: 민준아, 많이 피곤해 보여. 😔   한 번 쉬었다가 다시 시작할까?   아니면 가장 쉬운 낱말 하나만 읽어볼
+  [OK ] TP3_이탈방지_저학년_불성실 #8: 민준아, 쉬고 싶구나? 괜찮아, 천천히 해도 돼!   한 번 쉬었다가 다시 해볼래? 아니면 가장 짧은 문제 
+  [OK ] TP3_이탈방지_저학년_불성실 #9: 민준아, 지금 조금 힘들지?   잠깐 쉬었다가 다시 하고 싶을 때, 쌤이랑 같이 한 글자만 읽어볼까?   "Deserializing unregistered type app.core.enums.UseCase from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'UseCase')]
+Deserializing unregistered type app.core.enums.Touchpoint from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'Touchpoint')]
+Deserializing unregistered type app.schemas.chat.ChatResponse from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.schemas.chat', 'ChatResponse')]
+Deserializing unregistered type app.core.enums.Segment from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'Segment')]
+Deserializing unregistered type app.core.enums.GradeGroup from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'GradeGroup')]
+Deserializing unregistered type app.core.enums.UseCase from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'UseCase')]
+Deserializing unregistered type app.core.enums.Touchpoint from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'Touchpoint')]
+Deserializing unregistered type app.schemas.chat.ChatResponse from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.schemas.chat', 'ChatResponse')]
+Deserializing unregistered type app.core.enums.Segment from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'Segment')]
+Deserializing unregistered type app.core.enums.GradeGroup from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'GradeGroup')]
+Deserializing unregistered type app.core.enums.UseCase from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'UseCase')]
+Deserializing unregistered type app.core.enums.Touchpoint from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'Touchpoint')]
+Deserializing unregistered type app.schemas.chat.ChatResponse from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.schemas.chat', 'ChatResponse')]
+Deserializing unregistered type app.core.enums.Segment from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'Segment')]
+Deserializing unregistered type app.core.enums.GradeGroup from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'GradeGroup')]
+Deserializing unregistered type app.core.enums.UseCase from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'UseCase')]
+Deserializing unregistered type app.core.enums.Touchpoint from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'Touchpoint')]
+Deserializing unregistered type app.schemas.chat.ChatResponse from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.schemas.chat', 'ChatResponse')]
+Deserializing unregistered type app.core.enums.Segment from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'Segment')]
+Deserializing unregistered type app.core.enums.GradeGroup from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'GradeGroup')]
+Deserializing unregistered type app.core.enums.UseCase from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'UseCase')]
+Deserializing unregistered type app.core.enums.Touchpoint from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'Touchpoint')]
+Deserializing unregistered type app.schemas.chat.ChatResponse from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.schemas.chat', 'ChatResponse')]
+Deserializing unregistered type app.core.enums.Segment from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'Segment')]
+Deserializing unregistered type app.core.enums.GradeGroup from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'GradeGroup')]
+Deserializing unregistered type app.core.enums.UseCase from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'UseCase')]
+Deserializing unregistered type app.core.enums.Touchpoint from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'Touchpoint')]
+Deserializing unregistered type app.schemas.chat.ChatResponse from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.schemas.chat', 'ChatResponse')]
+Deserializing unregistered type app.core.enums.Segment from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'Segment')]
+Deserializing unregistered type app.core.enums.GradeGroup from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'GradeGroup')]
+Deserializing unregistered type app.core.enums.UseCase from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'UseCase')]
+Deserializing unregistered type app.core.enums.Touchpoint from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'Touchpoint')]
+Deserializing unregistered type app.schemas.chat.ChatResponse from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.schemas.chat', 'ChatResponse')]
+Deserializing unregistered type app.core.enums.Segment from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'Segment')]
+Deserializing unregistered type app.core.enums.GradeGroup from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'GradeGroup')]
+Deserializing unregistered type app.core.enums.UseCase from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'UseCase')]
+Deserializing unregistered type app.core.enums.Touchpoint from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'Touchpoint')]
+Deserializing unregistered type app.schemas.chat.ChatResponse from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.schemas.chat', 'ChatResponse')]
+Deserializing unregistered type app.core.enums.Segment from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'Segment')]
+Deserializing unregistered type app.core.enums.GradeGroup from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'GradeGroup')]
+Deserializing unregistered type app.core.enums.UseCase from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'UseCase')]
+Deserializing unregistered type app.core.enums.Touchpoint from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'Touchpoint')]
+Deserializing unregistered type app.schemas.chat.ChatResponse from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.schemas.chat', 'ChatResponse')]
+Deserializing unregistered type app.core.enums.Segment from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'Segment')]
+Deserializing unregistered type app.core.enums.GradeGroup from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'GradeGroup')]
+Deserializing unregistered type app.core.enums.UseCase from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'UseCase')]
+Deserializing unregistered type app.core.enums.Touchpoint from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'Touchpoint')]
+Deserializing unregistered type app.schemas.chat.ChatResponse from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.schemas.chat', 'ChatResponse')]
+Deserializing unregistered type app.core.enums.Segment from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'Segment')]
+Deserializing unregistered type app.core.enums.GradeGroup from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'GradeGroup')]
+
+  [OK ] TP3_이탈방지_저학년_불성실 #10: 민준아, 안녕! 뽀롱~   국어 받침 낱말 읽기 4개 남았네.   좀 쉬었다가 할까? 아니면 한 개만 골라볼
+  [OK ] TP4_막힘_원인선택지_고학년 #1: 주장의 문장을 잘못 읽어서 핵심을 놓친 경우 / 근거를 찾는 과정에서 중요한 문단을 놓친 경우 / 주장-근거
+  [OK ] TP4_막힘_원인선택지_고학년 #2: 주장의 핵심 키워드를 놓쳤어요. / 근거를 주장과 혼동했어요. / 문장 구조가 복잡해서 파악하기 어려워요. 
+  [OK ] TP4_막힘_원인선택지_고학년 #3: 주장이 무엇인지 헷갈려요 / 근거가 주장에 충분히 연결되지 않아요 / 근거와 주장 사이의 연결 고리를 찾지 
+  [OK ] TP4_막힘_원인선택지_고학년 #4: 주장과 근거를 구분하는 어휘를 헷갈림 / 문맥 전체를 파악하지 못해 근거와 주장을 혼동 / 근거를 뒷받침하는
+  [OK ] TP4_막힘_원인선택지_고학년 #5: 주장(주제)이 무엇이었는지 헷갈림 / 근거를 주장과 연결짓기 어려움 / 근거가 구체적이지 않아 부족함 / 설
+  [OK ] TP4_막힘_원인선택지_고학년 #6: 주장이 무엇인지 헷갈려요 / 근거가 주장과 연결이 잘 안돼 보여요 / 여러 주장이 섞여 있어 구분이 어려워요
+  [OK ] TP4_막힘_원인선택지_고학년 #7: 문맥 파악이 안 돼서 주장 찾기가 어려움 / 근거가 주장과 맞는지 판단하기 어려움 / 주장과 근거를 혼동해서
+  [OK ] TP4_막힘_원인선택지_고학년 #8: 문제의 핵심 세부 조건을 놓쳤어요 / 주장과 근거를 혼동하고 있어요 / 제시된 근거와 주장이 맞지 않아요 /
+  [OK ] TP4_막힘_원인선택지_고학년 #9: 주장이 무엇인지 헷갈려요 / 근거를 어떻게 찾는지 모르겠어요 / 문제 조건을 제대로 보지 않았어요 / 주장-
+  [OK ] TP4_막힘_원인선택지_고학년 #10: 주장이나 근거가 구체적으로 제시되지 않아 파악이 어려움 / 문단의 구조나 순서가 헷갈려서 주장과 근거를 구분
+  [OK ] TP4_막힘_코칭응답_고학년 #1: 채원아, 안녕! 뽀롱~  문제를 푸는 데 시간이 많이 걸려서 숨이 차 보이네. 괜찮아, 천천히 해도 돼.  
+  [OK ] TP4_막힘_코칭응답_고학년 #2: 채원아, 안녕! 뽀롱~   오늘 학습 중에 **'너무 길다'** 라는 느낌이 들었구나. 길게 느껴지는 부분을
+  [OK ] TP4_막힘_코칭응답_고학년 #3: 문제를 다시 한 번 천천히 읽어보세요. 핵심 문장과 조건을 찾아 밑줄 쳐 보세요. 주어진 정보를 작은 단위로
+  [OK ] TP4_막힘_코칭응답_고학년 #4: 채원아, 안녕! 뽀롱~ 오늘은 꽤 긴 문제였나요? 잠깐 숨을 고르고, 어느 부분이 가장 길어 보였는지 같이 
+  [OK ] TP4_막힘_코칭응답_고학년 #5: 채원아, 안녕! 뽀롱~ 오늘 학습 중에 긴 문제를 읽고 정리하는 데 시간이 좀 걸렸구나. 긴 문제를 작은 조
+  [OK ] TP4_막힘_코칭응답_고학년 #6: 채원아, 안녕! 뽀롱~ 오늘 학습 중에 어떤 부분이 많이 길어져서 힘들었나요? 막히는 구간을 천천히 나눠서 
+  [OK ] TP4_막힘_코칭응답_고학년 #7: 채원아, 안녕! 뽀롱~  문제의 풀이가 길어져서 힘들었나요? 큰 문제를 작은 조각으로 나눠서 차근차근 풀어보
+  [OK ] TP4_막힘_코칭응답_고학년 #8: 채원아, 안녕! 뽀롱~  문제가 좀 길어서 어디에 집중할지 헷갈릴 때가 있죠? 그럴 때는 먼저 전체 흐름을 
+  [OK ] TP4_막힘_코칭응답_고학년 #9: 채원아, 안녕! 뽀롱~  오늘은 수학과 과학 두 과목을 배우게 될 거예요. 수학과 과학을 동시에 공부하면 머
+  [OK ] TP4_막힘_코칭응답_고학년 #10: 문제를 풀기 전에 먼저 전체 문장을 천천히 한 번 읽어보자. 핵심 키워드나 조건을 찾아 표시해 보자. 각 문
+  [OK ] TP5_학습종료_피드백_저학년 #1: 민준아, 안녕! 뽀롱~  오늘 남은 학습 중에 민준이가 제일 쉽게 마칠 수 있는 거부터 한 번 해볼까?   
+  [OK ] TP5_학습종료_피드백_저학년 #2: 민준아, 안녕! 뽀롱~  오늘 학습 아직 안 끝났어?   한 번에 하나씩 쉬운 거부터 해보자!   어떤 과목
+  [OK ] TP5_학습종료_피드백_저학년 #3: 민준아, 안녕! 뽀롱~    오늘은 학습 마무리 시간이에요.   먼저 **국어**부터 시작해볼까?   가장 
+  [OK ] TP5_학습종료_피드백_저학년 #4: 민준아, 안녕! 뽀롱~  오늘 학습 아직 시작 안 했지?   쉽고 금방 끝낼 수 있는 거부터 해볼까?    
+  [OK ] TP5_학습종료_피드백_저학년 #5: 민준아, 안녕! 뽀롱~  한 번 쉬었으니까, 오늘은 **가장 쉬운 oo**부터 해볼까?   그 다음은 **네
+  [OK ] TP5_학습종료_피드백_저학년 #6: 민준아, 안녕! 뽀롱~  오늘 민준이가 좋아하는 한글 놀이부터 시작해볼까?   선생님이 빨간 책 들고 기다릴
+  [OK ] TP5_학습종료_피드백_저학년 #7: 민준아, 안녕! 뽀롱~    오늘 학습 하나 더 해볼까?    먼저 쉬운 것부터 골라보자.    뭐부터 할까
+  [OK ] TP5_학습종료_피드백_저학년 #8: 민준아, 안녕! 뽀롱~   오늘 학습 아직 안 끝났어?   한 가지씩 같이 해보자!    어떤 과목부터 할까
+  [OK ] TP5_학습종료_피드백_저학년 #9: 민준아, 안녕! 뽀롱~  오늘 학습 마무리할 친구야?   오늘은 쉬운 문제부터 하나씩 해볼까?    잘했어!
+  [OK ] TP5_학습종료_피드백_저학년 #10: 민준아, 안녕! 뽀롱~   오늘 학습도 마무리해볼까?    먼저 가장 쉬운 **국어**부터 해볼까?   한 
+
+▶ solar-pro2  (upstage · solar-pro2)
+  [OK ] TP1_뽀롱쌤_인사_저학년_불성실 #1: 민준아, 안녕! 뽀롱~   오늘은 **통합 - 봄 관찰하기**부터 해보는 건 어때?   민준이가 좋아하는 과
+  [OK ] TP1_뽀롱쌤_인사_저학년_불성실 #2: 민준아, 안녕! 뽀롱~   오늘 학교 어땠어?   **통합 - 봄 관찰하기**부터 해보는 건 어때?   민준
+  [OK ] TP1_뽀롱쌤_인사_저학년_불성실 #3: 민준아, 안녕! 뽀롱~   오늘은 **통합 - 봄 관찰하기**부터 해보는 건 어때?   민준이가 좋아하는 과
+  [OK ] TP1_뽀롱쌤_인사_저학년_불성실 #4: 민준아, 안녕! 뽀롱~   오늘 민준이가 좋아하는 **통합** 과목부터 시작해보는 건 어때?   **"봄 관
+  [OK ] TP1_뽀롱쌤_인사_저학년_불성실 #5: 민준아, 안녕! 뽀롱~   오늘은 **통합 - 봄 관찰하기**부터 해보는 건 어때?   민준이가 좋아하는 과
+  [OK ] TP1_뽀롱쌤_인사_저학년_불성실 #6: 민준아, 안녕! 뽀롱~   오늘은 **통합 - 봄 관찰하기**부터 해보는 건 어때?   민준이가 좋아하는 과
+  [OK ] TP1_뽀롱쌤_인사_저학년_불성실 #7: 민준아, 안녕! 뽀롱~   오늘은 **통합 - 봄 관찰하기**부터 해보는 건 어때?   민준이가 좋아하는 과
+  [OK ] TP1_뽀롱쌤_인사_저학년_불성실 #8: 민준아, 안녕! 뽀롱~   오늘 민준이가 좋아하는 **통합** 과목부터 시작해보는 건 어때?   **"봄 관
+  [OK ] TP1_뽀롱쌤_인사_저학년_불성실 #9: 민준아, 안녕! 뽀롱~   오늘 민준이가 좋아하는 **통합** 과목부터 시작해보는 건 어때?   **"봄 관
+  [OK ] TP1_뽀롱쌤_인사_저학년_불성실 #10: 민준아, 안녕! 뽀롱~   오늘은 **통합 - 봄 관찰하기**부터 해보는 건 어때?   민준이가 좋아하는 과
+  [OK ] TP1_뽀롱쌤_인사_고학년_성실 #1: 채원아, 안녕! 뽀롱~   오늘 홈화면에 들어왔네. 최근 평균 94점이라니, 정말 꾸준히 잘하고 있어!   
+  [OK ] TP1_뽀롱쌤_인사_고학년_성실 #2: 서연아, 안녕! 뽀롱~   오늘 수학부터 시작해볼까? 쌤이 보니까 요 근래 비율 계산하는 문제에서 실수가 잦
+  [OK ] TP1_뽀롱쌤_인사_고학년_성실 #3: 채원아, 안녕! 뽀롱~   오늘 홈화면에 들어왔네! 최근 평균 94점이라니, 정말 꾸준히 잘하고 있어.   Deserializing unregistered type app.core.enums.UseCase from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'UseCase')]
+Deserializing unregistered type app.core.enums.Touchpoint from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'Touchpoint')]
+Deserializing unregistered type app.schemas.chat.ChatResponse from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.schemas.chat', 'ChatResponse')]
+Deserializing unregistered type app.core.enums.Segment from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'Segment')]
+Deserializing unregistered type app.core.enums.GradeGroup from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'GradeGroup')]
+Deserializing unregistered type app.core.enums.UseCase from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'UseCase')]
+Deserializing unregistered type app.core.enums.Touchpoint from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'Touchpoint')]
+Deserializing unregistered type app.schemas.chat.ChatResponse from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.schemas.chat', 'ChatResponse')]
+Deserializing unregistered type app.core.enums.Segment from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'Segment')]
+Deserializing unregistered type app.core.enums.GradeGroup from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'GradeGroup')]
+Deserializing unregistered type app.core.enums.UseCase from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'UseCase')]
+Deserializing unregistered type app.core.enums.Touchpoint from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'Touchpoint')]
+Deserializing unregistered type app.schemas.chat.ChatResponse from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.schemas.chat', 'ChatResponse')]
+Deserializing unregistered type app.core.enums.Segment from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'Segment')]
+Deserializing unregistered type app.core.enums.GradeGroup from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'GradeGroup')]
+Deserializing unregistered type app.core.enums.UseCase from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'UseCase')]
+Deserializing unregistered type app.core.enums.Touchpoint from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'Touchpoint')]
+Deserializing unregistered type app.schemas.chat.ChatResponse from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.schemas.chat', 'ChatResponse')]
+Deserializing unregistered type app.core.enums.Segment from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'Segment')]
+Deserializing unregistered type app.core.enums.GradeGroup from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'GradeGroup')]
+Deserializing unregistered type app.core.enums.UseCase from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'UseCase')]
+Deserializing unregistered type app.core.enums.Touchpoint from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'Touchpoint')]
+Deserializing unregistered type app.schemas.chat.ChatResponse from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.schemas.chat', 'ChatResponse')]
+Deserializing unregistered type app.core.enums.Segment from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'Segment')]
+Deserializing unregistered type app.core.enums.GradeGroup from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'GradeGroup')]
+Deserializing unregistered type app.core.enums.UseCase from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'UseCase')]
+Deserializing unregistered type app.core.enums.Touchpoint from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'Touchpoint')]
+Deserializing unregistered type app.schemas.chat.ChatResponse from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.schemas.chat', 'ChatResponse')]
+Deserializing unregistered type app.core.enums.Segment from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'Segment')]
+Deserializing unregistered type app.core.enums.GradeGroup from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'GradeGroup')]
+Deserializing unregistered type app.core.enums.UseCase from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'UseCase')]
+Deserializing unregistered type app.core.enums.Touchpoint from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'Touchpoint')]
+Deserializing unregistered type app.schemas.chat.ChatResponse from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.schemas.chat', 'ChatResponse')]
+Deserializing unregistered type app.core.enums.Segment from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'Segment')]
+Deserializing unregistered type app.core.enums.GradeGroup from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'GradeGroup')]
+Deserializing unregistered type app.core.enums.UseCase from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'UseCase')]
+Deserializing unregistered type app.core.enums.Touchpoint from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'Touchpoint')]
+Deserializing unregistered type app.schemas.chat.ChatResponse from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.schemas.chat', 'ChatResponse')]
+Deserializing unregistered type app.core.enums.Segment from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'Segment')]
+Deserializing unregistered type app.core.enums.GradeGroup from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'GradeGroup')]
+
+  [OK ] TP1_뽀롱쌤_인사_고학년_성실 #4: 채원아, 안녕! 뽀롱~   오늘 학습 시작 축하해! 🎉    일단 **수학 - 비율과 비례식**부터 도전해볼
+  [OK ] TP1_뽀롱쌤_인사_고학년_성실 #5: 채원아, 안녕! 뽀롱~   오늘 학습 시작 축하해! 🎉    일단 **수학 - 비율과 비례식**부터 도전해볼
+  [OK ] TP1_뽀롱쌤_인사_고학년_성실 #6: 채원아, 안녕! 뽀롱~   오늘 학습 시작 축하해! 🎉    일단 **수학 - 비율과 비례식**부터 추천해줄
+  [OK ] TP1_뽀롱쌤_인사_고학년_성실 #7: 채원아, 안녕! 뽀롱~   오늘 학습 시작 축하해! 🎉    일단 **수학 - 비율과 비례식**부터 도전해볼
+  [OK ] TP1_뽀롱쌤_인사_고학년_성실 #8: 채원아, 안녕! 뽀롱~   오늘은 수학과목이 먼저 떠오르는데 어때? 쌤이 보니까 비율 개념은 거의 마스터했지
+  [OK ] TP1_뽀롱쌤_인사_고학년_성실 #9: 서연아, 안녕! 뽀롱~   오늘 수학부터 시작해볼까요? **비율과 비례식**이 서연이의 강한 과목인데, AI
+  [OK ] TP1_뽀롱쌤_인사_고학년_성실 #10: 채원아, 안녕! 뽀롱~   오늘 학습 준비됐어? 📚    쌤이 보기엔 **수학 - 비율과 비례식**부터 시작
+  [OK ] TP2_단원완료_피드백_저학년 #1: 민준아, 안녕! 뽀롱~   국어 받침 낱말 읽기를 금방 끝낼 수 있겠다니 대단해!   쌤이 보니까 수학은 민
+  [OK ] TP2_단원완료_피드백_저학년 #2: 민준아, 안녕! 뽀롱~   오늘 첫 과제를 벌써 끝냈네? 잘했어! ✨    국어 받침 읽기를 완료했으니까, 
+  [OK ] TP2_단원완료_피드백_저학년 #3: 민준아, 안녕! 뽀롱~   (오늘 첫 시작을 못 했네. 가장 쉽고 재미있는 걸로 추천해줄게!)    "민준아
+  [OK ] TP2_단원완료_피드백_저학년 #4: 민준아, 안녕! 뽀롱~   국어 받침 낱말 읽기를 금방 끝낼 수 있겠다니 대단해!   쌤이 보니까 수학은 민
+  [OK ] TP2_단원완료_피드백_저학년 #5: 민준아, 안녕! 뽀롱~   (방금 국어에서 "공" "군" "용" 같은 받침을 잘 읽었대! 잘했어~!)    
+  [OK ] TP2_단원완료_피드백_저학년 #6: 민준아, 안녕! 뽀롱~   (오늘 첫 시작을 못 했네. 가장 쉽고 재미있는 걸로 추천해줄게!)    "민준아
+  [OK ] TP2_단원완료_피드백_저학년 #7: 민준아, 안녕! 뽀롱~   오늘 첫 과제를 벌써 끝냈구나! 잘했어~ (박수)    지금 바로 쉬운 걸로 하나
+  [OK ] TP2_단원완료_피드백_저학년 #8: 민준아, 안녕! 뽀롱~   오늘 첫 과제를 벌써 끝냈구나! 잘했어~ (박수)    지금 바로 쉬운 걸로 하나
+  [OK ] TP2_단원완료_피드백_저학년 #9: 민준아, 안녕! 뽀롱~   국어 받침 낱말 읽기를 금방 끝낼 수 있겠다니 대단해!   쌤이 보니까 수학은 민
+  [OK ] TP2_단원완료_피드백_저학년 #10: 민준아, 안녕! 뽀롱~   (오늘 첫 시작을 못 했네. 가장 쉽고 재미있는 걸로 추천해줄게!)    "민준아
+  [OK ] TP3_이탈방지_저학년_불성실 #1: 민준아, 받침이 조금 힘들었구나. 쌤이랑 잠깐 쉬었다가 쉬운 단어부터 다시 해볼까?   1. "강아지" 같이
+  [OK ] TP3_이탈방지_저학년_불성실 #2: 민준아, 받침이 조금 어려웠니? 😊 쌤이랑 잠깐 숨 돌리고 올까?   **1. 쉬었다가 올래요**   **2
+  [OK ] TP3_이탈방지_저학년_불성실 #3: 민준아, 받침이 조금 어려웠니? 😊 쌤이랑 잠깐 숨 돌리고 올까?   **1. 쉬었다가 올래요**   **2
+  [OK ] TP3_이탈방지_저학년_불성실 #4: 민준아~ 쌤이랑 잠깐 숨 돌릴까? 뽀롱~   1️⃣ "받침 쉬운 단어만 골라 볼까?"   2️⃣ "딱 하나만
+  [OK ] TP3_이탈방지_저학년_불성실 #5: 민준아, 받침이 조금 어려웠니? 😊 쌤이랑 잠깐 숨 돌리고 올까?   **1. 쉬었다가 올래요**   **2
+  [OK ] TP3_이탈방지_저학년_불성실 #6: 민준아, 받침이 조금 힘들었구나? 쌤도 어릴 때 그랬어.   "5분만 쉬었다 할까? 아니면 지금 바로 쉬운 
+  [OK ] TP3_이탈방지_저학년_불성실 #7: 민준아, 받침이 조금 힘들었구나? 쌤도 어릴 때 그랬어!   "10분 쉬었다 할래? / 한 개만 더 같이 읽
+  [OK ] TP3_이탈방지_저학년_불성실 #8: 민준아, 받침이 좀 헷갈리지? 쌤도 처음에 그랬어.   (1) "우리 1개만 같이 읽어볼까?"   (2) "
+  [OK ] TP3_이탈방지_저학년_불성실 #9: 민준아, 받침이 좀 헷갈리지? 쌤도 처음에 그랬어.   (1) "우리 1개만 같이 읽어볼까?"   (2) "
+  [OK ] TP3_이탈방지_저학년_불성실 #10: 민준아, 받침이 조금 힘들었구나? 쌤도 어릴 때 그랬어.   "5분만 쉬었다 할까? 아니면 지금 바로 쉬운 
+  [OK ] TP4_막힘_원인선택지_고학년 #1: 주장과 근거를 구분하는 게 헷갈려요 / 어떤 내용이 근거로 적합한지 판단하기 어려워요 / 긴 글을 읽고 핵심
+  [OK ] TP4_막힘_원인선택지_고학년 #2: 주장과 근거를 구분하는 게 헷갈려요 / 근거가 주장을 충분히 뒷받침하는지 판단하기 어려워요 / 지문을 제대로
+  [OK ] TP4_막힘_원인선택지_고학년 #3: 주장과 근거가 헷갈려요 / 근거가 주장을 제대로 뒷받침하는지 모르겠어요 / 글의 구조를 잘못 파악한 것 같아
+  [OK ] TP4_막힘_원인선택지_고학년 #4: 주장과 근거를 구분하는 게 헷갈려요 / 근거가 주장을 얼마나 잘 뒷받침하는지 판단하기 어려워요 / 지문 내용
+  [OK ] TP4_막힘_원인선택지_고학년 #5: 주장을 정확히 찾는 데 어려움이 있어요 / 주장을 지지하는 근거만 골라내기 힘들어요 / 주장과 근거가 어떻게
+  [OK ] TP4_막힘_원인선택지_고학년 #6: 주장이 무엇인지 정확히 파악하기 어려워요 / 주장과 근거가 어떻게 연결되는지 이해가 안 돼요 / 제시된 근거
+  [OK ] TP4_막힘_원인선택지_고학년 #7: [선택지들은 "주장과 근거 파악" 과정에서 고성취 학생이 주로 겪는 사고적/분석적 난점을 반영했습니다. 채원
+  [OK ] TP4_막힘_원인선택지_고학년 #8: 주장을 정확히 찾는 데 어려움이 있어요 / 주장을 지지하는 근거만 골라내는 게 헷갈려요 / 주장과 근거가 논
+  [OK ] TP4_막힘_원인선택지_고학년 #9: [채원 학생이 중난이도 국어 과제에서 막힐 수 있는 핵심 원인을 4가지 제시 - 주장/근거 구분, 근거 적합
+  [OK ] TP4_막힘_원인선택지_고학년 #10: 주장과 근거를 구분하는 게 헷갈려요 / 근거가 주장을 제대로 뒷받침하는지 판단하기 어려워요 / 지문을 완전히
+  [OK ] TP4_막힘_코칭응답_고학년 #1: 채원아, 문제가 길어서 어디서부터 시작해야 할지 막막하죠? 쌤도 긴 문제를 보면 먼저 '핵심 질문'을 찾아요
+  [OK ] TP4_막힘_코칭응답_고학년 #2: 채원아, 긴 문제를 작은 질문으로 나눠보자. 첫 문장만 읽고 무엇을 묻는지 찾아봐~ 두 번째 문장에서 새로운
+  [OK ] TP4_막힘_코칭응답_고학년 #3: 채원아, 긴 문제를 작은 질문으로 나눠보자. 첫 문장만 읽고 무엇을 묻는지 찾아봐~ 두 번째 문장에서 새로운
+  [OK ] TP4_막힘_코칭응답_고학년 #4: 채원아, 안녕! 뽀롱~ 문제를 나눠서 보는 게 어때요? 쌤이랑 같이 긴 문장을 짧은 덩어리로 쪼개보자.
+  [OK ] TP4_막힘_코칭응답_고학년 #5: 채원아, 문제가 길어서 어디에 집중해야 할지 막막했을 것 같아. 쌤도 긴 문제를 보면 먼저 '핵심 질문'을 
+  [OK ] TP4_막힘_코칭응답_고학년 #6: 채원아, 문제가 길어서 헷갈렸구나. 쌤도 긴 문제는 먼저 '핵심 조건'만 따로 적어보는 게 도움이 됐어. 문
+  [OK ] TP4_막힘_코칭응답_고학년 #7: 채원아, 먼저 문제를 작은 부분으로 나눠볼게! 첫 번째 문장만 천천히 읽어보자 두 번째 문장은 첫 문장과 어
+  [OK ] TP4_막힘_코칭응답_고학년 #8: 채원아, 문제가 길어서 헷갈렸구나. 쌤도 긴 문제는 먼저 '핵심 조건'만 따로 적어보는 게 도움이 됐어. 문Deserializing unregistered type app.core.enums.UseCase from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'UseCase')]
+Deserializing unregistered type app.core.enums.Touchpoint from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'Touchpoint')]
+Deserializing unregistered type app.schemas.chat.ChatResponse from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.schemas.chat', 'ChatResponse')]
+Deserializing unregistered type app.core.enums.Segment from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'Segment')]
+Deserializing unregistered type app.core.enums.GradeGroup from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'GradeGroup')]
+Deserializing unregistered type app.core.enums.UseCase from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'UseCase')]
+Deserializing unregistered type app.core.enums.Touchpoint from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'Touchpoint')]
+Deserializing unregistered type app.schemas.chat.ChatResponse from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.schemas.chat', 'ChatResponse')]
+Deserializing unregistered type app.core.enums.Segment from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'Segment')]
+Deserializing unregistered type app.core.enums.GradeGroup from checkpoint. This will be blocked in a future version. Set LANGGRAPH_STRICT_MSGPACK=true to block now, or add to allowed_msgpack_modules to allow explicitly: [('app.core.enums', 'GradeGroup')]
+
+  [OK ] TP4_막힘_코칭응답_고학년 #9: 채원아, 문제가 길어서 막막했구나. 쌤도 긴 문제는 처음에 부담스러울 때가 있어~ 1. 문제를 2-3줄 단위
+  [OK ] TP4_막힘_코칭응답_고학년 #10: 채원아, 문제가 길어서 막막했구나. 쌤도 긴 문제를 보면 머리부터 복잡해질 때가 있어. 먼저 문제를 작은 덩
+  [OK ] TP5_학습종료_피드백_저학년 #1: 민준아, 안녕! 뽀롱~   오늘 학습 시작 전인데 아직 한 문제도 안 풀었네?   쌤이랑 같이 가장 쉬운 문
+  [OK ] TP5_학습종료_피드백_저학년 #2: 민준아, 안녕! 뽀롱~   오늘 학습 시작 전 잠깐만 봐줄래?    (빨간 책을 펼치며)   "민준아, 오늘
+  [OK ] TP5_학습종료_피드백_저학년 #3: 민준아, 안녕! 뽀롱~   오늘 학습 시작 전 잠깐만 봐줄래?    (빨간 책을 펼치며)   "민준아, 오늘
+  [OK ] TP5_학습종료_피드백_저학년 #4: 민준아, 안녕! 뽀롱~   오늘 학습 시작 전인데 아직 한 문제도 안 풀었네?   쌤이랑 가장 쉬운 문제부터
+  [OK ] TP5_학습종료_피드백_저학년 #5: 민준아, 안녕! 뽀롱~   오늘 학습 시작 전인데 아직 한 문제도 안 풀었네?   우리 같이 쉽게 시작해보자
+  [OK ] TP5_학습종료_피드백_저학년 #6: 민준아, 안녕! 뽀롱~   오늘 학습 시작 전인데 아직 한 문제도 안 풀었네?   우리 같이 쉽게 시작해보자
+  [OK ] TP5_학습종료_피드백_저학년 #7: 민준아, 안녕! 뽀롱~   오늘 학습 시작 전인데 아직 안 했네?   쌤이랑 같이 가장 쉬운 것부터 해볼까?
+  [OK ] TP5_학습종료_피드백_저학년 #8: 민준아, 안녕! 뽀롱~   오늘은 조금 어려웠나 봐. 쌤이랑 같이 남은 오답 3개만 다시 봐볼까?      
+  [OK ] TP5_학습종료_피드백_저학년 #9: 민준아, 안녕! 뽀롱~   오늘 4개 중 0개라... 조금 힘들었구나.   쌤이랑 **가장 쉬운 1개**만 
+  [OK ] TP5_학습종료_피드백_저학년 #10: 민준아, 안녕! 뽀롱~   오늘은 수학 연산부터 해볼까? 숫자 세는 게 재미있더라구~   (예시가 쉬워서 금
+
+========================================================================
+  완료
+  메인 리포트: C:\Users\sesac1\Ungji\scripts\results\model_comparison\2026-04-29\2026-04-29_model_test.md
+  원본:        C:\Users\sesac1\Ungji\scripts\results\model_comparison\2026-04-29\raw
+========================================================================
+
