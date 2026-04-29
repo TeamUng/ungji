@@ -3,6 +3,7 @@ from __future__ import annotations
 import pytest
 
 from app.core.enums import GradeGroup, Segment
+from app.services.prompts.agents import MOTIVATOR_ROLE, build_system_prompt
 from app.services.prompts.coaching import get_coaching_strategy
 from app.services.prompts.personas import get_persona
 
@@ -89,6 +90,17 @@ def test_grade_tones_differ_by_group():
     assert lower != middle
     assert middle != upper
     assert lower != upper
+
+
+# ─── 시스템 프롬프트 조립 ──────────────────────────────────────
+
+
+def test_build_system_prompt_combines_persona_strategy_and_role():
+    prompt = build_system_prompt(GradeGroup.LOWER, Segment.LOW_LAZY, MOTIVATOR_ROLE)
+
+    assert get_persona(GradeGroup.LOWER) in prompt
+    assert get_coaching_strategy(Segment.LOW_LAZY) in prompt
+    assert MOTIVATOR_ROLE in prompt
 
 
 # ─── PRD 케이스 방향 검증 ───────────────────────────────────────

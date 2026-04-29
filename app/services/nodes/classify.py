@@ -75,5 +75,4 @@ def classify(state: ChatState) -> dict:
         "today_score": profile["recent_avg_score"],
         "segment": segment,
         "grade_group": grade_group,
-        "chat_history": [],
     }

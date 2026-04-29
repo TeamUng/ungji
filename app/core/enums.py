@@ -17,6 +17,7 @@ class GradeGroup(str, Enum):
 class UseCase(str, Enum):
     TALK = "talk"          # TP1 / TP2 / TP3 / TP5
     LEARNING = "learning"  # TP4
+    CHAT = "chat"          # 자유 대화
 
 
 class Touchpoint(str, Enum):
@@ -33,6 +34,7 @@ class Subject(str, Enum):
     SOCIAL = "사회"
     SCIENCE = "과학"
     ENGLISH = "영어"
+    INTEGRATED = "통합"
 
 
 class Difficulty(str, Enum):

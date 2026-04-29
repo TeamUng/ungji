@@ -1,5 +1,5 @@
 """
-E2E 시나리오 러너 — 모든 학생 × 터치포인트 조합을 Solar Pro2로 실행하고
+LangGraph 시나리오 러너 — 저성취 학생 × 터치포인트 조합을 Solar Pro2로 실행하고
 결과를 CSV로 저장한다.
 
 사용법:
@@ -14,7 +14,6 @@ from __future__ import annotations
 
 import csv
 import io
-import json
 import sys
 import uuid
 from datetime import datetime
@@ -26,32 +25,40 @@ sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="repla
 # 프로젝트 루트를 sys.path에 추가
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from fastapi.testclient import TestClient
+from langchain_core.messages import HumanMessage
 
+from app.core.enums import GradeGroup, Segment, Touchpoint, UseCase
+from app.core.logging import get_logger
 from app.data.loader import load_student
-from app.main import app
+from app.schemas.chat import ChatResponse
+from app.services.graph import graph
+
+logger = get_logger(__name__)
 
 # ─── 설정 ─────────────────────────────────────────────────────────────────────
 
 STUDENT_IDS = [
-    "lower-low-lazy",
     "lower-low-diligent",
-    "lower-high-lazy",
-    "lower-high-diligent",
-    "upper-low-lazy",
+    "lower-low-lazy",
     "upper-low-diligent",
-    "upper-high-lazy",
-    "upper-high-diligent",
+    "upper-low-lazy",
 ]
 
 TP_SCENARIOS = [
-    ("talk",     "tp1", 1, "",           "TP1 홈화면 진입"),
-    ("talk",     "tp2", 1, "",           "TP2 단위 학습 완료"),
-    ("talk",     "tp3", 1, "",           "TP3 이탈 방지"),
-    ("learning", "tp4", 1, "",           "TP4 막힘 (원인 선택지)"),
-    ("learning", "tp4", 2, "__cause__",  "TP4 막힘 (원인 선택 후 코칭)"),
-    ("talk",     "tp5", 1, "",           "TP5 학습 종료"),
+    (UseCase.TALK,     Touchpoint.TP1, 1, "",           "TP1 홈화면 진입"),
+    (UseCase.TALK,     Touchpoint.TP2, 1, "",           "TP2 단위 학습 완료"),
+    (UseCase.TALK,     Touchpoint.TP3, 1, "",           "TP3 이탈 방지"),
+    (UseCase.LEARNING, Touchpoint.TP4, 1, "",           "TP4 막힘 (원인 선택지)"),
+    (UseCase.LEARNING, Touchpoint.TP4, 2, "__cause__",  "TP4 막힘 (원인 선택 후 코칭)"),
+    (UseCase.TALK,     Touchpoint.TP5, 1, "",           "TP5 학습 종료"),
 ]
+
+EXPECTED_CASES = {
+    "lower-low-diligent": (Segment.LOW_DILIGENT.value, GradeGroup.LOWER.value),
+    "lower-low-lazy": (Segment.LOW_LAZY.value, GradeGroup.LOWER.value),
+    "upper-low-diligent": (Segment.LOW_DILIGENT.value, GradeGroup.UPPER.value),
+    "upper-low-lazy": (Segment.LOW_LAZY.value, GradeGroup.UPPER.value),
+}
 
 TP4_CAUSE_BY_SUBJECT = {
     "국어": "too_long",
@@ -64,7 +71,9 @@ RESULTS_DIR = Path(__file__).parent / "results"
 RESULTS_DIR.mkdir(exist_ok=True)
 
 CSV_COLUMNS = [
+    "runner_mode",
     "student_id", "name", "grade", "grade_group", "segment",
+    "expected_grade_group", "expected_segment", "classification_ok",
     "preferred_subject", "strong_subject",
     "recent_avg_score", "avg_completion_rate",
     "wrong_content_rate", "wrong_content_total", "wrong_content_done",
@@ -77,40 +86,53 @@ CSV_COLUMNS = [
     "error",
 ]
 
-# ─── SSE 파싱 ─────────────────────────────────────────────────────────────────
+# ─── LangGraph 호출 ───────────────────────────────────────────────────────────
 
-def _parse_sse(raw: str) -> dict | None:
-    for line in raw.splitlines():
-        if line.startswith("data: "):
-            try:
-                return json.loads(line[6:])
-            except json.JSONDecodeError:
-                pass
-    return None
-
-
-# ─── API 호출 ─────────────────────────────────────────────────────────────────
-
-def _call_api(
-    client: TestClient,
+def _call_graph(
     thread_id: str,
     student_id: str,
-    use_case: str,
-    touchpoint: str,
+    use_case: UseCase,
+    touchpoint: Touchpoint,
     message_content: str,
-) -> dict | None:
-    payload = {
+) -> ChatResponse | None:
+    state: dict = {
         "thread_id": thread_id,
         "student_id": student_id,
         "use_case": use_case,
         "current_touchpoint": touchpoint,
-        "message": {"type": "init" if not message_content else "choice", "content": message_content},
+        "chat_history": (
+            [HumanMessage(content=message_content)]
+            if message_content
+            else []
+        ),
+        "response": None,
     }
-    with client.stream("POST", "/chat", json=payload) as resp:
-        if resp.status_code != 200:
-            return {"error": f"HTTP {resp.status_code}: {resp.text}"}
-        raw = resp.read().decode("utf-8")
-        return _parse_sse(raw)
+    config = {"configurable": {"thread_id": thread_id}}
+    result = graph.invoke(state, config=config)
+    return result.get("response")
+
+
+def _extract_response_fields(response: ChatResponse | None) -> tuple[str, str, str, str]:
+    if response is None:
+        return "", "", "", "LangGraph 응답 없음"
+
+    response_texts: list[str] = []
+    choices: list[str] = []
+    message_types: list[str] = []
+
+    for msg in response.messages:
+        message_types.append(msg.type)
+        if msg.type == "text":
+            response_texts.append(msg.content)
+        elif msg.type == "choices":
+            choices.extend(item.label for item in msg.items)
+
+    return (
+        "\n".join(response_texts),
+        " | ".join(choices),
+        "|".join(message_types),
+        "",
+    )
 
 
 # ─── 세그먼트·학년 그룹 계산 ──────────────────────────────────────────────────
@@ -129,113 +151,133 @@ def main() -> None:
     csv_path = RESULTS_DIR / f"scenario_results_{timestamp}.csv"
 
     print(f"\n{'='*70}")
-    print(f"  E2E 시나리오 러너 (Solar Pro2)")
+    print(f"  LangGraph 시나리오 러너 (Solar Pro2)")
     print(f"  학생 {len(STUDENT_IDS)}명 × 터치포인트 {len(TP_SCENARIOS)}종")
     print(f"  결과 저장: {csv_path}")
     print(f"{'='*70}")
 
+    logger.info(
+        "LangGraph scenario runner started",
+        extra={
+            "student_count": len(STUDENT_IDS),
+            "scenario_count": len(TP_SCENARIOS),
+            "csv_path": str(csv_path),
+        },
+    )
+
     all_rows: list[dict] = []
 
-    with TestClient(app) as client:
-        for student_id in STUDENT_IDS:
-            record = load_student(student_id)
-            profile = record["profile"]
-            pattern = record["learning_pattern"]
-            wrong_pattern = record["wrong_answer_pattern"]
-            task = record["today_tasks"][0] if record["today_tasks"] else {}
+    for student_id in STUDENT_IDS:
+        record = load_student(student_id)
+        profile = record["profile"]
+        pattern = record["learning_pattern"]
+        wrong_pattern = record["wrong_answer_pattern"]
+        task = record["today_tasks"][0] if record["today_tasks"] else {}
 
-            segment_val, grade_group_val = _derive_labels(record)
-            has_wrong = pattern["wrong_content_total"] > 0
-            wrong_done_today = has_wrong and (
-                pattern["wrong_content_done"] >= pattern["wrong_content_total"]
+        segment_val, grade_group_val = _derive_labels(record)
+        expected_segment, expected_grade_group = EXPECTED_CASES[student_id]
+        classification_ok = (
+            segment_val == expected_segment
+            and grade_group_val == expected_grade_group
+        )
+        has_wrong = pattern["wrong_content_total"] > 0
+        wrong_done_today = has_wrong and (
+            pattern["wrong_content_done"] >= pattern["wrong_content_total"]
+        )
+
+        subject = task.get("subject", "")
+        tp4_cause = TP4_CAUSE_BY_SUBJECT.get(subject, "too_long")
+        tp4_thread_id = f"tp4-{student_id}-{uuid.uuid4()}"
+        thread_ids: dict[Touchpoint, str] = {}
+
+        print(f"\n  [{student_id}] {profile['name']} / {grade_group_val} / {segment_val}")
+        if not classification_ok:
+            print(
+                "    [WARN] 기대 분류와 다름 "
+                f"(expected {expected_grade_group} / {expected_segment})"
             )
 
-            subject = task.get("subject", "")
-            tp4_cause = TP4_CAUSE_BY_SUBJECT.get(subject, "too_long")
-            tp4_thread_id = f"tp4-{student_id}-{uuid.uuid4()}"
-            thread_ids: dict[str, str] = {}
+        for use_case, touchpoint, turn, message_content, label in TP_SCENARIOS:
+            if touchpoint == Touchpoint.TP4:
+                thread_id = tp4_thread_id
+            else:
+                if touchpoint not in thread_ids:
+                    thread_ids[touchpoint] = f"{touchpoint.value}-{student_id}-{uuid.uuid4()}"
+                thread_id = thread_ids[touchpoint]
 
-            print(f"\n  [{student_id}] {profile['name']} / {grade_group_val} / {segment_val}")
+            actual_content = tp4_cause if message_content == "__cause__" else message_content
 
-            for use_case, touchpoint, turn, message_content, label in TP_SCENARIOS:
-                if touchpoint == "tp4":
-                    thread_id = tp4_thread_id
-                else:
-                    key = touchpoint
-                    if key not in thread_ids:
-                        thread_ids[key] = f"{touchpoint}-{student_id}-{uuid.uuid4()}"
-                    thread_id = thread_ids[key]
-
-                actual_content = tp4_cause if message_content == "__cause__" else message_content
-
-                try:
-                    result = _call_api(client, thread_id, student_id, use_case, touchpoint, actual_content)
-                except Exception as exc:
-                    result = {"error": str(exc)}
-
-                error = ""
+            try:
+                response = _call_graph(
+                    thread_id=thread_id,
+                    student_id=student_id,
+                    use_case=use_case,
+                    touchpoint=touchpoint,
+                    message_content=actual_content,
+                )
+                response_text, choices, message_types, error = _extract_response_fields(response)
+            except Exception as exc:
+                logger.exception(
+                    "LangGraph scenario failed",
+                    extra={
+                        "student_id": student_id,
+                        "use_case": use_case.value,
+                        "touchpoint": touchpoint.value,
+                        "turn": turn,
+                    },
+                )
                 response_text = ""
                 choices = ""
                 message_types = ""
+                error = str(exc)
 
-                if result is None:
-                    error = "SSE 응답 파싱 실패"
-                elif "error" in result:
-                    error = result["error"]
-                else:
-                    messages = result.get("messages", [])
-                    message_types = "|".join(m.get("type", "") for m in messages)
-                    for msg in messages:
-                        if msg.get("type") == "text":
-                            response_text = msg.get("content", "")
-                        elif msg.get("type") == "choices":
-                            choices = " | ".join(
-                                item.get("label", "") for item in msg.get("items", [])
-                            )
+            status = "[OK] " if not error else "[ERR]"
+            tp4_info = f" [{tp4_cause}]" if touchpoint == Touchpoint.TP4 and turn == 2 else ""
+            print(f"    {status} {label}{tp4_info}")
+            if response_text:
+                preview = response_text[:80].replace("\n", " ")
+                print(f"      → {preview}{'...' if len(response_text) > 80 else ''}")
+            if error:
+                print(f"      오류: {error}")
 
-                status = "[OK] " if not error else "[ERR]"
-                tp4_info = f" [{tp4_cause}]" if touchpoint == "tp4" and turn == 2 else ""
-                print(f"    {status} {label}{tp4_info}")
-                if response_text:
-                    preview = response_text[:80].replace("\n", " ")
-                    print(f"      → {preview}{'...' if len(response_text) > 80 else ''}")
-                if error:
-                    print(f"      오류: {error}")
-
-                all_rows.append({
-                    "student_id": student_id,
-                    "name": profile["name"],
-                    "grade": profile["grade"],
-                    "grade_group": grade_group_val,
-                    "segment": segment_val,
-                    "preferred_subject": profile["preferred_subject"],
-                    "strong_subject": profile["strong_subject"],
-                    "recent_avg_score": profile["recent_avg_score"],
-                    "avg_completion_rate": profile["avg_completion_rate"],
-                    "wrong_content_rate": pattern["wrong_content_rate"],
-                    "wrong_content_total": pattern["wrong_content_total"],
-                    "wrong_content_done": pattern["wrong_content_done"],
-                    "skipping_habit": pattern["skipping_habit"],
-                    "guessing_habit": pattern["guessing_habit"],
-                    "careless_habit": pattern["careless_habit"],
-                    "wrong_cause": wrong_pattern["wrong_cause"],
-                    "frequent_wrong_type": wrong_pattern["frequent_wrong_type"],
-                    "task_subject": subject,
-                    "task_unit": task.get("unit", ""),
-                    "task_difficulty": task.get("difficulty", ""),
-                    "ai_predicted_score": task.get("ai_predicted_score", ""),
-                    "touchpoint": touchpoint,
-                    "use_case": use_case,
-                    "turn": turn,
-                    "tp4_cause": tp4_cause if touchpoint == "tp4" and turn == 2 else "",
-                    "scenario_label": label,
-                    "has_wrong_answers": has_wrong,
-                    "wrong_content_done_today": wrong_done_today,
-                    "response_text": response_text,
-                    "choices": choices,
-                    "message_types": message_types,
-                    "error": error,
-                })
+            all_rows.append({
+                "runner_mode": "graph",
+                "student_id": student_id,
+                "name": profile["name"],
+                "grade": profile["grade"],
+                "grade_group": grade_group_val,
+                "segment": segment_val,
+                "expected_grade_group": expected_grade_group,
+                "expected_segment": expected_segment,
+                "classification_ok": classification_ok,
+                "preferred_subject": profile["preferred_subject"],
+                "strong_subject": profile["strong_subject"],
+                "recent_avg_score": profile["recent_avg_score"],
+                "avg_completion_rate": profile["avg_completion_rate"],
+                "wrong_content_rate": pattern["wrong_content_rate"],
+                "wrong_content_total": pattern["wrong_content_total"],
+                "wrong_content_done": pattern["wrong_content_done"],
+                "skipping_habit": pattern["skipping_habit"],
+                "guessing_habit": pattern["guessing_habit"],
+                "careless_habit": pattern["careless_habit"],
+                "wrong_cause": wrong_pattern["wrong_cause"],
+                "frequent_wrong_type": wrong_pattern["frequent_wrong_type"],
+                "task_subject": subject,
+                "task_unit": task.get("unit", ""),
+                "task_difficulty": task.get("difficulty", ""),
+                "ai_predicted_score": task.get("ai_predicted_score", ""),
+                "touchpoint": touchpoint.value,
+                "use_case": use_case.value,
+                "turn": turn,
+                "tp4_cause": tp4_cause if touchpoint == Touchpoint.TP4 and turn == 2 else "",
+                "scenario_label": label,
+                "has_wrong_answers": has_wrong,
+                "wrong_content_done_today": wrong_done_today,
+                "response_text": response_text,
+                "choices": choices,
+                "message_types": message_types,
+                "error": error,
+            })
 
     # CSV 저장
     with csv_path.open("w", newline="", encoding="utf-8-sig") as f:
@@ -245,8 +287,20 @@ def main() -> None:
 
     total = len(all_rows)
     errors = sum(1 for r in all_rows if r["error"])
+    classification_errors = sum(1 for r in all_rows if not r["classification_ok"])
+
+    logger.info(
+        "LangGraph scenario runner completed",
+        extra={
+            "total": total,
+            "errors": errors,
+            "classification_errors": classification_errors,
+            "csv_path": str(csv_path),
+        },
+    )
+
     print(f"\n{'='*70}")
-    print(f"  완료: {total}개 시나리오, 오류: {errors}개")
+    print(f"  완료: {total}개 시나리오, 오류: {errors}개, 분류 불일치: {classification_errors}개")
     print(f"  CSV 저장됨: {csv_path}")
     print(f"{'='*70}\n")
 
