@@ -42,7 +42,7 @@ sys.path.insert(0, str(ROOT))
 from langchain_core.callbacks import BaseCallbackHandler
 from langchain_core.messages import HumanMessage
 
-import app.clients.upstage as upstage_module
+import app.clients.llm as llm_module
 from app.core.config import settings
 from app.core.enums import GradeGroup, Touchpoint, UseCase
 from app.core.logging import get_logger
@@ -54,15 +54,17 @@ logger = get_logger(__name__)
 
 
 # ─── 모델 레지스트리 ──────────────────────────────────────────────────────────
-# OpenRouter 모델 ID 는 https://openrouter.ai/models 에서 확인 후 필요시 교체.
+# transport:
+#   "openrouter" → OpenRouter 경유 (model_id 는 OpenRouter 카탈로그 ID)
+#   "upstage"    → Upstage 네이티브 API 경유 (langchain_upstage.ChatUpstage)
 
 MODELS: list[dict[str, str]] = [
-    {"label": "gpt-5.4-mini",          "openrouter_id": "openai/gpt-5.4-mini"},
-    {"label": "gpt-5.4-nano",          "openrouter_id": "openai/gpt-5.4-nano"},
-    {"label": "gemini-2.5-flash",      "openrouter_id": "google/gemini-2.5-flash"},
-    {"label": "gemini-2.5-flash-lite", "openrouter_id": "google/gemini-2.5-flash-lite"},
-    {"label": "solar-pro3",            "openrouter_id": "upstage/solar-pro-3"},
-    {"label": "solar-pro2",            "openrouter_id": "upstage/solar-pro2"},
+    {"label": "gpt-5.4-mini",          "transport": "openrouter", "model_id": "openai/gpt-5.4-mini"},
+    {"label": "gpt-5.4-nano",          "transport": "openrouter", "model_id": "openai/gpt-5.4-nano"},
+    {"label": "gemini-2.5-flash",      "transport": "openrouter", "model_id": "google/gemini-2.5-flash"},
+    {"label": "gemini-2.5-flash-lite", "transport": "openrouter", "model_id": "google/gemini-2.5-flash-lite"},
+    {"label": "solar-pro3",            "transport": "openrouter", "model_id": "upstage/solar-pro-3"},
+    {"label": "solar-pro2",            "transport": "upstage",    "model_id": "solar-pro2"},
 ]
 
 
@@ -79,13 +81,13 @@ class Scenario:
 
 # PRD 케이스 1·2 학생 위주 + 양 학년 톤 차이를 보기 위해 TP1 두 학년 모두 포함.
 SCENARIOS: list[Scenario] = [
-    Scenario("TP1_뽀롱쌤_인사_저학년_불성실", "lower-low-lazy",     UseCase.TALK,     Touchpoint.TP1, 1, ""),
-    Scenario("TP1_뽀롱쌤_인사_고학년_성실",   "upper-low-diligent", UseCase.TALK,     Touchpoint.TP1, 1, ""),
-    Scenario("TP2_단원완료_피드백_저학년",    "lower-low-lazy",     UseCase.TALK,     Touchpoint.TP2, 1, ""),
-    Scenario("TP3_이탈방지_저학년_불성실",    "lower-low-lazy",     UseCase.TALK,     Touchpoint.TP3, 1, ""),
-    Scenario("TP4_막힘_원인선택지_고학년",    "upper-low-diligent", UseCase.LEARNING, Touchpoint.TP4, 1, ""),
-    Scenario("TP4_막힘_코칭응답_고학년",      "upper-low-diligent", UseCase.LEARNING, Touchpoint.TP4, 2, "__cause__"),
-    Scenario("TP5_학습종료_피드백_저학년",    "lower-low-lazy",     UseCase.TALK,     Touchpoint.TP5, 1, ""),
+    Scenario("TP1_뽀롱쌤_인사_저학년_불성실", "lower-lazy",     UseCase.TALK,     Touchpoint.TP1, 1, ""),
+    Scenario("TP1_뽀롱쌤_인사_고학년_성실",   "upper-diligent", UseCase.TALK,     Touchpoint.TP1, 1, ""),
+    Scenario("TP2_단원완료_피드백_저학년",    "lower-lazy",     UseCase.TALK,     Touchpoint.TP2, 1, ""),
+    Scenario("TP3_이탈방지_저학년_불성실",    "lower-lazy",     UseCase.TALK,     Touchpoint.TP3, 1, ""),
+    Scenario("TP4_막힘_원인선택지_고학년",    "upper-diligent", UseCase.LEARNING, Touchpoint.TP4, 1, ""),
+    Scenario("TP4_막힘_코칭응답_고학년",      "upper-diligent", UseCase.LEARNING, Touchpoint.TP4, 2, "__cause__"),
+    Scenario("TP5_학습종료_피드백_저학년",    "lower-lazy",     UseCase.TALK,     Touchpoint.TP5, 1, ""),
 ]
 
 TP4_CAUSE_BY_SUBJECT = {"국어": "too_long", "수학": "confused_concept"}
@@ -208,19 +210,17 @@ class LLMMetricsCollector(BaseCallbackHandler):
 
 # ─── 모델 스왑 ────────────────────────────────────────────────────────────────
 
-@contextmanager
-def use_openrouter_model(openrouter_id: str, temperature: float):
-    """`app.clients.upstage.llm` 을 OpenRouter 클라이언트로 일시 교체."""
+def _build_openrouter_llm(model_id: str, temperature: float):
     from langchain_openai import ChatOpenAI
 
     api_key = settings.OPENROUTER_API_KEY
     if not api_key:
         raise RuntimeError("OPENROUTER_API_KEY 가 .env 에 설정되지 않았습니다.")
 
-    new_llm = ChatOpenAI(
+    return ChatOpenAI(
         api_key=api_key,
         base_url=settings.OPENROUTER_BASE_URL,
-        model=openrouter_id,
+        model=model_id,
         temperature=temperature,
         timeout=60,
         max_retries=1,
@@ -229,12 +229,48 @@ def use_openrouter_model(openrouter_id: str, temperature: float):
             "X-Title": "ungji-model-comparison",
         },
     )
-    original = upstage_module.llm
-    upstage_module.llm = new_llm
+
+
+def _build_upstage_llm(model_id: str, temperature: float):
+    from langchain_upstage import ChatUpstage
+
+    api_key = settings.UPSTAGE_API_KEY
+    if not api_key:
+        raise RuntimeError("UPSTAGE_API_KEY 가 .env 에 설정되지 않았습니다.")
+
+    return ChatUpstage(
+        api_key=api_key,
+        model=model_id,
+        temperature=temperature,
+        timeout=60,
+    )
+
+
+@contextmanager
+def use_model(transport: str, model_id: str, temperature: float, target: str = "both"):
+    """transport 에 따라 LLM 을 만들고 `app.clients.llm` 의 어트리뷰트를 일시 교체.
+
+    target:
+      - "both": motivator_llm 과 helper_llm 둘 다 같은 모델로 교체 (단일 모델 평가)
+      - "motivator": motivator_llm 만 교체
+      - "helper": helper_llm 만 교체
+    """
+    if transport == "openrouter":
+        new_llm = _build_openrouter_llm(model_id, temperature)
+    elif transport == "upstage":
+        new_llm = _build_upstage_llm(model_id, temperature)
+    else:
+        raise ValueError(f"지원하지 않는 transport: {transport}")
+
+    targets = ("motivator_llm", "helper_llm") if target == "both" else (f"{target}_llm",)
+    originals = {attr: getattr(llm_module, attr) for attr in targets}
+    for attr in targets:
+        setattr(llm_module, attr, new_llm)
     try:
         yield
     finally:
-        upstage_module.llm = original
+        for attr, orig in originals.items():
+            setattr(llm_module, attr, orig)
 
 
 # ─── 한 회차 실행 ─────────────────────────────────────────────────────────────
@@ -369,7 +405,8 @@ def aggregate(model_iters: list[IterResult]) -> dict:
 def write_raw_per_model(
     out_dir: Path,
     model_label: str,
-    openrouter_id: str,
+    transport: str,
+    model_id: str,
     scenario_to_iters: dict[str, list[IterResult]],
 ) -> Path:
     path = out_dir / "raw" / f"{model_label}.md"
@@ -378,7 +415,7 @@ def write_raw_per_model(
     L: list[str] = [
         f"# {model_label} — 원본 출력",
         "",
-        f"- OpenRouter ID: `{openrouter_id}`",
+        f"- Transport: `{transport}` · Model ID: `{model_id}`",
         f"- 생성: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}",
         "",
     ]
@@ -450,11 +487,11 @@ def write_main_report(
         "",
         "## 모델 목록",
         "",
-        "| 라벨 | OpenRouter ID |",
-        "|---|---|",
+        "| 라벨 | Transport | Model ID |",
+        "|---|---|---|",
     ]
-    for label, openrouter_id in model_meta.items():
-        L.append(f"| {label} | `{openrouter_id}` |")
+    for label, meta in model_meta.items():
+        L.append(f"| {label} | {meta['transport']} | `{meta['model_id']}` |")
 
     L.extend([
         "",
@@ -673,19 +710,20 @@ def main() -> None:
     print(f"{'='*72}")
 
     results_by_model: dict[str, list[IterResult]] = {}
-    model_meta: dict[str, str] = {}
+    model_meta: dict[str, dict[str, str]] = {}
 
     for model_cfg in selected_models:
         label = model_cfg["label"]
-        openrouter_id = model_cfg["openrouter_id"]
-        model_meta[label] = openrouter_id
-        print(f"\n▶ {label}  ({openrouter_id})")
+        transport = model_cfg["transport"]
+        model_id = model_cfg["model_id"]
+        model_meta[label] = {"transport": transport, "model_id": model_id}
+        print(f"\n▶ {label}  ({transport} · {model_id})")
 
         per_scenario: dict[str, list[IterResult]] = {}
         all_iters: list[IterResult] = []
 
         try:
-            with use_openrouter_model(openrouter_id, temperature=args.temperature):
+            with use_model(transport, model_id, temperature=args.temperature):
                 for scenario in SCENARIOS:
                     iters: list[IterResult] = []
                     for k in range(1, args.iterations + 1):
@@ -700,7 +738,7 @@ def main() -> None:
             print(f"  [모델 단위 오류] {exc}")
             traceback.print_exc()
 
-        write_raw_per_model(out_dir, label, openrouter_id, per_scenario)
+        write_raw_per_model(out_dir, label, transport, model_id, per_scenario)
         results_by_model[label] = all_iters
 
     main_path = write_main_report(out_dir, args.iterations, results_by_model, SCENARIOS, model_meta)

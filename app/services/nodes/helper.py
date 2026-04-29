@@ -44,7 +44,7 @@ def send_image_card(caption: str) -> str:
 
 
 def helper(state: ChatState) -> dict:
-    from app.clients.upstage import llm
+    from app.clients.llm import helper_llm as llm
 
     segment = state["segment"]
     grade_group = state["grade_group"]
