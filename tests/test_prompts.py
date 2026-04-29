@@ -115,11 +115,11 @@ def test_case_1_lower_low_lazy_prompt_matches_prd_direction():
     assert "1~2학년" in persona
     # 인격 (뽀롱쌤 통일)
     assert "뽀롱쌤" in persona
-    # 코칭 전략 (PRD 2-5: 즉시 성공 경험 / 짧은 대화 / 작은 목표)
-    assert "아주 작은 목표" in strategy
+    # 코칭 전략 (PRD 2-5: 즉시 성공 경험 / 짧은 행동 / 시작 장벽 낮추기)
+    assert "한 번에 하나의 행동만" in strategy
     assert "즉시 성공 경험" in strategy
-    assert "절대 길게 설명하지 마" in strategy
-    assert "딱 이것만 해보자" in combined_prompt
+    assert "긴 설명" in strategy and "피하고" in strategy
+    assert "이건 금방 끝낼 수 있어" in combined_prompt
 
 
 def test_case_2_upper_low_diligent_prompt_matches_prd_direction():
@@ -132,8 +132,8 @@ def test_case_2_upper_low_diligent_prompt_matches_prd_direction():
     assert "해요체" in persona
     # 인격 (뽀롱쌤 통일)
     assert "뽀롱쌤" in persona
-    # 코칭 전략 (PRD 2-6: 막힘 원인 진단 / 단계별 / 정답 X / teach-back)
-    assert "막힌 원인을 먼저 파악" in strategy
-    assert "단계별로 설명" in strategy
-    assert "정답을 바로 알려주지 말고" in strategy
-    assert "teach-back" in combined_prompt
+    # 코칭 전략 (PRD 2-6: 막힘 구간 진단 / 단계별 / 정답 직접 X / teach-back)
+    assert "어디가 어려운지 짚어내게" in strategy
+    assert "단계별로" in strategy
+    assert "정답을 바로 말하지 말고" in strategy
+    assert "자기 말로 다시 설명" in combined_prompt

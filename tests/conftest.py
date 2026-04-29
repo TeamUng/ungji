@@ -281,6 +281,7 @@ class FakeLLM:
 def mock_llm(monkeypatch) -> FakeLLM:
     fake_llm = FakeLLM()
     fake_module = types.ModuleType("app.clients.llm")
-    fake_module.llm = fake_llm
+    fake_module.motivator_llm = fake_llm
+    fake_module.helper_llm = fake_llm
     monkeypatch.setitem(sys.modules, "app.clients.llm", fake_module)
     return fake_llm

@@ -15,7 +15,7 @@ _HISTORY_WINDOW = 20
 
 def motivator(state: ChatState) -> ChatResponse:
     """Handle TP1, TP2, TP3, TP5, and non-TP4 free chat turns."""
-    from app.clients.llm import llm
+    from app.clients.llm import motivator_llm as llm
 
     grade_group = state["grade_group"]
     segment = state["segment"]

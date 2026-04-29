@@ -49,7 +49,7 @@ def send_image_card(caption: str) -> str:
 
 
 def helper(state: ChatState) -> dict:
-    from app.clients.llm import llm
+    from app.clients.llm import helper_llm as llm
 
     current_problem = state.get("current_problem")
     chat_history = state.get("chat_history", [])
