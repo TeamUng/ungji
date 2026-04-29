@@ -25,6 +25,10 @@ from typing import Any
 # Allow running this file directly from the repository root or scripts directory.
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
+from app.core.config import configure_langsmith_tracing, settings
+
+configure_langsmith_tracing()
+
 from langchain_core.messages import HumanMessage
 
 from app.core.enums import GradeGroup, Segment, Touchpoint, UseCase
@@ -233,7 +237,17 @@ def _call_graph(
         "chat_history": [HumanMessage(content=message_content)] if message_content else [],
         "response": None,
     }
-    config = {"configurable": {"thread_id": thread_id}}
+    config = {
+        "configurable": {"thread_id": thread_id},
+        "run_name": f"scenario:{touchpoint.value}:{student_id}",
+        "tags": ["scenario-runner", use_case.value, touchpoint.value, student_id],
+        "metadata": {
+            "student_id": student_id,
+            "use_case": use_case.value,
+            "touchpoint": touchpoint.value,
+            "runner_mode": "graph",
+        },
+    }
     result = graph.invoke(state, config=config)
     return result.get("response")
 
@@ -494,6 +508,19 @@ def _configure_stdout() -> None:
             )
 
 
+def _flush_langsmith_traces() -> None:
+    if not settings.LANGSMITH_API_KEY or settings.UNGJI_DISABLE_LANGSMITH_TRACING:
+        return
+
+    try:
+        from langchain_core.tracers.langchain import wait_for_all_tracers
+
+        wait_for_all_tracers()
+        logger.info("LangSmith trace flush completed")
+    except Exception:
+        logger.warning("LangSmith trace flush failed", exc_info=True)
+
+
 def main(argv: Sequence[str] | None = None) -> None:
     _configure_stdout()
     setup_logging()
@@ -726,6 +753,7 @@ def main(argv: Sequence[str] | None = None) -> None:
             "transcript_path": str(transcript_path),
         },
     )
+    _flush_langsmith_traces()
 
     print(f"\n{'=' * 70}")
     print(

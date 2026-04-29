@@ -1,19 +1,17 @@
 from __future__ import annotations
 
 import asyncio
-import os
 from collections.abc import Iterable
 from dataclasses import dataclass
 from typing import Any
 
 import httpx
 
-from app.core.config import settings
+from app.core.config import configure_langsmith_tracing, settings
 from app.core.logging import get_logger
 from app.clients import llm_config
 
 logger = get_logger(__name__)
-_DISABLE_LANGSMITH_TRACING = "UNGJI_DISABLE_LANGSMITH_TRACING"
 
 
 class LLMConfigurationError(RuntimeError):
@@ -348,19 +346,5 @@ def _log_fallback_success(config: LLMProviderConfig, operation: str) -> None:
     )
 
 
-def _configure_langsmith() -> None:
-    if not settings.LANGSMITH_API_KEY:
-        return
-    if os.environ.get(_DISABLE_LANGSMITH_TRACING, "").lower() == "true":
-        return
-
-    os.environ["LANGCHAIN_API_KEY"] = settings.LANGSMITH_API_KEY
-    os.environ["LANGSMITH_API_KEY"] = settings.LANGSMITH_API_KEY
-    os.environ["LANGCHAIN_PROJECT"] = settings.LANGSMITH_PROJECT
-    os.environ["LANGSMITH_PROJECT"] = settings.LANGSMITH_PROJECT
-    os.environ["LANGCHAIN_TRACING_V2"] = "true"
-    os.environ["LANGSMITH_TRACING"] = "true"
-
-
-_configure_langsmith()
+configure_langsmith_tracing()
 llm = create_llm()

@@ -10,7 +10,7 @@ from typing import Any
 import httpx
 import pytest
 
-from app.core.config import settings
+from app.core.config import configure_langsmith_tracing, settings
 from app.clients import llm_config
 
 
@@ -189,6 +189,7 @@ def test_langsmith_tracing_env_is_configured(monkeypatch):
     monkeypatch.setattr(settings, "UPSTAGE_API_KEY", "upstage-key")
     monkeypatch.setattr(settings, "LANGSMITH_API_KEY", "test-langsmith-key")
     monkeypatch.setattr(settings, "LANGSMITH_PROJECT", "test-project")
+    monkeypatch.setattr(settings, "UNGJI_DISABLE_LANGSMITH_TRACING", False)
     monkeypatch.delenv("UNGJI_DISABLE_LANGSMITH_TRACING", raising=False)
     monkeypatch.delenv("LANGCHAIN_API_KEY", raising=False)
     monkeypatch.delenv("LANGSMITH_API_KEY", raising=False)
@@ -220,6 +221,7 @@ def test_langsmith_tracing_respects_disable_flag(monkeypatch):
     monkeypatch.setattr(settings, "UPSTAGE_API_KEY", "upstage-key")
     monkeypatch.setattr(settings, "LANGSMITH_API_KEY", "test-langsmith-key")
     monkeypatch.setattr(settings, "LANGSMITH_PROJECT", "test-project")
+    monkeypatch.setattr(settings, "UNGJI_DISABLE_LANGSMITH_TRACING", True)
     monkeypatch.setenv("UNGJI_DISABLE_LANGSMITH_TRACING", "true")
     monkeypatch.setenv("LANGCHAIN_TRACING_V2", "false")
     monkeypatch.setenv("LANGSMITH_TRACING", "false")
@@ -233,6 +235,23 @@ def test_langsmith_tracing_respects_disable_flag(monkeypatch):
     assert os.environ["LANGSMITH_TRACING"] == "false"
     assert "LANGCHAIN_API_KEY" not in os.environ
     assert "LANGSMITH_API_KEY" not in os.environ
+
+
+def test_langsmith_tracing_clears_cached_env_lookup(monkeypatch):
+    from langsmith import utils as langsmith_utils
+
+    monkeypatch.setattr(settings, "LANGSMITH_API_KEY", "test-langsmith-key")
+    monkeypatch.setattr(settings, "LANGSMITH_PROJECT", "test-project")
+    monkeypatch.setattr(settings, "UNGJI_DISABLE_LANGSMITH_TRACING", False)
+    monkeypatch.delenv("LANGSMITH_TRACING", raising=False)
+    monkeypatch.delenv("LANGCHAIN_TRACING_V2", raising=False)
+    langsmith_utils.get_env_var.cache_clear()
+
+    assert langsmith_utils.get_env_var("TRACING", default="") == ""
+
+    configure_langsmith_tracing()
+
+    assert langsmith_utils.get_env_var("TRACING", default="") == "true"
 
 
 @pytest.mark.asyncio
