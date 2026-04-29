@@ -14,10 +14,12 @@ from scripts.run_scenarios import (
     CSV_COLUMNS,
     DEFAULT_STUDENT_IDS,
     EXPECTED_CASES,
+    ResponseFields,
     _available_units,
     _extract_response_fields,
     _format_response_for_transcript,
     _parse_args,
+    _recommended_task_from_response,
     _select_scenario_task,
     _simulated_student_reply,
     _task_problem_id,
@@ -179,6 +181,47 @@ def test_runner_simulated_tp4_reply_uses_first_choice_id() -> None:
     fields = _extract_response_fields(response)
 
     assert _simulated_student_reply(Touchpoint.TP4, 1, task, fields) == "too_long"
+
+
+def test_runner_detects_recommended_unit_for_simulated_reply() -> None:
+    student = load_student("upper-low-lazy")
+    recommended = student["today_tasks"][1]
+    response = ChatResponse(
+        thread_id="test",
+        messages=[TextMessage(content=f"{recommended['subject']} - {recommended['unit']}부터 시작해보자.")],
+    )
+    fields = _extract_response_fields(response)
+
+    detected = _recommended_task_from_response(student, fields)
+    reply = _simulated_student_reply(Touchpoint.TP1, 2, detected, fields)
+
+    assert detected == recommended
+    assert recommended["unit"] in reply
+
+
+def test_runner_simulated_reply_uses_neutral_fallback_without_detected_unit() -> None:
+    fields = ResponseFields(
+        response_text="좋아, 추천한 것부터 해보자.",
+        choices="",
+        message_types="text",
+        error="",
+        first_choice_id="",
+    )
+
+    reply = _simulated_student_reply(Touchpoint.TP2, 2, None, fields)
+
+    assert reply == "좋아요, 추천한 것부터 해볼게요."
+
+
+def test_runner_tp4_followup_matches_korean_reading_context() -> None:
+    student = load_student("lower-low-lazy")
+    task = _select_scenario_task(student, Touchpoint.TP4)
+    fields = ResponseFields("", "", "text", "", "")
+
+    reply = _simulated_student_reply(Touchpoint.TP4, 3, task, fields)
+
+    assert "숫자" not in reply
+    assert "글자" in reply
 
 
 def test_runner_main_writes_csv_and_transcript(tmp_path, monkeypatch) -> None:

@@ -107,6 +107,33 @@ TP4_SIMULATED_FOLLOWUPS = [
     "그럼 비교하는 양을 전체 양으로 나누면 되나요?",
 ]
 
+TP4_SIMULATED_FOLLOWUPS_BY_SUBJECT = {
+    "국어": [
+        "아직 어느 글자를 봐야 하는지 잘 모르겠어요.",
+        "그럼 글자 아래에 붙은 걸 먼저 보면 되나요?",
+    ],
+    "수학": [
+        "아직 어떤 숫자를 써야 하는지 잘 모르겠어요.",
+        "그럼 비교하는 양을 전체 양으로 나누면 되나요?",
+    ],
+    "과학": [
+        "아직 어디를 먼저 봐야 하는지 잘 모르겠어요.",
+        "그럼 서로 어떤 관계인지 먼저 보면 되나요?",
+    ],
+    "사회": [
+        "아직 무슨 뜻인지 잘 모르겠어요.",
+        "그럼 중요한 말부터 하나씩 보면 되나요?",
+    ],
+    "영어": [
+        "아직 어떤 단어를 봐야 하는지 잘 모르겠어요.",
+        "그럼 모르는 단어부터 확인하면 되나요?",
+    ],
+    "통합": [
+        "아직 어디부터 봐야 하는지 잘 모르겠어요.",
+        "그럼 하나씩 관찰하면 되나요?",
+    ],
+}
+
 RESULTS_DIR = Path(__file__).parent / "results"
 RESULTS_DIR.mkdir(exist_ok=True)
 
@@ -333,6 +360,26 @@ def _fallback_cause_for_task(task: Task | dict[str, Any]) -> str:
     return TP4_FALLBACK_CAUSE_BY_SUBJECT.get(subject, "need_help")
 
 
+def _recommended_task_from_response(
+    record: StudentRecord,
+    fields: ResponseFields,
+) -> Task | dict[str, Any] | None:
+    response_context = f"{fields.response_text}\n{fields.choices}".lower()
+    for task in record["today_tasks"]:
+        unit = str(task.get("unit", ""))
+        subject = str(task.get("subject", ""))
+        if unit and unit.lower() in response_context:
+            return task
+        if subject and f"{subject} -" in response_context:
+            return task
+    return None
+
+
+def _tp4_followups_for_task(task: Task | dict[str, Any]) -> list[str]:
+    subject = str(task.get("subject", ""))
+    return TP4_SIMULATED_FOLLOWUPS_BY_SUBJECT.get(subject, TP4_SIMULATED_FOLLOWUPS)
+
+
 def _transcript_path(csv_path: Path) -> Path:
     return csv_path.with_name(csv_path.name.replace("scenario_results_", "scenario_transcript_")).with_suffix(".md")
 
@@ -358,18 +405,21 @@ def _format_response_for_transcript(response: ChatResponse | None) -> str:
 def _simulated_student_reply(
     touchpoint: Touchpoint,
     turn: int,
-    task: Task | dict[str, Any],
+    task: Task | dict[str, Any] | None,
     fields: ResponseFields,
 ) -> str:
     if touchpoint == Touchpoint.TP4 and turn == 1:
-        return fields.first_choice_id or _fallback_cause_for_task(task)
+        return fields.first_choice_id or _fallback_cause_for_task(task or {})
     if touchpoint == Touchpoint.TP4:
+        if task is None:
+            return "아직 어디부터 봐야 하는지 잘 모르겠어요."
         index = max(turn - 3, 0)
-        return TP4_SIMULATED_FOLLOWUPS[min(index, len(TP4_SIMULATED_FOLLOWUPS) - 1)]
-    if touchpoint == Touchpoint.TP1:
-        return f"좋아요, {task.get('unit', '추천 단원')}부터 해볼게요."
-    if touchpoint == Touchpoint.TP2:
-        return "다음 것도 해볼게요."
+        followups = _tp4_followups_for_task(task)
+        return followups[min(index, len(followups) - 1)]
+    if touchpoint in (Touchpoint.TP1, Touchpoint.TP2):
+        if task:
+            return f"좋아요, {task.get('unit', '추천한 것')}부터 해볼게요."
+        return "좋아요, 추천한 것부터 해볼게요."
     if touchpoint == Touchpoint.TP3:
         return "조금만 더 해보고 나갈게요."
     if touchpoint == Touchpoint.TP5:
@@ -787,7 +837,9 @@ def _run_non_tp4_simulated_followup(
     previous_response: ChatResponse,
     base_label: str,
 ) -> None:
-    student_reply = _simulated_student_reply(touchpoint, 2, task, _extract_response_fields(previous_response))
+    previous_fields = _extract_response_fields(previous_response)
+    reply_task = _recommended_task_from_response(record, previous_fields)
+    student_reply = _simulated_student_reply(touchpoint, 2, reply_task, previous_fields)
     label = f"{base_label} simulated student follow-up"
 
     transcript_lines.extend(["", f"### {label}", ""])
@@ -857,7 +909,7 @@ def _run_tp4_simulated_followups(
 ) -> ChatResponse | None:
     last_response = previous_response
 
-    for index, student_reply in enumerate(TP4_SIMULATED_FOLLOWUPS, start=3):
+    for index, student_reply in enumerate(_tp4_followups_for_task(task), start=3):
         label = f"TP4 coaching follow-up {index - 2}"
         transcript_lines.extend(["", f"### {label}", ""])
         _append_exchange(transcript_lines, "Student", student_reply)

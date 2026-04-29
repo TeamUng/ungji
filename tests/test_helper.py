@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from langchain_core.messages import HumanMessage
+from langchain_core.messages import HumanMessage, SystemMessage
 
 from app.core.enums import GradeGroup, Segment, Touchpoint, UseCase
 from app.schemas.chat import (
@@ -226,10 +226,13 @@ class TestHelperCoachingConversation:
 
         helper(state)
 
-        prompt_text = "\n".join(message.content for message in mock_llm.calls[-1]["messages"])
-        assert "agentic, multi-turn coaching conversation" in prompt_text
-        assert "fixed backend category" in prompt_text
-        assert "Choice buttons are only a child-friendly scaffold" in prompt_text
+        messages = mock_llm.calls[-1]["messages"]
+        prompt_text = "\n".join(message.content for message in messages)
+        assert isinstance(messages[0], SystemMessage)
+        assert isinstance(messages[1], HumanMessage)
+        assert "TP4 코칭 규칙" in prompt_text
+        assert "고정된 백엔드 분류값" in prompt_text
+        assert "원인 선택지는" in prompt_text
 
 
 class TestHelperSegmentNotExposed:
