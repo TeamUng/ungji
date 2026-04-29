@@ -7,7 +7,8 @@ It runs one LLM judge call that checks:
 - tone: encouraging, kind, not judgmental, and never gives direct answers
 - quality: relevant to the touchpoint with a clear next step
 
-Severity is always WARN. The response is still delivered to the student.
+Severity is WARN. The pipeline reports the warning, and the central agent
+output wrapper may use the same warning reasons to request one regeneration.
 Content safety is handled by SafetyCheck, which is the input guard.
 
 Fail-safe policy: if the LLM judge call fails, the guard logs a warning and
@@ -17,12 +18,11 @@ because an evaluator is unavailable.
 
 from __future__ import annotations
 
-import logging
-
+from app.core.logging import get_logger
 from app.guardrails.models import GuardResult, GuardrailContext, Severity
 from app.guardrails.strategies.llm_judge import LLMJudge, LLMJudgeError
 
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 
 _SYSTEM_PROMPT_TEMPLATE = """\
 당신은 초등학생을 위한 AI 학습 코치 챗봇의 응답 품질 평가자입니다.
@@ -59,16 +59,13 @@ tone:
   통과: 격려하고, 친절하며, 단계적으로 안내하는 표현.
 
 quality:
-  터치포인트별 목적에 맞는지 평가합니다.
-    home_screen     : 환영 + 제공된 단원 중 다음 학습 하나 추천.
-    during_study    : 막힌 지점 파악 + 단계별 안내. 정답 직접 제공 금지.
-    after_task      : 결과 인정 + 제공된 남은 단원 중 다음 학습 하나 추천.
-    after_all_tasks : 완료 축하 + 선택적 휴식/활동 안내.
-    exit            : 다시 돌아오도록 격려.
+  모든 에이전트에 공통으로 적용되는 출력 품질을 평가합니다.
   실패:
-    - 터치포인트와 무관하거나 다음 행동 안내가 없는 경우.
+    - 아이에게 직접 말하는 최종 응답이 아니라, 교사/개발자/시스템 사용자에게 설명하는 문장인 경우.
     - 내부 참고, 선택 이유, 프롬프트 규칙, 선생님/개발자용 설명이 포함된 경우.
-    - 제공된 맥락에 없는 새 문제, 예시, 퀴즈, 교과서 페이지, 과제, 단원을 만드는 경우.
+    - "실제 출력", "학생의 반응을 기다린 후", "응답 예정", "send_text(...)", tool call 코드, JSON, stage direction이 포함된 경우.
+    - 제공된 맥락에 없는 새 문제, 예시, 미션, 퀴즈, 교과서 페이지, 과제, 단원을 만드는 경우.
+    - 학생의 실제 발화를 대신 쓰거나 대화 대본을 만드는 경우.
     - lower 기준 200자, middle/upper 기준 400자를 크게 초과하는 경우.
 
 규칙
@@ -121,6 +118,55 @@ class ResponseEvaluator:
                 "ResponseEvaluator WARN session=%s dimensions=%s",
                 context.session_id, failures,
             )
+            return GuardResult(
+                passed=False,
+                guard_name=self.name,
+                severity=Severity.WARN,
+                reason="; ".join(reasons) or f"Failed: {failures}",
+                metadata={"failed_dimensions": failures},
+            )
+
+        return GuardResult(
+            passed=True,
+            guard_name=self.name,
+            severity=Severity.LOG,
+        )
+
+    def check_sync(self, text: str, context: GuardrailContext) -> GuardResult:
+        system_prompt = _SYSTEM_PROMPT_TEMPLATE.format(
+            touchpoint=context.touchpoint,
+            grade_group=context.grade_group,
+            segment=context.segment or "unknown",
+        )
+
+        try:
+            verdict = self._judge.evaluate_sync(system_prompt, text)
+        except LLMJudgeError as exc:
+            logger.warning(
+                "ResponseEvaluator LLM judge failed session=%s error=%s",
+                context.session_id, exc,
+            )
+            return GuardResult(
+                passed=True,
+                guard_name=self.name,
+                severity=Severity.WARN,
+                reason=f"LLM judge unavailable - skipped evaluation: {exc}",
+                metadata={"error": str(exc)},
+            )
+
+        return self._result_from_verdict(verdict)
+
+    def _result_from_verdict(self, verdict: dict) -> GuardResult:
+        failures: list[str] = []
+        reasons: list[str] = []
+        for dimension in ("age_appropriateness", "tone", "quality"):
+            dim_result = verdict.get(dimension, {})
+            if not dim_result.get("passed", True):
+                failures.append(dimension)
+                if dim_result.get("reason"):
+                    reasons.append(f"{dimension}: {dim_result['reason']}")
+
+        if failures:
             return GuardResult(
                 passed=False,
                 guard_name=self.name,

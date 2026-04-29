@@ -47,6 +47,10 @@ class OutputCheckResult(BaseModel):
     def final_text(self) -> str | None:
         return self.fallback_response
 
+    @property
+    def reasons(self) -> list[str]:
+        return [result.reason for result in self.guard_results if result.reason]
+
 
 TouchpointType = Literal["home_screen", "during_study", "after_task", "after_all_tasks", "exit"]
 UseCaseType    = Literal["talk", "learning"]
@@ -61,6 +65,7 @@ class GuardrailContext(BaseModel):
     grade_group: GradeGroup = "middle"
     segment:     str | None = None
     session_id:  str | None = None
+    agent_name:  str | None = None
     conversation_history: list[dict] = Field(default_factory=list)
 
     @property

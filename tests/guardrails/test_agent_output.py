@@ -1,0 +1,76 @@
+from __future__ import annotations
+
+from dataclasses import dataclass
+
+import app.guardrails
+from app.guardrails.agent_output import guarded_invoke
+from app.guardrails.models import GuardResult, OutputCheckResult, Severity
+from app.core.enums import GradeGroup, Segment, Touchpoint
+
+
+@dataclass
+class FakeResponse:
+    content: str
+
+
+class FakeRunnable:
+    def __init__(self):
+        self.calls = []
+        self.responses = [FakeResponse("bad meta response"), FakeResponse("clean child response")]
+
+    def invoke(self, messages):
+        self.calls.append(messages)
+        return self.responses.pop(0)
+
+
+class FakePipeline:
+    def __init__(self):
+        self.contexts = []
+        self.checked_texts = []
+
+    def check_output_sync(self, text, context):
+        self.contexts.append(context)
+        self.checked_texts.append(text)
+        if len(self.checked_texts) == 1:
+            return OutputCheckResult(
+                passed=False,
+                guard_results=[
+                    GuardResult(
+                        passed=False,
+                        guard_name="response_evaluator",
+                        severity=Severity.WARN,
+                        reason="quality: contains teacher-facing rationale",
+                        metadata={"failed_dimensions": ["quality"]},
+                    )
+                ],
+            )
+        return OutputCheckResult(passed=True, guard_results=[])
+
+
+def test_guarded_invoke_regenerates_with_guardrail_reasons(monkeypatch, make_chat_state, case1_student):
+    pipeline = FakePipeline()
+    monkeypatch.setattr(app.guardrails, "build_pipeline", lambda context: pipeline)
+    runnable = FakeRunnable()
+    state = make_chat_state(
+        case1_student,
+        segment=Segment.LOW_LAZY,
+        grade_group=GradeGroup.LOWER,
+        touchpoint=Touchpoint.TP1,
+    )
+
+    result = guarded_invoke(
+        runnable,
+        messages=[],
+        state=state,
+        agent_name="motivator",
+        render_output=lambda response: response.content,
+    )
+
+    assert result.content == "clean child response"
+    assert len(runnable.calls) == 2
+    repair_message = runnable.calls[1][-1].content
+    assert "guardrail" in repair_message
+    assert "quality: contains teacher-facing rationale" in repair_message
+    assert pipeline.checked_texts == ["bad meta response", "clean child response"]
+    assert pipeline.contexts[0].agent_name == "motivator"
+    assert pipeline.contexts[0].touchpoint == "home_screen"

@@ -257,7 +257,7 @@ def test_tp1_situation_includes_four_home_screen_units() -> None:
 
     assert "4개 단원" in text
     assert "추천 단원 하나" in text
-    assert "선택지처럼 나열하지 말고" in text
+    assert "선택지처럼 나열하지 말고" not in text
     for task in student["today_tasks"]:
         assert task["unit"] in text
 

@@ -57,6 +57,6 @@ def test_tp2_recommends_only_remaining_units(make_chat_state, mock_llm):
     assert "아직 남은 단원은 3개" in prompt_text
     for task in student["today_tasks"][1:]:
         assert task["unit"] in prompt_text
-    assert "새 문제" in prompt_text
-    assert "예시" in prompt_text
+    assert "새 문제" not in prompt_text
+    assert "예시" not in prompt_text
     assert "하나만 추천" in prompt_text

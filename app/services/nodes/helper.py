@@ -5,6 +5,7 @@ from langchain_core.tools import tool
 
 from app.core.logging import get_logger
 from app.data.loader import load_problem
+from app.guardrails.agent_output import guarded_invoke
 from app.schemas.chat import ChatState, ResponseMessage
 from app.services.nodes.common import (
     make_choices,
@@ -18,15 +19,6 @@ logger = get_logger(__name__)
 
 TP4_PHASE_AWAITING_PROBLEM = "awaiting_problem"
 TP4_PHASE_COACHING = "coaching"
-_HELPER_META_MARKERS = (
-    "선택 이유",
-    "추천 이유",
-    "ESSENTIAL",
-    "send_text",
-    "JSON",
-    "이유:",
-    "내부",
-)
 
 
 @tool
@@ -165,16 +157,13 @@ def _coach_tp4(state: ChatState, problem: dict, llm) -> list[ResponseMessage]:
         SystemMessage(content=system_prompt),
         HumanMessage(content=user_message),
     ]
-    response = bound_llm.invoke(messages)
-    if _needs_helper_repair(response, turn_count):
-        logger.warning(
-            "helper response repaired before delivery",
-            extra={"student_id": state["student_id"], "tp4_turn_count": turn_count},
-        )
-        response = bound_llm.invoke([
-            *messages,
-            HumanMessage(content=_helper_repair_prompt(response, turn_count, call_name)),
-        ])
+    response = guarded_invoke(
+        bound_llm,
+        messages,
+        state,
+        agent_name="helper",
+        render_output=_render_helper_output_for_guard,
+    )
 
     return _parse_helper_response(response)
 
@@ -189,30 +178,18 @@ def _student_call_name(name: str) -> str:
     return f"{name}야"
 
 
-def _needs_helper_repair(response, turn_count: int) -> bool:
+def _render_helper_output_for_guard(response) -> str:
+    parts: list[str] = []
     content = str(getattr(response, "content", "") or "")
-    if any(marker in content for marker in _HELPER_META_MARKERS):
-        return True
-    tool_names = [tool_call.get("name") for tool_call in getattr(response, "tool_calls", [])]
-    return turn_count > 0 and "send_causes" in tool_names
+    if content:
+        parts.append(content)
 
+    for tool_call in getattr(response, "tool_calls", []):
+        name = tool_call.get("name", "")
+        args = tool_call.get("args", {})
+        parts.append(f"tool:{name} args:{args}")
 
-def _helper_repair_prompt(response, turn_count: int, call_name: str) -> str:
-    content = str(getattr(response, "content", "") or "")
-    tool_names = ", ".join(tool_call.get("name", "") for tool_call in getattr(response, "tool_calls", []))
-    if turn_count > 0:
-        phase_rule = "아이는 이미 막힌 이유를 말했어. 원인 선택지를 다시 주지 말고 작은 힌트나 질문 하나로 이어가."
-    else:
-        phase_rule = "아이는 아직 막힌 이유를 말하지 않았어. 바로 풀지 말고 원인 선택지를 짧게 줘."
-    return (
-        "방금 응답은 아이에게 그대로 보낼 수 없어. "
-        "메타 설명, 도구 코드, 내부 이유, 반복 선택지, 정답 직접 제공을 제거하고 다시 작성해.\n"
-        f"학생을 부를 때는 반드시 '{call_name}'라고 불러.\n"
-        f"{phase_rule}\n"
-        "실제 tool call을 사용해. 본문에 send_text(...) 같은 코드를 쓰지 마.\n"
-        f"이전 응답 content: {content}\n"
-        f"이전 tool calls: {tool_names}"
-    )
+    return "\n".join(parts)
 
 
 def _problem_context(problem: dict | None, state: ChatState) -> str:

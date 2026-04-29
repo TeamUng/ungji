@@ -101,7 +101,7 @@ def test_chat_followup_gets_child_context_with_tasks(case1_student, make_chat_st
     assert isinstance(context_message, HumanMessage)
     assert case1_student["profile"]["name"] in context_message.content
     assert case1_student["today_tasks"][0]["unit"] in context_message.content
-    assert "수업 설명이나 문제 풀이를 시작하지 마" in context_message.content
+    assert "내가 추천한 단원을 해보겠다고 했어" in context_message.content
 
 
 def test_response_does_not_expose_segment_name(case1_student, make_chat_state, mock_llm):

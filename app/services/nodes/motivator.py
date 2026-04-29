@@ -4,6 +4,7 @@ from langchain_core.messages import HumanMessage, SystemMessage
 
 from app.core.enums import Touchpoint, UseCase
 from app.core.logging import get_logger
+from app.guardrails.agent_output import guarded_invoke
 from app.schemas.chat import ChatResponse, ChatState, Task
 from app.services.nodes.common import make_chat_response, make_text
 from app.services.prompts.agents import MOTIVATOR_ROLE, build_system_prompt
@@ -12,24 +13,6 @@ logger = get_logger(__name__)
 
 _HISTORY_WINDOW = 20
 _BOOK_CLUB_LABEL = "Book Club"
-_META_OUTPUT_MARKERS = (
-    "내부 참고",
-    "선택 이유",
-    "추천 이유",
-    "응답 예정",
-    "학생의 반응",
-    "실제 화면 구성",
-    "현재 문제 유형을 가정",
-    "ESSENTIAL",
-    "send_text",
-    "예를 들어",
-    "예시:",
-    "교과서",
-    "페이지",
-    "퀴즈",
-    "미션",
-    "문제 선택 이유",
-)
 
 
 def _task_key(task: Task | dict) -> tuple[str, str]:
@@ -60,30 +43,6 @@ def _task_lines(tasks: list[Task] | list[dict]) -> str:
     return "\n".join(lines)
 
 
-def _unit_boundary_request(tasks: list[Task] | list[dict], *, allow_close: bool = False) -> str:
-    if not tasks:
-        return (
-            f"오늘 남은 단원은 없어. 새 공부를 만들지 말고 앱의 {_BOOK_CLUB_LABEL}을 알려줘. "
-            "새 문제, 예시, 퀴즈, 교과서 페이지, 복습문제, 숙제는 만들지 말아줘."
-        )
-
-    close_rule = "내가 오늘은 끝내고 싶어하면 따뜻하게 마무리해줘. " if allow_close else ""
-    return (
-        f"{close_rule}"
-        "위 목록에 실제로 있는 단원 중 하나만 골라줘. "
-        "새 문제, 예시, 퀴즈, 교과서 페이지, 복습문제, 숙제는 만들지 말아줘. "
-        "단원 목록 전체를 다시 선택지처럼 나열하지 말고, 지금 시작할 하나만 추천해줘."
-    )
-
-
-def _current_task_action_request() -> str:
-    return (
-        "새 문제, 예시, 퀴즈, 교과서 페이지, 복습문제, 숙제는 만들지 말아줘. "
-        "구체적인 낱말, 문장, 숫자식, 보기, 페이지 번호를 새로 말하지 말아줘. "
-        "지금 화면에 이미 있는 첫 줄, 첫 보기, 첫 문제처럼 위치만 가리켜줘."
-    )
-
-
 def _latest_student_message(chat_history) -> str:
     for message in reversed(chat_history):
         if message.__class__.__name__ == "HumanMessage":
@@ -101,37 +60,6 @@ def _student_call_name(name: str) -> str:
     if 0 <= code <= 11171 and code % 28:
         return f"{name}아"
     return f"{name}야"
-
-
-def _needs_motivator_repair(content: str, touchpoint: Touchpoint | None) -> bool:
-    if any(marker in content for marker in _META_OUTPUT_MARKERS):
-        return True
-    if touchpoint == Touchpoint.TP3:
-        return any(marker in content for marker in ("작은 그림", "숫자", "낱말", "문장", "문제 첫", "첫 문제"))
-    if touchpoint in (Touchpoint.TP1, Touchpoint.TP2, Touchpoint.TP5):
-        return any(marker in content for marker in ("첫 문제", "문제 1개", "개념", "풀이", "힌트"))
-    return False
-
-
-def _repair_motivator_response(state: ChatState, llm, messages, content: str) -> str:
-    profile = state["student_profile"]
-    touchpoint = state.get("current_touchpoint")
-    call_name = _student_call_name(str(profile.get("name", "")))
-    repair_prompt = (
-        "방금 답변은 아이에게 그대로 보낼 수 없어. "
-        "메타 설명이나 새 문제/예시/퀴즈/교과서 페이지/풀이가 섞였을 수 있어.\n"
-        f"학생을 부를 때는 반드시 '{call_name}'라고 불러.\n"
-        "다시 작성해줘. 아이에게 보낼 말만 출력하고, 괄호 속 내부 설명을 쓰지 마.\n"
-        "Motivator는 수업 내용을 가르치지 말고, 제공된 단원 중 하나를 추천하거나 짧게 응원만 해야 해.\n"
-    )
-    if touchpoint == Touchpoint.TP3:
-        repair_prompt += (
-            "TP3에서는 구체적인 낱말, 문장, 숫자식, 그림을 만들지 말고 "
-            "'지금 화면의 첫 줄만 보자'처럼 화면 위치만 가리켜.\n"
-        )
-    repair_prompt += f"\n수정해야 할 원문:\n{content}"
-    repaired = llm.invoke([*messages, HumanMessage(content=repair_prompt)])
-    return str(getattr(repaired, "content", "") or content)
 
 
 def motivator(state: ChatState) -> ChatResponse:
@@ -161,17 +89,14 @@ def motivator(state: ChatState) -> ChatResponse:
         },
     )
 
-    response = llm.invoke(messages)
+    response = guarded_invoke(
+        llm,
+        messages,
+        state,
+        agent_name="motivator",
+        render_output=lambda raw: str(getattr(raw, "content", "")),
+    )
     content = str(getattr(response, "content", ""))
-    if _needs_motivator_repair(content, touchpoint):
-        logger.warning(
-            "motivator response repaired before delivery",
-            extra={
-                "student_id": state["student_id"],
-                "touchpoint": touchpoint.value if touchpoint else "chat",
-            },
-        )
-        content = _repair_motivator_response(state, llm, messages, content)
 
     logger.info("motivator node completed", extra={"student_id": state["student_id"]})
 
@@ -213,17 +138,14 @@ def _situation_chat(state: ChatState) -> str:
             f"방금 이렇게 말했어: \"{latest}\"\n"
             f"지금 화면의 현재 단원:\n{task_line}\n\n"
             "내 말에 이어서 바로 대답해줘. "
-            "내가 조금 더 해보겠다고 하면 새 학습 내용을 만들지 말고, "
-            "현재 화면 안에서 할 수 있는 아주 작은 행동 하나만 말해줘. "
-            f"{_current_task_action_request()}"
+            "내가 조금 더 해보겠다고 했으니 현재 화면 안에서 할 수 있는 아주 작은 행동 하나만 말해줘."
         )
 
     if touchpoint == Touchpoint.TP5 and "여기까지" in latest:
         return (
             f"나는 {profile['name']}이고 {profile['grade']}학년이야. 나를 부를 때는 '{call_name}'라고 불러줘. "
             f"방금 이렇게 말했어: \"{latest}\"\n\n"
-            "오늘은 끝내겠다는 뜻이야. 새 공부나 내일 할 문제를 만들지 말고 따뜻하게 마무리해줘. "
-            "제공된 단원 이름을 새 과제처럼 말하지 말고, 짧게 칭찬하고 쉬라고 말해줘."
+            "오늘은 끝내겠다는 뜻이야. 따뜻하게 마무리해줘."
         )
 
     return (
@@ -231,9 +153,7 @@ def _situation_chat(state: ChatState) -> str:
         f"방금 이렇게 말했어: \"{latest}\"\n"
         f"내 홈 화면에서 지금 말할 수 있는 단원:\n{_task_lines(active_tasks)}\n\n"
         "내 말에 이어서 바로 대답해줘. "
-        "내가 추천한 단원을 해보겠다고 하면 짧게 응원만 하고, 수업 설명이나 문제 풀이를 시작하지 마. "
-        "추천이 필요하면 위 단원 중 하나만 말해줘. "
-        f"{_unit_boundary_request(active_tasks)}"
+        "내가 추천한 단원을 해보겠다고 했어. 추천이 필요하면 위 단원 중 하나만 말해줘."
     )
 
 
@@ -261,8 +181,7 @@ def _situation_tp1(state: ChatState) -> str:
         f"{habit_line}"
         "오늘 홈 화면에는 4개 단원이 보여:\n"
         f"{_task_lines(today_tasks)}\n\n"
-        "이 중에서 지금 바로 시작할 추천 단원 하나만 알려줘. "
-        f"{_unit_boundary_request(today_tasks)}"
+        "이 중에서 지금 바로 시작할 추천 단원 하나만 알려줘."
     )
 
 
@@ -280,16 +199,14 @@ def _situation_tp2(state: ChatState) -> str:
             f"{_task_lines(completed_tasks)}\n\n"
             f"아직 남은 단원은 {len(remaining)}개야:\n"
             f"{_task_lines(remaining)}\n\n"
-            "다음에 무엇을 하면 좋을지 남은 단원 중 하나만 추천해줘. "
-            f"{_unit_boundary_request(remaining)}"
+            "다음에 무엇을 하면 좋을지 남은 단원 중 하나만 추천해줘."
         )
 
     return (
         f"안녕, 나는 {profile['name']}이고 {profile['grade']}학년이야. 나를 부를 때는 '{call_name}'라고 불러줘. "
         f"오늘 할 단원 {len(today_tasks)}개를 모두 끝냈어.\n"
         f"완료한 단원:\n{_task_lines(completed_tasks)}\n\n"
-        f"남은 단원이 없으니 새 공부를 만들지 말고 {_BOOK_CLUB_LABEL}을 알려줘. "
-        f"{_unit_boundary_request(remaining)}"
+        f"남은 단원이 없어서 {_BOOK_CLUB_LABEL}을 써볼까 생각 중이야."
     )
 
 
@@ -315,8 +232,7 @@ def _situation_tp3(state: ChatState) -> str:
         f"나는 {profile['name']}이고 {profile['grade']}학년이야. 나를 부를 때는 '{call_name}'라고 불러줘. {task_info}\n"
         f"아직 남은 단원 수는 {remaining_count}개야.\n\n"
         "지금 나가고 싶어졌어. 강요하지 말고 공감해줘. "
-        "그래도 계속할 수 있게 현재 단원 안에서 할 수 있는 아주 작은 행동 하나만 말해줘. "
-        f"{_current_task_action_request()}"
+        "그래도 계속할 수 있게 현재 단원 안에서 할 수 있는 아주 작은 행동 하나만 말해줘."
     )
 
 
@@ -331,14 +247,10 @@ def _situation_tp5(state: ChatState) -> str:
     if remaining:
         next_request = (
             "홈 화면으로 돌아온 상태라면 남은 단원 중 추천 단원 하나만 알려줘. "
-            "내가 오늘은 끝내겠다고 말하면 따뜻하게 마무리해줘. "
-            f"{_unit_boundary_request(remaining, allow_close=True)}"
+            "내가 오늘은 끝내겠다고 말하면 따뜻하게 마무리해줘."
         )
     else:
-        next_request = (
-            f"남은 단원이 없으니 새 공부를 만들지 말고 {_BOOK_CLUB_LABEL}을 알려줘. "
-            f"{_unit_boundary_request(remaining, allow_close=True)}"
-        )
+        next_request = f"남은 단원이 없어서 {_BOOK_CLUB_LABEL}을 써볼까 생각 중이야."
 
     return (
         f"나는 {profile['name']}이고 {profile['grade']}학년이야. 나를 부를 때는 '{call_name}'라고 불러줘. 오늘 학습을 마치려 해.\n"
