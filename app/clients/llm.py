@@ -38,7 +38,14 @@ class LLMProviderConfig:
 
 
 class FallbackChatModel:
-    """LangChain-style chat model wrapper with central provider fallback."""
+    """LangChain-style chat model wrapper with central provider fallback.
+
+    Runtime fallback is only active when llm_config.FALLBACK_LLM is set.
+    Fallback is intentionally limited to transient provider failures such as
+    timeouts, connection errors, rate limits, and 5xx responses. Configuration
+    errors, missing API keys, invalid providers, and prompt/schema bugs should
+    fail visibly instead of silently trying another provider.
+    """
 
     def __init__(
         self,
@@ -278,6 +285,7 @@ def _can_try_next(
 
 
 def _is_fallbackable(exc: Exception) -> bool:
+    """Return True only for temporary provider/service failures."""
     if isinstance(exc, (TimeoutError, ConnectionError, httpx.RequestError)):
         return True
 

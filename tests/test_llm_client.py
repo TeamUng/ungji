@@ -167,6 +167,16 @@ def test_bind_tools_is_applied_to_fallback_provider(monkeypatch):
     assert FakeChatOpenAI.instances[0].bound_tools == [["send_text"]]
 
 
+def test_configuration_errors_do_not_fallback(monkeypatch):
+    llm_module = _import_llm(monkeypatch, fallback_provider="openai", fallback_model="gpt-test")
+    monkeypatch.setattr(settings, "UPSTAGE_API_KEY", "")
+
+    with pytest.raises(llm_module.LLMCallError):
+        llm_module.create_llm().invoke(["hello"])
+
+    assert FakeChatOpenAI.instances == []
+
+
 def test_langsmith_tracing_env_is_configured(monkeypatch):
     _reset_fakes()
     _install_fake_provider_modules(monkeypatch)
@@ -192,7 +202,24 @@ def test_langsmith_tracing_env_is_configured(monkeypatch):
 
 
 @pytest.mark.asyncio
-async def test_llm_judge_uses_injected_fallback_chat_model():
+@pytest.mark.parametrize(
+    ("raw_content", "expected"),
+    [
+        (
+            '```json\n{"tone": {"passed": true, "reason": null}}\n```',
+            {"tone": {"passed": True, "reason": None}},
+        ),
+        (
+            '검사 결과입니다.\n{"tone": {"passed": true, "reason": null}}\n다음 응답을 사용하세요.',
+            {"tone": {"passed": True, "reason": None}},
+        ),
+        (
+            '{"tone": {"passed": false, "reason": "too {harsh}"}}',
+            {"tone": {"passed": False, "reason": "too {harsh}"}},
+        ),
+    ],
+)
+async def test_llm_judge_parses_common_json_wrappers(raw_content, expected):
     from app.guardrails.strategies.llm_judge import LLMJudge
 
     class FakeFallbackLLM:
@@ -201,13 +228,11 @@ async def test_llm_judge_uses_injected_fallback_chat_model():
 
         async def ainvoke(self, messages, **kwargs):
             self.calls.append({"messages": messages, "kwargs": kwargs})
-            return FakeLLMResponse(
-                content='```json\n{"tone": {"passed": true, "reason": null}}\n```'
-            )
+            return FakeLLMResponse(content=raw_content)
 
     fake_llm = FakeFallbackLLM()
 
     verdict = await LLMJudge(chat_model=fake_llm).evaluate("judge system", "candidate")
 
-    assert verdict == {"tone": {"passed": True, "reason": None}}
+    assert verdict == expected
     assert fake_llm.calls[0]["kwargs"] == {"temperature": 0}

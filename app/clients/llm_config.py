@@ -12,6 +12,10 @@ class LLMModelConfig:
 # Non-secret model routing config lives here, not in .env.
 # Provider values: upstage, openai, google. The LLM client also accepts gemini
 # as an alias for google.
+#
+# FALLBACK_LLM=None means the default runtime has no active fallback model yet.
+# Set FALLBACK_LLM to LLMModelConfig(...) after a fallback provider/model is
+# chosen and its API key is configured.
 PRIMARY_LLM = LLMModelConfig(provider="upstage", model="solar-pro2")
 FALLBACK_LLM: LLMModelConfig | None = None
 
