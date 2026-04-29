@@ -220,6 +220,9 @@ def make_chat_state() -> Callable[..., ChatState]:
             "today_tasks": today_tasks,
             "completed_tasks": completed,
             "current_task": current_task or (today_tasks[0] if today_tasks else None),
+            "current_problem": None,
+            "tp4_phase": "awaiting_problem",
+            "tp4_turn_count": 0,
             "has_wrong_answers": learning_pattern["wrong_content_total"] > 0,
             "wrong_content_done_today": (
                 learning_pattern["wrong_content_total"] > 0

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from langchain_core.messages import HumanMessage, SystemMessage
+from langchain_core.messages import SystemMessage
 from langchain_core.tools import tool
 
 from app.core.logging import get_logger
@@ -16,12 +16,17 @@ from app.services.prompts.agents import HELPER_ROLE, build_system_prompt
 
 logger = get_logger(__name__)
 
+TP4_PHASE_AWAITING_PROBLEM = "awaiting_problem"
+TP4_PHASE_COACHING = "coaching"
+
 
 @tool
 def send_causes(items: list[dict]) -> str:
-    """학생에게 막힘 원인 선택지를 제시합니다.
-    각 item은 반드시 {"id": "snake_case_english_id", "label": "한국어 설명"} 형식이어야 합니다.
-    3~4개의 구체적인 선택지를 생성하세요."""
+    """학생에게 막힌 이유 선택지를 제시합니다.
+
+    Each item must be {"id": "snake_case_english_id", "label": "Korean student-facing label"}.
+    Use this when a child may not be able to name where they are stuck.
+    """
     return str(items)
 
 
@@ -33,49 +38,52 @@ def send_text(content: str) -> str:
 
 @tool
 def send_hint_card(steps: list[str]) -> str:
-    """단계별 힌트 카드를 보여줍니다. 각 step은 짧고 쉬운 안내 문장입니다."""
+    """단계별 힌트 카드를 보여줍니다. Each step should be short and student-friendly."""
     return str(steps)
 
 
 @tool
 def send_image_card(caption: str) -> str:
-    """그림/시각 자료 카드를 보여줍니다. caption에 어떤 그림을 보여줄지 설명하세요."""
+    """그림/시각 자료 카드를 보여줍니다. Describe what visual aid should be shown."""
     return caption
 
 
 def helper(state: ChatState) -> dict:
     from app.clients.upstage import llm
 
-    segment = state["segment"]
-    grade_group = state["grade_group"]
+    current_problem = state.get("current_problem")
+    chat_history = state.get("chat_history", [])
+    last_content = chat_history[-1].content.strip() if chat_history else ""
+    turn_count = int(state.get("tp4_turn_count") or 0)
 
     logger.info(
         "helper node invoked",
         extra={
             "student_id": state["student_id"],
-            "segment": segment.value,
-            "grade_group": grade_group.value,
+            "segment": state["segment"].value,
+            "grade_group": state["grade_group"].value,
+            "tp4_phase": state.get("tp4_phase") or TP4_PHASE_AWAITING_PROBLEM,
+            "tp4_turn_count": turn_count,
         },
     )
 
-    current_problem = state.get("current_problem")
-    chat_history = state.get("chat_history", [])
-    last_content = chat_history[-1].content.strip() if chat_history else ""
+    result: dict = {
+        "tp4_phase": TP4_PHASE_COACHING,
+        "tp4_turn_count": turn_count + 1,
+    }
 
     if current_problem is None:
-        problem_data = _try_load_problem(last_content)
-        messages = _generate_causes(state, problem_data, llm)
-        result = {"helper_response": messages, "current_problem": problem_data or {}}
-    else:
-        cause_label = last_content
-        messages = _build_coaching(state, current_problem, cause_label, llm)
-        result = {"helper_response": messages}
+        current_problem = _try_load_problem(last_content) or {}
+        result["current_problem"] = current_problem
+
+    result["helper_response"] = _coach_tp4(state, current_problem, llm)
 
     logger.info(
         "helper node completed",
         extra={
             "student_id": state["student_id"],
-            "turn": 1 if current_problem is None else 2,
+            "tp4_phase": result["tp4_phase"],
+            "tp4_turn_count": result["tp4_turn_count"],
         },
     )
 
@@ -92,123 +100,98 @@ def _try_load_problem(problem_id: str) -> dict | None:
         return None
 
 
-def _generate_causes(state: ChatState, problem: dict | None, llm) -> list[ResponseMessage]:
-    """Turn 1: ask the LLM to generate likely causes as choices."""
+def _coach_tp4(state: ChatState, problem: dict, llm) -> list[ResponseMessage]:
+    """Let the LLM run TP4 as an ongoing coaching conversation."""
+    profile = state["student_profile"]
     segment = state["segment"]
     grade_group = state["grade_group"]
-    profile = state["student_profile"]
+    history = _format_recent_history(state.get("chat_history", []))
 
     system_prompt = build_system_prompt(grade_group, segment, HELPER_ROLE) + (
-        "\n\n학생이 문제를 풀다가 막혀서 도움을 요청했습니다.\n"
-        "주어진 문제와 학생 정보를 바탕으로, 이 학생이 막혔을 만한 원인 3~4가지를 "
-        "선택지로 제시해주세요.\n"
-        "반드시 send_causes 도구를 호출해 선택지를 전달하세요.\n"
-        "각 선택지 id는 영어 snake_case로, label은 학생이 클릭하기 쉬운 짧은 한국어 문장으로 작성하세요."
+        "\n\nTP4 is an agentic, multi-turn coaching conversation.\n"
+        "Use the full conversation history. Do not treat any one student message as a fixed backend category.\n"
+        "Choice buttons are only a child-friendly scaffold: use send_causes when the student may not know"
+        " how to explain where they are stuck.\n"
+        "If the student selects a choice, describes a new reason, changes their mind, or attempts an answer,"
+        " continue naturally from that message.\n"
+        "Guide step by step with one small next question or hint. Do not jump straight to the final answer.\n"
+        "Use any suitable tool: send_causes, send_text, send_hint_card, or send_image_card."
     )
-
-    if problem:
-        problem_info = (
-            f"현재 문제:\n"
-            f"과목: {problem.get('subject', '정보 없음')}\n"
-            f"단원: {problem.get('unit', '정보 없음')}\n"
-            f"문제: {problem.get('question', '(문제 없음)')}"
-        )
-    else:
-        current_task = state.get("current_task")
-        if current_task:
-            problem_info = (
-                f"현재 과제: {current_task['subject']} - {current_task['unit']} "
-                f"(난이도: {current_task['difficulty']})\n"
-                "(구체적인 문제 데이터 없음)"
-            )
-        else:
-            problem_info = "(문제 데이터 없음 - 일반적인 학습 막힘 상황)"
 
     user_message = (
         f"학생: {profile['name']} ({profile['grade']}학년)\n"
         f"세그먼트: {segment.value}\n\n"
-        f"{problem_info}\n\n"
-        "이 학생이 막혔을 만한 원인 3~4가지를 선택지로 만들어주세요."
+        f"{_problem_context(problem, state)}\n\n"
+        f"최근 대화:\n{history}\n\n"
+        "지금 이 대화의 다음 코칭 응답을 생성해 주세요."
     )
 
-    llm_with_tools = llm.bind_tools([send_causes])
-    response = llm_with_tools.invoke([
+    response = llm.bind_tools([
+        send_causes,
+        send_text,
+        send_hint_card,
+        send_image_card,
+    ]).invoke([
         SystemMessage(content=system_prompt),
-        HumanMessage(content=user_message),
+        SystemMessage(content=user_message),
     ])
 
-    return _parse_turn1_response(response)
+    return _parse_helper_response(response)
 
 
-def _build_coaching(
-    state: ChatState,
-    problem: dict,
-    cause_label: str,
-    llm,
-) -> list[ResponseMessage]:
-    """Turn 2: respond with coaching for the selected cause."""
-    segment = state["segment"]
-    grade_group = state["grade_group"]
-    profile = state["student_profile"]
-
-    problem_info = ""
+def _problem_context(problem: dict | None, state: ChatState) -> str:
     if problem:
-        problem_info = (
-            f"문제: {problem.get('question', '')}\n"
+        return (
+            "현재 문제:\n"
+            f"과목: {problem.get('subject', '정보 없음')}\n"
+            f"단원: {problem.get('unit', '정보 없음')}\n"
+            f"문제: {problem.get('question', '(문제 없음)')}\n"
             f"정답: {problem.get('answer', '')}\n"
             f"설명: {problem.get('explanation', '')}"
         )
 
-    system_prompt = build_system_prompt(grade_group, segment, HELPER_ROLE) + (
-        "\n\n학생이 막힘 원인을 선택했습니다. 그 원인에 맞게 학생을 도와주세요.\n"
-        "적절한 도구를 골라 응답하세요.\n"
-        "- send_text: 일반 코칭 텍스트\n"
-        "- send_hint_card: 단계별 힌트가 효과적일 때\n"
-        "- send_image_card: 그림/시각 자료로 설명할 때\n"
-        "하나 또는 두 개의 도구를 사용하세요."
-    )
-
-    user_message = (
-        f"학생: {profile['name']} ({profile['grade']}학년)\n"
-        f"학생이 선택한 막힘 원인: '{cause_label}'\n\n"
-        f"{problem_info}\n\n"
-        "이 원인에 맞는 도움을 제공해주세요."
-    )
-
-    llm_with_tools = llm.bind_tools([send_text, send_hint_card, send_image_card])
-    response = llm_with_tools.invoke([
-        SystemMessage(content=system_prompt),
-        HumanMessage(content=user_message),
-    ])
-
-    return _parse_turn2_response(response)
+    current_task = state.get("current_task")
+    if current_task:
+        return (
+            f"현재 단원: {current_task['subject']} - {current_task['unit']} "
+            f"(난이도 {current_task['difficulty']})\n"
+            "(구체적인 문제 데이터 없음)"
+        )
+    return "(문제 데이터 없음 - 일반적인 학습 막힘 상황)"
 
 
-def _parse_turn1_response(response) -> list[ResponseMessage]:
-    """Extract a choices message from a Turn 1 tool response."""
-    for tc in getattr(response, "tool_calls", []):
-        if tc["name"] == "send_causes":
-            raw_items = tc["args"].get("items", [])
+def _format_recent_history(messages) -> str:
+    if not messages:
+        return "(이전 대화 없음)"
+
+    lines: list[str] = []
+    for message in messages[-10:]:
+        role = "학생"
+        if message.__class__.__name__ == "AIMessage":
+            role = "코치"
+        content = getattr(message, "content", "")
+        if content:
+            lines.append(f"{role}: {content}")
+    return "\n".join(lines) if lines else "(이전 대화 없음)"
+
+
+def _parse_helper_response(response) -> list[ResponseMessage]:
+    messages: list[ResponseMessage] = []
+
+    for tool_call in getattr(response, "tool_calls", []):
+        name = tool_call["name"]
+        args = tool_call["args"]
+
+        if name == "send_causes":
+            raw_items = args.get("items", [])
             try:
                 choices = [(item["id"], item["label"]) for item in raw_items if "id" in item and "label" in item]
                 if choices:
-                    return [make_choices(choices)]
+                    messages.append(make_choices(choices))
             except (TypeError, KeyError):
                 pass
 
-    content = getattr(response, "content", "") or "어느 부분이 어려웠나요?"
-    return [make_text(content)]
-
-
-def _parse_turn2_response(response) -> list[ResponseMessage]:
-    """Extract response messages from a Turn 2 tool response."""
-    messages: list[ResponseMessage] = []
-
-    for tc in getattr(response, "tool_calls", []):
-        name = tc["name"]
-        args = tc["args"]
-
-        if name == "send_text":
+        elif name == "send_text":
             content = args.get("content", "")
             if content:
                 messages.append(make_text(content))
@@ -224,7 +207,7 @@ def _parse_turn2_response(response) -> list[ResponseMessage]:
                 messages.append(make_image_card("https://placeholder.invalid/img", caption))
 
     if not messages:
-        content = getattr(response, "content", "") or "함께 생각해볼까요?"
+        content = getattr(response, "content", "") or "좋아요, 한 단계씩 같이 생각해 볼까요?"
         messages.append(make_text(content))
 
     return messages

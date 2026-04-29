@@ -1,43 +1,79 @@
 """
-LangGraph 시나리오 러너 — 저성취 학생 × 터치포인트 조합을 Solar Pro2로 실행하고
-결과를 CSV로 저장한다.
+Run the LangGraph scenario matrix, write CSV metrics, and write a Markdown transcript.
 
-사용법:
+Examples:
     uv run python scripts/run_scenarios.py
-
-출력:
-    - 터미널: 각 시나리오 결과 실시간 출력
-    - scripts/results/scenario_results_YYYYMMDD_HHMMSS.csv
+    uv run python scripts/run_scenarios.py --all
+    uv run python scripts/run_scenarios.py --grade-group middle --ability high
+    uv run python scripts/run_scenarios.py --students lower-low-lazy upper-high-diligent
+    uv run python scripts/run_scenarios.py --simulate-conversation
 """
 
 from __future__ import annotations
 
+import argparse
 import csv
 import io
 import sys
 import uuid
+from collections.abc import Sequence
+from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
+from typing import Any
 
-# Windows 터미널 한글·이모지 출력을 위해 stdout을 UTF-8로 강제 설정
-sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
-
-# 프로젝트 루트를 sys.path에 추가
+# Allow running this file directly from the repository root or scripts directory.
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from langchain_core.messages import HumanMessage
 
 from app.core.enums import GradeGroup, Segment, Touchpoint, UseCase
-from app.core.logging import get_logger
-from app.data.loader import load_student
-from app.schemas.chat import ChatResponse
+from app.core.logging import get_logger, setup_logging
+from app.data.loader import StudentRecord, load_student
+from app.schemas.chat import ChatResponse, ResponseMessage, Task
 from app.services.graph import graph
 
 logger = get_logger(__name__)
 
-# ─── 설정 ─────────────────────────────────────────────────────────────────────
 
-STUDENT_IDS = [
+ABILITY_VALUES = ("low", "high")
+DILIGENCE_VALUES = ("lazy", "diligent")
+GRADE_GROUP_VALUES = tuple(group.value for group in GradeGroup)
+
+
+@dataclass(frozen=True)
+class ExpectedCase:
+    grade_group: GradeGroup
+    ability: str
+    diligence: str
+    segment: Segment
+
+
+@dataclass(frozen=True)
+class ResponseFields:
+    response_text: str
+    choices: str
+    message_types: str
+    error: str
+    first_choice_id: str
+
+
+EXPECTED_CASES: dict[str, ExpectedCase] = {
+    "lower-low-lazy": ExpectedCase(GradeGroup.LOWER, "low", "lazy", Segment.LOW_LAZY),
+    "lower-low-diligent": ExpectedCase(GradeGroup.LOWER, "low", "diligent", Segment.LOW_DILIGENT),
+    "lower-high-lazy": ExpectedCase(GradeGroup.LOWER, "high", "lazy", Segment.HIGH_LAZY),
+    "lower-high-diligent": ExpectedCase(GradeGroup.LOWER, "high", "diligent", Segment.HIGH_DILIGENT),
+    "middle-low-lazy": ExpectedCase(GradeGroup.MIDDLE, "low", "lazy", Segment.LOW_LAZY),
+    "middle-low-diligent": ExpectedCase(GradeGroup.MIDDLE, "low", "diligent", Segment.LOW_DILIGENT),
+    "middle-high-lazy": ExpectedCase(GradeGroup.MIDDLE, "high", "lazy", Segment.HIGH_LAZY),
+    "middle-high-diligent": ExpectedCase(GradeGroup.MIDDLE, "high", "diligent", Segment.HIGH_DILIGENT),
+    "upper-low-lazy": ExpectedCase(GradeGroup.UPPER, "low", "lazy", Segment.LOW_LAZY),
+    "upper-low-diligent": ExpectedCase(GradeGroup.UPPER, "low", "diligent", Segment.LOW_DILIGENT),
+    "upper-high-lazy": ExpectedCase(GradeGroup.UPPER, "high", "lazy", Segment.HIGH_LAZY),
+    "upper-high-diligent": ExpectedCase(GradeGroup.UPPER, "high", "diligent", Segment.HIGH_DILIGENT),
+}
+
+DEFAULT_STUDENT_IDS = [
     "lower-low-diligent",
     "lower-low-lazy",
     "upper-low-diligent",
@@ -45,27 +81,27 @@ STUDENT_IDS = [
 ]
 
 TP_SCENARIOS = [
-    (UseCase.TALK,     Touchpoint.TP1, 1, "",           "TP1 홈화면 진입"),
-    (UseCase.TALK,     Touchpoint.TP2, 1, "",           "TP2 단위 학습 완료"),
-    (UseCase.TALK,     Touchpoint.TP3, 1, "",           "TP3 이탈 방지"),
-    (UseCase.LEARNING, Touchpoint.TP4, 1, "",           "TP4 막힘 (원인 선택지)"),
-    (UseCase.LEARNING, Touchpoint.TP4, 2, "__cause__",  "TP4 막힘 (원인 선택 후 코칭)"),
-    (UseCase.TALK,     Touchpoint.TP5, 1, "",           "TP5 학습 종료"),
+    (UseCase.TALK, Touchpoint.TP1, 1, "", "TP1 home-screen entry"),
+    (UseCase.TALK, Touchpoint.TP2, 1, "", "TP2 unit completed"),
+    (UseCase.TALK, Touchpoint.TP3, 1, "", "TP3 exit prevention"),
+    (UseCase.LEARNING, Touchpoint.TP4, 1, "__problem_id__", "TP4 stuck: cause choices"),
+    (UseCase.LEARNING, Touchpoint.TP4, 2, "__cause__", "TP4 stuck: coaching after cause"),
+    (UseCase.TALK, Touchpoint.TP5, 1, "", "TP5 learning wrap-up"),
 ]
 
-EXPECTED_CASES = {
-    "lower-low-diligent": (Segment.LOW_DILIGENT.value, GradeGroup.LOWER.value),
-    "lower-low-lazy": (Segment.LOW_LAZY.value, GradeGroup.LOWER.value),
-    "upper-low-diligent": (Segment.LOW_DILIGENT.value, GradeGroup.UPPER.value),
-    "upper-low-lazy": (Segment.LOW_LAZY.value, GradeGroup.UPPER.value),
-}
-
-TP4_CAUSE_BY_SUBJECT = {
-    "국어": "too_long",
+TP4_FALLBACK_CAUSE_BY_SUBJECT = {
+    "국어": "confused_question",
     "수학": "confused_concept",
+    "과학": "confused_relationship",
+    "사회": "confused_context",
+    "영어": "confused_vocabulary",
+    "통합": "need_small_step",
 }
 
-# ─── 결과 저장 경로 ───────────────────────────────────────────────────────────
+TP4_SIMULATED_FOLLOWUPS = [
+    "아직 어떤 숫자를 써야 하는지 잘 모르겠어요.",
+    "그럼 비교하는 양을 전체 양으로 나누면 되나요?",
+]
 
 RESULTS_DIR = Path(__file__).parent / "results"
 RESULTS_DIR.mkdir(exist_ok=True)
@@ -73,38 +109,128 @@ RESULTS_DIR.mkdir(exist_ok=True)
 CSV_COLUMNS = [
     "runner_mode",
     "student_id", "name", "grade", "grade_group", "segment",
-    "expected_grade_group", "expected_segment", "classification_ok",
+    "expected_grade_group", "expected_ability", "expected_diligence",
+    "expected_segment", "classification_ok",
     "preferred_subject", "strong_subject",
     "recent_avg_score", "avg_completion_rate",
     "wrong_content_rate", "wrong_content_total", "wrong_content_done",
     "skipping_habit", "guessing_habit", "careless_habit",
     "wrong_cause", "frequent_wrong_type",
+    "task_index", "task_count", "available_units",
     "task_subject", "task_unit", "task_difficulty", "ai_predicted_score",
+    "problem_id",
     "touchpoint", "use_case", "turn", "tp4_cause", "scenario_label",
     "has_wrong_answers", "wrong_content_done_today",
     "response_text", "choices", "message_types",
     "error",
 ]
 
-# ─── LangGraph 호출 ───────────────────────────────────────────────────────────
+
+def select_student_ids(
+    *,
+    all_profiles: bool = False,
+    students: Sequence[str] | None = None,
+    grade_groups: Sequence[str] | None = None,
+    abilities: Sequence[str] | None = None,
+    diligences: Sequence[str] | None = None,
+) -> list[str]:
+    if all_profiles:
+        return list(EXPECTED_CASES)
+
+    if students:
+        unknown = [student_id for student_id in students if student_id not in EXPECTED_CASES]
+        if unknown:
+            raise ValueError(f"Unknown student_id: {', '.join(unknown)}")
+        return list(students)
+
+    has_filters = bool(grade_groups or abilities or diligences)
+    if not has_filters:
+        return list(DEFAULT_STUDENT_IDS)
+
+    grade_group_set = set(grade_groups or GRADE_GROUP_VALUES)
+    ability_set = set(abilities or ABILITY_VALUES)
+    diligence_set = set(diligences or DILIGENCE_VALUES)
+
+    return [
+        student_id
+        for student_id, expected in EXPECTED_CASES.items()
+        if expected.grade_group.value in grade_group_set
+        and expected.ability in ability_set
+        and expected.diligence in diligence_set
+    ]
+
+
+def _parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
+    parser = argparse.ArgumentParser(description="Run LangGraph scenario profiles.")
+    parser.add_argument("--all", action="store_true", help="Run all 12 mock student profiles.")
+    parser.add_argument("--students", nargs="+", help="Run exact student IDs.")
+    parser.add_argument("--grade-group", nargs="+", choices=GRADE_GROUP_VALUES)
+    parser.add_argument("--ability", nargs="+", choices=ABILITY_VALUES)
+    parser.add_argument("--diligence", nargs="+", choices=DILIGENCE_VALUES)
+    parser.add_argument("--list-students", action="store_true", help="Print available profiles and exit.")
+    parser.add_argument(
+        "--simulate-conversation",
+        action="store_true",
+        help=(
+            "After each coach response, simulate a student reply and continue the graph. "
+            "This increases LLM calls and adds follow-up rows to the CSV."
+        ),
+    )
+
+    args = parser.parse_args(argv)
+    criteria = args.grade_group or args.ability or args.diligence
+
+    if args.all and (args.students or criteria):
+        parser.error("--all cannot be combined with --students or criteria filters")
+    if args.students and criteria:
+        parser.error("--students cannot be combined with criteria filters")
+
+    return args
+
+
+def _student_ids_from_args(args: argparse.Namespace) -> list[str]:
+    try:
+        student_ids = select_student_ids(
+            all_profiles=args.all,
+            students=args.students,
+            grade_groups=args.grade_group,
+            abilities=args.ability,
+            diligences=args.diligence,
+        )
+    except ValueError as exc:
+        raise SystemExit(str(exc)) from exc
+
+    if not student_ids:
+        raise SystemExit("No student profiles matched the selected criteria.")
+
+    return student_ids
+
+
+def _print_available_students() -> None:
+    print("student_id,grade_group,ability,diligence,segment")
+    for student_id, expected in EXPECTED_CASES.items():
+        print(
+            f"{student_id},"
+            f"{expected.grade_group.value},"
+            f"{expected.ability},"
+            f"{expected.diligence},"
+            f"{expected.segment.value}"
+        )
+
 
 def _call_graph(
     thread_id: str,
     student_id: str,
     use_case: UseCase,
     touchpoint: Touchpoint,
-    message_content: str,
+    message_content: str = "",
 ) -> ChatResponse | None:
-    state: dict = {
+    state: dict[str, Any] = {
         "thread_id": thread_id,
         "student_id": student_id,
         "use_case": use_case,
         "current_touchpoint": touchpoint,
-        "chat_history": (
-            [HumanMessage(content=message_content)]
-            if message_content
-            else []
-        ),
+        "chat_history": [HumanMessage(content=message_content)] if message_content else [],
         "response": None,
     }
     config = {"configurable": {"thread_id": thread_id}}
@@ -112,92 +238,348 @@ def _call_graph(
     return result.get("response")
 
 
-def _extract_response_fields(response: ChatResponse | None) -> tuple[str, str, str, str]:
+def _extract_response_fields(response: ChatResponse | None) -> ResponseFields:
     if response is None:
-        return "", "", "", "LangGraph 응답 없음"
+        return ResponseFields("", "", "", "LangGraph returned no response", "")
 
     response_texts: list[str] = []
     choices: list[str] = []
     message_types: list[str] = []
+    first_choice_id = ""
 
     for msg in response.messages:
         message_types.append(msg.type)
         if msg.type == "text":
             response_texts.append(msg.content)
         elif msg.type == "choices":
+            if msg.items and not first_choice_id:
+                first_choice_id = msg.items[0].id
             choices.extend(item.label for item in msg.items)
 
-    return (
-        "\n".join(response_texts),
-        " | ".join(choices),
-        "|".join(message_types),
-        "",
+    return ResponseFields(
+        response_text="\n".join(response_texts),
+        choices=" | ".join(choices),
+        message_types="|".join(message_types),
+        error="",
+        first_choice_id=first_choice_id,
     )
 
 
-# ─── 세그먼트·학년 그룹 계산 ──────────────────────────────────────────────────
-
-def _derive_labels(record: dict) -> tuple[str, str]:
+def _derive_labels(record: StudentRecord) -> tuple[str, str]:
     from app.services.nodes.classify import get_grade_group, get_segment
+
     profile = record["profile"]
     pattern = record["learning_pattern"]
     return get_segment(profile, pattern).value, get_grade_group(profile["grade"]).value
 
 
-# ─── 메인 실행 ────────────────────────────────────────────────────────────────
+def _task_problem_ids(task: Task | dict[str, Any]) -> list[str]:
+    problem_ids = task.get("problem_ids") or []
+    if isinstance(problem_ids, list) and problem_ids:
+        return [str(problem_id) for problem_id in problem_ids if problem_id]
 
-def main() -> None:
+    legacy_problem_id = task.get("problem_id")
+    return [str(legacy_problem_id)] if legacy_problem_id else []
+
+
+def _task_problem_id(task: Task | dict[str, Any]) -> str:
+    problem_ids = _task_problem_ids(task)
+    return problem_ids[0] if problem_ids else ""
+
+
+def _available_units(record: StudentRecord) -> str:
+    return " | ".join(
+        f"{index}. {task.get('subject', '')} - {task.get('unit', '')}"
+        for index, task in enumerate(record["today_tasks"], 1)
+    )
+
+
+def _task_index(record: StudentRecord, selected_task: Task | dict[str, Any]) -> int:
+    for index, task in enumerate(record["today_tasks"], 1):
+        if task is selected_task or task == selected_task:
+            return index
+    return 0
+
+
+def _select_scenario_task(record: StudentRecord, touchpoint: Touchpoint) -> Task | dict[str, Any]:
+    tasks = record["today_tasks"]
+    if not tasks:
+        return {}
+
+    if touchpoint == Touchpoint.TP4:
+        for task in tasks:
+            if _task_problem_ids(task):
+                return task
+
+    return tasks[0]
+
+
+def _fallback_cause_for_task(task: Task | dict[str, Any]) -> str:
+    subject = task.get("subject", "")
+    return TP4_FALLBACK_CAUSE_BY_SUBJECT.get(subject, "need_help")
+
+
+def _transcript_path(csv_path: Path) -> Path:
+    return csv_path.with_name(csv_path.name.replace("scenario_results_", "scenario_transcript_")).with_suffix(".md")
+
+
+def _message_to_transcript(message: ResponseMessage) -> str:
+    if message.type == "text":
+        return message.content
+    if message.type == "choices":
+        return "\n".join(f"- `{item.id}`: {item.label}" for item in message.items)
+    if message.type == "hint_card":
+        return "\n".join(f"{step.step}. {step.content}" for step in message.steps)
+    if message.type == "image_card":
+        return f"[image] {message.caption} ({message.image_url})"
+    return str(message)
+
+
+def _format_response_for_transcript(response: ChatResponse | None) -> str:
+    if response is None:
+        return "(no response)"
+    return "\n\n".join(_message_to_transcript(message) for message in response.messages)
+
+
+def _simulated_student_reply(
+    touchpoint: Touchpoint,
+    turn: int,
+    task: Task | dict[str, Any],
+    fields: ResponseFields,
+) -> str:
+    if touchpoint == Touchpoint.TP4 and turn == 1:
+        return fields.first_choice_id or _fallback_cause_for_task(task)
+    if touchpoint == Touchpoint.TP4:
+        index = max(turn - 3, 0)
+        return TP4_SIMULATED_FOLLOWUPS[min(index, len(TP4_SIMULATED_FOLLOWUPS) - 1)]
+    if touchpoint == Touchpoint.TP1:
+        return f"좋아요, {task.get('unit', '추천 단원')}부터 해볼게요."
+    if touchpoint == Touchpoint.TP2:
+        return "다음 것도 해볼게요."
+    if touchpoint == Touchpoint.TP3:
+        return "조금만 더 해보고 나갈게요."
+    if touchpoint == Touchpoint.TP5:
+        return "오늘은 여기까지 하고 내일 다시 할게요."
+    return "네, 알겠어요."
+
+
+def _append_transcript_header(
+    transcript_lines: list[str],
+    *,
+    timestamp: str,
+    student_ids: Sequence[str],
+    simulate_conversation: bool,
+) -> None:
+    transcript_lines.extend([
+        "# Scenario Conversation Transcript",
+        "",
+        f"- Generated: {timestamp}",
+        f"- Student profiles: {', '.join(student_ids)}",
+        f"- Simulated follow-up graph turns: {simulate_conversation}",
+        "",
+    ])
+
+
+def _append_student_header(
+    transcript_lines: list[str],
+    *,
+    student_id: str,
+    record: StudentRecord,
+    grade_group: str,
+    segment: str,
+) -> None:
+    profile = record["profile"]
+    transcript_lines.extend([
+        "",
+        f"## {student_id}",
+        "",
+        f"- Name: {profile['name']}",
+        f"- Grade group: {grade_group}",
+        f"- Segment: {segment}",
+        "",
+        "Available home-screen units:",
+    ])
+    for index, task in enumerate(record["today_tasks"], 1):
+        transcript_lines.append(
+            f"{index}. {task['subject']} - {task['unit']} "
+            f"({task['problem_count']} problems, {task['estimated_time']} min, difficulty {task['difficulty']})"
+        )
+    transcript_lines.append("")
+
+
+def _append_exchange(transcript_lines: list[str], role: str, content: str) -> None:
+    transcript_lines.extend([f"**{role}:**", "", content or "(empty)", ""])
+
+
+def _build_result_row(
+    *,
+    student_id: str,
+    record: StudentRecord,
+    expected: ExpectedCase,
+    segment_val: str,
+    grade_group_val: str,
+    classification_ok: bool,
+    has_wrong: bool,
+    wrong_done_today: bool,
+    task: Task | dict[str, Any],
+    task_index: int,
+    task_count: int,
+    available_units: str,
+    problem_id: str,
+    touchpoint: Touchpoint,
+    use_case: UseCase,
+    turn: int,
+    actual_content: str,
+    label: str,
+    fields: ResponseFields,
+) -> dict[str, Any]:
+    profile = record["profile"]
+    pattern = record["learning_pattern"]
+    wrong_pattern = record["wrong_answer_pattern"]
+
+    return {
+        "runner_mode": "graph",
+        "student_id": student_id,
+        "name": profile["name"],
+        "grade": profile["grade"],
+        "grade_group": grade_group_val,
+        "segment": segment_val,
+        "expected_grade_group": expected.grade_group.value,
+        "expected_ability": expected.ability,
+        "expected_diligence": expected.diligence,
+        "expected_segment": expected.segment.value,
+        "classification_ok": classification_ok,
+        "preferred_subject": profile["preferred_subject"],
+        "strong_subject": profile["strong_subject"],
+        "recent_avg_score": profile["recent_avg_score"],
+        "avg_completion_rate": profile["avg_completion_rate"],
+        "wrong_content_rate": pattern["wrong_content_rate"],
+        "wrong_content_total": pattern["wrong_content_total"],
+        "wrong_content_done": pattern["wrong_content_done"],
+        "skipping_habit": pattern["skipping_habit"],
+        "guessing_habit": pattern["guessing_habit"],
+        "careless_habit": pattern["careless_habit"],
+        "wrong_cause": wrong_pattern["wrong_cause"],
+        "frequent_wrong_type": wrong_pattern["frequent_wrong_type"],
+        "task_index": task_index,
+        "task_count": task_count,
+        "available_units": available_units,
+        "task_subject": task.get("subject", ""),
+        "task_unit": task.get("unit", ""),
+        "task_difficulty": task.get("difficulty", ""),
+        "ai_predicted_score": task.get("ai_predicted_score", ""),
+        "problem_id": problem_id,
+        "touchpoint": touchpoint.value,
+        "use_case": use_case.value,
+        "turn": turn,
+        "tp4_cause": actual_content if touchpoint == Touchpoint.TP4 and turn == 2 else "",
+        "scenario_label": label,
+        "has_wrong_answers": has_wrong,
+        "wrong_content_done_today": wrong_done_today,
+        "response_text": fields.response_text,
+        "choices": fields.choices,
+        "message_types": fields.message_types,
+        "error": fields.error,
+    }
+
+
+def _configure_stdout() -> None:
+    for stream_name in ("stdout", "stderr"):
+        stream = getattr(sys, stream_name)
+        if hasattr(stream, "buffer"):
+            setattr(
+                sys,
+                stream_name,
+                io.TextIOWrapper(stream.buffer, encoding="utf-8", errors="replace"),
+            )
+
+
+def main(argv: Sequence[str] | None = None) -> None:
+    _configure_stdout()
+    setup_logging()
+
+    args = _parse_args(argv)
+    if args.list_students:
+        _print_available_students()
+        return
+
+    student_ids = _student_ids_from_args(args)
+
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     csv_path = RESULTS_DIR / f"scenario_results_{timestamp}.csv"
+    transcript_path = _transcript_path(csv_path)
 
-    print(f"\n{'='*70}")
-    print(f"  LangGraph 시나리오 러너 (Solar Pro2)")
-    print(f"  학생 {len(STUDENT_IDS)}명 × 터치포인트 {len(TP_SCENARIOS)}종")
-    print(f"  결과 저장: {csv_path}")
-    print(f"{'='*70}")
+    print(f"\n{'=' * 70}")
+    print("  LangGraph scenario runner")
+    print(f"  Students: {len(student_ids)} | base scenarios per student: {len(TP_SCENARIOS)}")
+    print(f"  Simulated follow-up graph turns: {args.simulate_conversation}")
+    print(f"  CSV: {csv_path}")
+    print(f"  Transcript: {transcript_path}")
+    print(f"{'=' * 70}")
 
     logger.info(
         "LangGraph scenario runner started",
         extra={
-            "student_count": len(STUDENT_IDS),
+            "student_count": len(student_ids),
             "scenario_count": len(TP_SCENARIOS),
+            "simulate_conversation": args.simulate_conversation,
             "csv_path": str(csv_path),
+            "transcript_path": str(transcript_path),
         },
     )
 
-    all_rows: list[dict] = []
+    all_rows: list[dict[str, Any]] = []
+    transcript_lines: list[str] = []
+    _append_transcript_header(
+        transcript_lines,
+        timestamp=timestamp,
+        student_ids=student_ids,
+        simulate_conversation=args.simulate_conversation,
+    )
 
-    for student_id in STUDENT_IDS:
+    for student_id in student_ids:
+        expected = EXPECTED_CASES[student_id]
         record = load_student(student_id)
         profile = record["profile"]
-        pattern = record["learning_pattern"]
-        wrong_pattern = record["wrong_answer_pattern"]
-        task = record["today_tasks"][0] if record["today_tasks"] else {}
+        task_count = len(record["today_tasks"])
+        available_units = _available_units(record)
 
         segment_val, grade_group_val = _derive_labels(record)
-        expected_segment, expected_grade_group = EXPECTED_CASES[student_id]
         classification_ok = (
-            segment_val == expected_segment
-            and grade_group_val == expected_grade_group
+            segment_val == expected.segment.value
+            and grade_group_val == expected.grade_group.value
         )
+        pattern = record["learning_pattern"]
         has_wrong = pattern["wrong_content_total"] > 0
         wrong_done_today = has_wrong and (
             pattern["wrong_content_done"] >= pattern["wrong_content_total"]
         )
 
-        subject = task.get("subject", "")
-        tp4_cause = TP4_CAUSE_BY_SUBJECT.get(subject, "too_long")
+        _append_student_header(
+            transcript_lines,
+            student_id=student_id,
+            record=record,
+            grade_group=grade_group_val,
+            segment=segment_val,
+        )
+
         tp4_thread_id = f"tp4-{student_id}-{uuid.uuid4()}"
         thread_ids: dict[Touchpoint, str] = {}
+        selected_tp4_cause = ""
+        last_tp4_response: ChatResponse | None = None
 
         print(f"\n  [{student_id}] {profile['name']} / {grade_group_val} / {segment_val}")
         if not classification_ok:
             print(
-                "    [WARN] 기대 분류와 다름 "
-                f"(expected {expected_grade_group} / {expected_segment})"
+                "    [WARN] classification mismatch "
+                f"(expected {expected.grade_group.value} / {expected.segment.value})"
             )
 
         for use_case, touchpoint, turn, message_content, label in TP_SCENARIOS:
+            task = _select_scenario_task(record, touchpoint)
+            task_index = _task_index(record, task)
+            problem_id = _task_problem_id(task)
+
             if touchpoint == Touchpoint.TP4:
                 thread_id = tp4_thread_id
             else:
@@ -205,8 +587,20 @@ def main() -> None:
                     thread_ids[touchpoint] = f"{touchpoint.value}-{student_id}-{uuid.uuid4()}"
                 thread_id = thread_ids[touchpoint]
 
-            actual_content = tp4_cause if message_content == "__cause__" else message_content
+            if message_content == "__problem_id__":
+                actual_content = problem_id
+            elif message_content == "__cause__":
+                actual_content = selected_tp4_cause or _fallback_cause_for_task(task)
+            else:
+                actual_content = message_content
 
+            transcript_lines.extend(["", f"### {label}", ""])
+            if actual_content:
+                _append_exchange(transcript_lines, "Student", actual_content)
+            else:
+                _append_exchange(transcript_lines, "Student", "(opens this touchpoint)")
+
+            response: ChatResponse | None = None
             try:
                 response = _call_graph(
                     thread_id=thread_id,
@@ -215,7 +609,11 @@ def main() -> None:
                     touchpoint=touchpoint,
                     message_content=actual_content,
                 )
-                response_text, choices, message_types, error = _extract_response_fields(response)
+                fields = _extract_response_fields(response)
+                if touchpoint == Touchpoint.TP4 and turn == 1:
+                    selected_tp4_cause = _simulated_student_reply(touchpoint, turn, task, fields)
+                if touchpoint == Touchpoint.TP4:
+                    last_tp4_response = response
             except Exception as exc:
                 logger.exception(
                     "LangGraph scenario failed",
@@ -224,70 +622,99 @@ def main() -> None:
                         "use_case": use_case.value,
                         "touchpoint": touchpoint.value,
                         "turn": turn,
+                        "task_index": task_index,
+                        "problem_id": problem_id,
                     },
                 )
-                response_text = ""
-                choices = ""
-                message_types = ""
-                error = str(exc)
+                fields = ResponseFields("", "", "", str(exc), "")
 
-            status = "[OK] " if not error else "[ERR]"
-            tp4_info = f" [{tp4_cause}]" if touchpoint == Touchpoint.TP4 and turn == 2 else ""
-            print(f"    {status} {label}{tp4_info}")
-            if response_text:
-                preview = response_text[:80].replace("\n", " ")
-                print(f"      → {preview}{'...' if len(response_text) > 80 else ''}")
-            if error:
-                print(f"      오류: {error}")
+            _append_exchange(transcript_lines, "Coach", _format_response_for_transcript(response))
 
-            all_rows.append({
-                "runner_mode": "graph",
-                "student_id": student_id,
-                "name": profile["name"],
-                "grade": profile["grade"],
-                "grade_group": grade_group_val,
-                "segment": segment_val,
-                "expected_grade_group": expected_grade_group,
-                "expected_segment": expected_segment,
-                "classification_ok": classification_ok,
-                "preferred_subject": profile["preferred_subject"],
-                "strong_subject": profile["strong_subject"],
-                "recent_avg_score": profile["recent_avg_score"],
-                "avg_completion_rate": profile["avg_completion_rate"],
-                "wrong_content_rate": pattern["wrong_content_rate"],
-                "wrong_content_total": pattern["wrong_content_total"],
-                "wrong_content_done": pattern["wrong_content_done"],
-                "skipping_habit": pattern["skipping_habit"],
-                "guessing_habit": pattern["guessing_habit"],
-                "careless_habit": pattern["careless_habit"],
-                "wrong_cause": wrong_pattern["wrong_cause"],
-                "frequent_wrong_type": wrong_pattern["frequent_wrong_type"],
-                "task_subject": subject,
-                "task_unit": task.get("unit", ""),
-                "task_difficulty": task.get("difficulty", ""),
-                "ai_predicted_score": task.get("ai_predicted_score", ""),
-                "touchpoint": touchpoint.value,
-                "use_case": use_case.value,
-                "turn": turn,
-                "tp4_cause": tp4_cause if touchpoint == Touchpoint.TP4 and turn == 2 else "",
-                "scenario_label": label,
-                "has_wrong_answers": has_wrong,
-                "wrong_content_done_today": wrong_done_today,
-                "response_text": response_text,
-                "choices": choices,
-                "message_types": message_types,
-                "error": error,
-            })
+            status = "[OK] " if not fields.error else "[ERR]"
+            detail = f" [{actual_content}]" if touchpoint == Touchpoint.TP4 else ""
+            print(f"    {status} {label}{detail}")
+            if fields.response_text:
+                preview = fields.response_text[:80].replace("\n", " ")
+                print(f"      {preview}{'...' if len(fields.response_text) > 80 else ''}")
+            if fields.error:
+                print(f"      error: {fields.error}")
 
-    # CSV 저장
+            all_rows.append(_build_result_row(
+                student_id=student_id,
+                record=record,
+                expected=expected,
+                segment_val=segment_val,
+                grade_group_val=grade_group_val,
+                classification_ok=classification_ok,
+                has_wrong=has_wrong,
+                wrong_done_today=wrong_done_today,
+                task=task,
+                task_index=task_index,
+                task_count=task_count,
+                available_units=available_units,
+                problem_id=problem_id,
+                touchpoint=touchpoint,
+                use_case=use_case,
+                turn=turn,
+                actual_content=actual_content,
+                label=label,
+                fields=fields,
+            ))
+
+            if args.simulate_conversation and not fields.error and response is not None:
+                if touchpoint == Touchpoint.TP4 and turn == 2:
+                    last_tp4_response = _run_tp4_simulated_followups(
+                        all_rows=all_rows,
+                        transcript_lines=transcript_lines,
+                        student_id=student_id,
+                        record=record,
+                        expected=expected,
+                        segment_val=segment_val,
+                        grade_group_val=grade_group_val,
+                        classification_ok=classification_ok,
+                        has_wrong=has_wrong,
+                        wrong_done_today=wrong_done_today,
+                        task=task,
+                        task_index=task_index,
+                        task_count=task_count,
+                        available_units=available_units,
+                        problem_id=problem_id,
+                        thread_id=thread_id,
+                        previous_response=last_tp4_response,
+                    )
+                elif touchpoint != Touchpoint.TP4:
+                    _run_non_tp4_simulated_followup(
+                        all_rows=all_rows,
+                        transcript_lines=transcript_lines,
+                        student_id=student_id,
+                        record=record,
+                        expected=expected,
+                        segment_val=segment_val,
+                        grade_group_val=grade_group_val,
+                        classification_ok=classification_ok,
+                        has_wrong=has_wrong,
+                        wrong_done_today=wrong_done_today,
+                        task=task,
+                        task_index=task_index,
+                        task_count=task_count,
+                        available_units=available_units,
+                        problem_id=problem_id,
+                        thread_id=thread_id,
+                        touchpoint=touchpoint,
+                        previous_response=response,
+                        base_label=label,
+                    )
+
     with csv_path.open("w", newline="", encoding="utf-8-sig") as f:
         writer = csv.DictWriter(f, fieldnames=CSV_COLUMNS)
         writer.writeheader()
         writer.writerows(all_rows)
 
+    transcript_path.write_text("\n".join(transcript_lines).rstrip() + "\n", encoding="utf-8")
+
     total = len(all_rows)
-    errors = sum(1 for r in all_rows if r["error"])
-    classification_errors = sum(1 for r in all_rows if not r["classification_ok"])
+    errors = sum(1 for row in all_rows if row["error"])
+    classification_errors = sum(1 for row in all_rows if not row["classification_ok"])
 
     logger.info(
         "LangGraph scenario runner completed",
@@ -296,13 +723,160 @@ def main() -> None:
             "errors": errors,
             "classification_errors": classification_errors,
             "csv_path": str(csv_path),
+            "transcript_path": str(transcript_path),
         },
     )
 
-    print(f"\n{'='*70}")
-    print(f"  완료: {total}개 시나리오, 오류: {errors}개, 분류 불일치: {classification_errors}개")
-    print(f"  CSV 저장됨: {csv_path}")
-    print(f"{'='*70}\n")
+    print(f"\n{'=' * 70}")
+    print(
+        f"  Done: {total} rows | errors: {errors} | "
+        f"classification mismatches: {classification_errors}"
+    )
+    print(f"  CSV saved: {csv_path}")
+    print(f"  Transcript saved: {transcript_path}")
+    print(f"{'=' * 70}\n")
+
+
+def _run_non_tp4_simulated_followup(
+    *,
+    all_rows: list[dict[str, Any]],
+    transcript_lines: list[str],
+    student_id: str,
+    record: StudentRecord,
+    expected: ExpectedCase,
+    segment_val: str,
+    grade_group_val: str,
+    classification_ok: bool,
+    has_wrong: bool,
+    wrong_done_today: bool,
+    task: Task | dict[str, Any],
+    task_index: int,
+    task_count: int,
+    available_units: str,
+    problem_id: str,
+    thread_id: str,
+    touchpoint: Touchpoint,
+    previous_response: ChatResponse,
+    base_label: str,
+) -> None:
+    student_reply = _simulated_student_reply(touchpoint, 2, task, _extract_response_fields(previous_response))
+    label = f"{base_label} simulated student follow-up"
+
+    transcript_lines.extend(["", f"### {label}", ""])
+    _append_exchange(transcript_lines, "Student", student_reply)
+
+    response: ChatResponse | None = None
+    try:
+        response = _call_graph(
+            thread_id=thread_id,
+            student_id=student_id,
+            use_case=UseCase.CHAT,
+            touchpoint=touchpoint,
+            message_content=student_reply,
+        )
+        fields = _extract_response_fields(response)
+    except Exception as exc:
+        logger.exception(
+            "Simulated non-TP4 follow-up failed",
+            extra={"student_id": student_id, "touchpoint": touchpoint.value},
+        )
+        fields = ResponseFields("", "", "", str(exc), "")
+
+    _append_exchange(transcript_lines, "Coach", _format_response_for_transcript(response))
+
+    all_rows.append(_build_result_row(
+        student_id=student_id,
+        record=record,
+        expected=expected,
+        segment_val=segment_val,
+        grade_group_val=grade_group_val,
+        classification_ok=classification_ok,
+        has_wrong=has_wrong,
+        wrong_done_today=wrong_done_today,
+        task=task,
+        task_index=task_index,
+        task_count=task_count,
+        available_units=available_units,
+        problem_id=problem_id,
+        touchpoint=touchpoint,
+        use_case=UseCase.CHAT,
+        turn=2,
+        actual_content=student_reply,
+        label=label,
+        fields=fields,
+    ))
+
+
+def _run_tp4_simulated_followups(
+    *,
+    all_rows: list[dict[str, Any]],
+    transcript_lines: list[str],
+    student_id: str,
+    record: StudentRecord,
+    expected: ExpectedCase,
+    segment_val: str,
+    grade_group_val: str,
+    classification_ok: bool,
+    has_wrong: bool,
+    wrong_done_today: bool,
+    task: Task | dict[str, Any],
+    task_index: int,
+    task_count: int,
+    available_units: str,
+    problem_id: str,
+    thread_id: str,
+    previous_response: ChatResponse | None,
+) -> ChatResponse | None:
+    last_response = previous_response
+
+    for index, student_reply in enumerate(TP4_SIMULATED_FOLLOWUPS, start=3):
+        label = f"TP4 coaching follow-up {index - 2}"
+        transcript_lines.extend(["", f"### {label}", ""])
+        _append_exchange(transcript_lines, "Student", student_reply)
+
+        response: ChatResponse | None = None
+        try:
+            response = _call_graph(
+                thread_id=thread_id,
+                student_id=student_id,
+                use_case=UseCase.LEARNING,
+                touchpoint=Touchpoint.TP4,
+                message_content=student_reply,
+            )
+            fields = _extract_response_fields(response)
+            last_response = response
+        except Exception as exc:
+            logger.exception(
+                "Simulated TP4 follow-up failed",
+                extra={"student_id": student_id, "turn": index, "problem_id": problem_id},
+            )
+            fields = ResponseFields("", "", "", str(exc), "")
+
+        _append_exchange(transcript_lines, "Coach", _format_response_for_transcript(response))
+
+        all_rows.append(_build_result_row(
+            student_id=student_id,
+            record=record,
+            expected=expected,
+            segment_val=segment_val,
+            grade_group_val=grade_group_val,
+            classification_ok=classification_ok,
+            has_wrong=has_wrong,
+            wrong_done_today=wrong_done_today,
+            task=task,
+            task_index=task_index,
+            task_count=task_count,
+            available_units=available_units,
+            problem_id=problem_id,
+            touchpoint=Touchpoint.TP4,
+            use_case=UseCase.LEARNING,
+            turn=index,
+            actual_content=student_reply,
+            label=label,
+            fields=fields,
+        ))
+
+    return last_response
 
 
 if __name__ == "__main__":
