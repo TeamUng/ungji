@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 import sys
 import types
 from collections.abc import Callable, Iterator
@@ -8,6 +9,10 @@ from typing import Any
 
 import pytest
 from fastapi.testclient import TestClient
+
+os.environ.setdefault("LANGCHAIN_TRACING_V2", "false")
+os.environ.setdefault("LANGSMITH_TRACING", "false")
+os.environ.setdefault("UNGJI_DISABLE_LANGSMITH_TRACING", "true")
 
 from app.core.enums import (
     Difficulty,

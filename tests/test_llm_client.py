@@ -189,16 +189,50 @@ def test_langsmith_tracing_env_is_configured(monkeypatch):
     monkeypatch.setattr(settings, "UPSTAGE_API_KEY", "upstage-key")
     monkeypatch.setattr(settings, "LANGSMITH_API_KEY", "test-langsmith-key")
     monkeypatch.setattr(settings, "LANGSMITH_PROJECT", "test-project")
+    monkeypatch.delenv("UNGJI_DISABLE_LANGSMITH_TRACING", raising=False)
     monkeypatch.delenv("LANGCHAIN_API_KEY", raising=False)
+    monkeypatch.delenv("LANGSMITH_API_KEY", raising=False)
     monkeypatch.delenv("LANGCHAIN_PROJECT", raising=False)
+    monkeypatch.delenv("LANGSMITH_PROJECT", raising=False)
     monkeypatch.delenv("LANGCHAIN_TRACING_V2", raising=False)
+    monkeypatch.delenv("LANGSMITH_TRACING", raising=False)
     sys.modules.pop("app.clients.llm", None)
 
     importlib.import_module("app.clients.llm")
 
     assert os.environ["LANGCHAIN_API_KEY"] == "test-langsmith-key"
+    assert os.environ["LANGSMITH_API_KEY"] == "test-langsmith-key"
     assert os.environ["LANGCHAIN_PROJECT"] == "test-project"
+    assert os.environ["LANGSMITH_PROJECT"] == "test-project"
     assert os.environ["LANGCHAIN_TRACING_V2"] == "true"
+    assert os.environ["LANGSMITH_TRACING"] == "true"
+
+
+def test_langsmith_tracing_respects_disable_flag(monkeypatch):
+    _reset_fakes()
+    _install_fake_provider_modules(monkeypatch)
+    monkeypatch.setattr(
+        llm_config,
+        "PRIMARY_LLM",
+        llm_config.LLMModelConfig(provider="upstage", model="solar-pro2"),
+    )
+    monkeypatch.setattr(llm_config, "FALLBACK_LLM", None)
+    monkeypatch.setattr(settings, "UPSTAGE_API_KEY", "upstage-key")
+    monkeypatch.setattr(settings, "LANGSMITH_API_KEY", "test-langsmith-key")
+    monkeypatch.setattr(settings, "LANGSMITH_PROJECT", "test-project")
+    monkeypatch.setenv("UNGJI_DISABLE_LANGSMITH_TRACING", "true")
+    monkeypatch.setenv("LANGCHAIN_TRACING_V2", "false")
+    monkeypatch.setenv("LANGSMITH_TRACING", "false")
+    monkeypatch.delenv("LANGCHAIN_API_KEY", raising=False)
+    monkeypatch.delenv("LANGSMITH_API_KEY", raising=False)
+    sys.modules.pop("app.clients.llm", None)
+
+    importlib.import_module("app.clients.llm")
+
+    assert os.environ["LANGCHAIN_TRACING_V2"] == "false"
+    assert os.environ["LANGSMITH_TRACING"] == "false"
+    assert "LANGCHAIN_API_KEY" not in os.environ
+    assert "LANGSMITH_API_KEY" not in os.environ
 
 
 @pytest.mark.asyncio
