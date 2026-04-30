@@ -74,6 +74,38 @@ def test_expectation_evaluation_flags_forbidden_helper_language() -> None:
     assert eval_rows[0]["actual"] == "첫 식"
 
 
+def test_expectation_evaluation_requires_min_choices_and_message_type() -> None:
+    expectation = {
+        "case_id": "case",
+        "student_id": "lower-high-lazy",
+        "touchpoint": "tp4",
+        "use_case": "learning",
+        "turn": 1,
+        "scenario_label": "TP4 stuck: cause choices",
+        "message_types_include": ["choices"],
+        "min_choices": 1,
+        "max_choices": 3,
+    }
+    row = {
+        "student_id": "lower-high-lazy",
+        "touchpoint": "tp4",
+        "use_case": "learning",
+        "turn": 1,
+        "scenario_label": "TP4 stuck: cause choices",
+        "response_text": "좋아, 한 단계만 같이 생각해보자.",
+        "choices": "",
+        "message_types": "text",
+        "problem_id": "lower_korean_reading_001",
+    }
+
+    eval_rows = _evaluate_expectation(row, expectation)
+    results = {row["criterion"]: row for row in eval_rows}
+
+    assert results["message_types_include"]["passed"] is False
+    assert results["min_choices"]["passed"] is False
+    assert results["max_choices"]["passed"] is True
+
+
 def test_expectations_file_stays_inside_scripts_scenarios() -> None:
     assert Path(DEFAULT_EXPECTATIONS_PATH).parts[-3:] == (
         "scripts",

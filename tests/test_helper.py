@@ -177,6 +177,7 @@ class TestHelperCoachingConversation:
             GradeGroup.UPPER,
         )
         state["current_problem"] = _DUMMY_PROBLEM
+        state["tp4_turn_count"] = 1
         state["chat_history"] = [HumanMessage(content="계산이 어려워요")]
 
         result = helper(state)
@@ -196,6 +197,7 @@ class TestHelperCoachingConversation:
             GradeGroup.LOWER,
         )
         state["current_problem"] = _DUMMY_PROBLEM
+        state["tp4_turn_count"] = 1
         state["chat_history"] = [HumanMessage(content="그림으로 보고 싶어요")]
 
         result = helper(state)
@@ -216,6 +218,7 @@ class TestHelperCoachingConversation:
             GradeGroup.UPPER,
         )
         state["current_problem"] = _DUMMY_PROBLEM
+        state["tp4_turn_count"] = 1
         state["chat_history"] = [HumanMessage(content="글이 너무 길어요")]
 
         result = helper(state)
@@ -391,6 +394,7 @@ class TestHelperSegmentNotExposed:
             GradeGroup.UPPER,
         )
         state["current_problem"] = _DUMMY_PROBLEM
+        state["tp4_turn_count"] = 1
         state["chat_history"] = [HumanMessage(content="no_concept")]
 
         result = helper(state)

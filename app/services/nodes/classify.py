@@ -70,6 +70,7 @@ def classify(state: ChatState) -> dict:
         "today_tasks": record["today_tasks"],
         "completed_tasks": [],
         "current_task": record["today_tasks"][0] if record["today_tasks"] else None,
+        "current_task_remaining_count": None,
         "current_problem": None,
         "tp4_phase": "awaiting_problem",
         "tp4_turn_count": 0,

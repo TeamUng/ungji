@@ -53,7 +53,6 @@ def mock_judge(verdict: dict):
 ALL_PASS_INPUT = {
     "content_safety":   {"passed": True,  "reason": None},
     "prompt_injection": {"passed": True,  "reason": None},
-    "topic_relevance":  {"passed": True,  "reason": None},
 }
 
 ALL_PASS_OUTPUT = {
@@ -129,20 +128,27 @@ class TestSafetyCheckWithMock:
         assert result.severity == Severity.BLOCK
 
     @pytest.mark.asyncio
-    async def test_llm_topic_fail_blocks(self):
-        verdict = {**ALL_PASS_INPUT, "topic_relevance": {"passed": False, "reason": "off topic"}}
-        guard = SafetyCheck(judge=mock_judge(verdict))
-        result = await guard.check("아이돌 얘기 해줘", make_context())
-        assert not result.passed
-        assert result.severity == Severity.BLOCK
+    async def test_off_topic_input_runs_safety_judge_without_blocking(self):
+        judge = mock_judge(ALL_PASS_INPUT)
+        guard = SafetyCheck(judge=judge)
+        result = await guard.check("유튜브랑 게임 얘기 해줘", make_context())
+        assert result.passed
+        judge.evaluate.assert_called_once()
 
     @pytest.mark.asyncio
-    async def test_greeting_skips_llm(self):
+    async def test_topic_relevance_verdict_is_ignored(self):
+        verdict = {**ALL_PASS_INPUT, "topic_relevance": {"passed": False, "reason": "unsafe topic"}}
+        guard = SafetyCheck(judge=mock_judge(verdict))
+        result = await guard.check("아이돌 얘기 해줘", make_context())
+        assert result.passed
+
+    @pytest.mark.asyncio
+    async def test_greeting_runs_safety_judge(self):
         judge = mock_judge(ALL_PASS_INPUT)
         guard = SafetyCheck(judge=judge)
         result = await guard.check("안녕", make_context())
         assert result.passed
-        judge.evaluate.assert_not_called()
+        judge.evaluate.assert_called_once()
 
     def test_clean_message_passes_sync(self):
         guard = SafetyCheck(judge=mock_judge(ALL_PASS_INPUT))
@@ -190,6 +196,10 @@ class TestResponseEvaluatorWithMock:
         assert "판단하는 표현" in _SYSTEM_PROMPT_TEMPLATE
         assert "게으르다" in _SYSTEM_PROMPT_TEMPLATE
         assert "안 하려고 하는 거 알아" in _SYSTEM_PROMPT_TEMPLATE
+
+    def test_prompt_flags_deep_off_topic_engagement(self):
+        assert "공부 밖 주제" in _SYSTEM_PROMPT_TEMPLATE
+        assert "추천, 공략, 정보 제공" in _SYSTEM_PROMPT_TEMPLATE
 
     @pytest.mark.asyncio
     async def test_good_response_passes(self):

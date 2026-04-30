@@ -53,6 +53,7 @@ def _decision_lines(decision: dict) -> str:
         f"- candidate_tasks:\n{candidate_line}\n"
         f"- forbidden: {forbidden}\n\n"
         "위 decision의 범위를 벗어나지 말고, 아이에게 그대로 보일 최종 문장만 작성해줘. "
+        "target_task가 있으면 반드시 target_task 단원 하나만 추천해줘. "
         "forbidden에 적힌 행동은 제안하지 말고, "
         "intent, target_task, candidate_tasks, forbidden 같은 내부 필드명은 절대 말하지 마."
     )
@@ -167,10 +168,17 @@ def _situation_chat(state: ChatState) -> str:
         decision = _make_motivator_decision(state)
         current_task = state.get("current_task")
         task_line = _task_lines([current_task] if current_task else [])
+        remaining_problem_count = state.get("current_task_remaining_count")
+        problem_count_line = (
+            f"현재 단원에서 남은 문제 수는 {remaining_problem_count}문제야.\n"
+            if remaining_problem_count
+            else ""
+        )
         return (
             f"나는 {profile['name']}이고 {profile['grade']}학년이야. 나를 부를 때는 '{call_name}'라고 불러줘. "
             f"방금 이렇게 말했어: \"{latest}\"\n"
             f"지금 화면의 현재 단원:\n{task_line}\n\n"
+            f"{problem_count_line}"
             f"{_decision_lines(decision)}\n\n"
             "내 말에 이어서 바로 대답해줘. "
             "내가 조금 더 해보겠다고 했으니 현재 화면 안에서 할 수 있는 아주 작은 행동 하나만 말해줘."
@@ -257,6 +265,12 @@ def _situation_tp3(state: ChatState) -> str:
     today_tasks = state["today_tasks"]
     completed_tasks = state["completed_tasks"]
     remaining_count = len(remaining_tasks(today_tasks, completed_tasks))
+    remaining_problem_count = state.get("current_task_remaining_count")
+    problem_count_line = (
+        f"현재 단원에서 남은 문제 수는 {remaining_problem_count}문제야.\n\n"
+        if remaining_problem_count is not None
+        else ""
+    )
     decision = _make_motivator_decision(state)
 
     if current_task:
@@ -272,6 +286,7 @@ def _situation_tp3(state: ChatState) -> str:
     return (
         f"나는 {profile['name']}이고 {profile['grade']}학년이야. 나를 부를 때는 '{call_name}'라고 불러줘. {task_info}\n"
         f"아직 남은 단원 수는 {remaining_count}개야.\n\n"
+        f"{problem_count_line}"
         f"{_decision_lines(decision)}\n\n"
         "나가기 버튼을 눌러서 이탈하려는 상황이야. 나가기 방법을 안내하지 말고, 강요하지 말고 공감해줘. "
         "그래도 계속할 수 있게 현재 단원 안에서 할 수 있는 아주 작은 행동 하나만 말해줘."

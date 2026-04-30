@@ -108,6 +108,15 @@ def test_global_output_contract_blocks_invented_study_content():
     assert "도구 이름" in prompt
 
 
+def test_common_boundary_redirects_harmless_off_topic_interests():
+    prompt = build_system_prompt(GradeGroup.MIDDLE, Segment.HIGH_LAZY, MOTIVATOR_ROLE)
+
+    assert "공부 범위 대화 원칙" in prompt
+    assert "유튜브, 게임, 아이돌" in prompt
+    assert "공부 밖 주제로 깊게 대화하거나 추천, 공략, 정보 제공을 하지 않는다" in prompt
+    assert "차단하거나 혼내지 말고" in prompt
+
+
 def test_low_lazy_strategy_contains_choice_policy_in_korean_strategy_only():
     strategy = get_coaching_strategy(Segment.LOW_LAZY)
 

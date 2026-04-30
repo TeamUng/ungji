@@ -49,6 +49,7 @@ class ChatState(TypedDict):
     today_tasks: list[Task]
     completed_tasks: list[Task]
     current_task: Task | None
+    current_task_remaining_count: int | None
     current_problem: dict | None
     tp4_phase: str
     tp4_turn_count: int

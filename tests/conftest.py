@@ -225,6 +225,7 @@ def make_chat_state() -> Callable[..., ChatState]:
             "today_tasks": today_tasks,
             "completed_tasks": completed,
             "current_task": current_task or (today_tasks[0] if today_tasks else None),
+            "current_task_remaining_count": None,
             "current_problem": None,
             "tp4_phase": "awaiting_problem",
             "tp4_turn_count": 0,
@@ -240,6 +241,9 @@ def make_chat_state() -> Callable[..., ChatState]:
             "segment": segment,
             "chat_history": [],
             "current_touchpoint": touchpoint,
+            "current_message_type": None,
+            "current_message_source": None,
+            "current_message_requires_input_guard": None,
         }
 
     return _make_chat_state

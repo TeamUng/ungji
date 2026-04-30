@@ -7,11 +7,12 @@ All functions are pure and stateless — no I/O, no async.
 Design note — topic verdict
 ---------------------------
 quick_topic_verdict uses a TF-IDF cosine-similarity classifier fit on curated
-off-topic example sentences.  A message is flagged "off_topic" only when its
+off-topic example sentences. A message is flagged "off_topic" only when its
 similarity to off-topic examples exceeds _OFF_TOPIC_THRESHOLD AND no study
-signal is present (conflict → "unknown").  This is more robust than keyword
-counting but preserves the core invariant: positive "on_topic" decisions are
-only made for greetings/short affirmations — everything else defers to the LLM.
+signal is present (conflict → "unknown"). SafetyCheck treats that signal as
+advisory, so harmless kid interests can reach the coach and be redirected.
+Positive "on_topic" decisions are only made for greetings/short affirmations —
+everything else defers to the LLM.
 """
 
 from __future__ import annotations
