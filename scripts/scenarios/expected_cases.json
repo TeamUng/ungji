@@ -64,9 +64,9 @@
       ]
     },
     {
-      "case_id": "case_2_lower_low_lazy",
-      "student_id": "lower-low-lazy",
-      "purpose": "저성취/불성실 저학년: 짧고 쉬운 말로 국어 시작을 유도하고 3턴 안에 도움을 제공한다.",
+      "case_id": "case_2_lower_high_lazy",
+      "student_id": "lower-high-lazy",
+      "purpose": "고성취/불성실 저학년: 짧고 쉬운 말로 국어 시작을 유도하고 3턴 안에 도움을 제공한다.",
       "expectations": [
         {
           "touchpoint": "tp1",
@@ -75,7 +75,7 @@
           "scenario_label": "TP1 home-screen entry",
           "must_include_any": ["국어", "받침", "낱말"],
           "must_include_any_note": "첫 진입에서 국어 받침 학습을 부담 낮게 유도해야 한다.",
-          "must_not_include": ["추천 이유", "내부 이유", "저성취", "불성실", "세그먼트"]
+          "must_not_include": ["추천 이유", "내부 이유", "고성취", "불성실", "세그먼트"]
         },
         {
           "touchpoint": "tp4",
@@ -102,7 +102,7 @@
           "turn": 1,
           "scenario_label": "TP2 unit completed",
           "must_include_any": ["수학", "더하기", "사과"],
-          "must_not_include": ["추천 이유", "내부 이유", "저성취", "불성실", "Book Club", "나가기"]
+          "must_not_include": ["추천 이유", "내부 이유", "고성취", "불성실", "Book Club", "나가기"]
         },
         {
           "touchpoint": "tp3",

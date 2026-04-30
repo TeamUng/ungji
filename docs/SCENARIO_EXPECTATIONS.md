@@ -193,14 +193,14 @@ TP3는 도움 요청이 아니라 프론트 이탈 이벤트이기 때문이다.
 
 ---
 
-## 4. Case 2 - 저성취/불성실 저학년
+## 4. Case 2 - 고성취/불성실 저학년
 
 | 항목 | 값 |
 |---|---|
-| student_id | `lower-low-lazy` |
-| 이름 | 민준 |
-| 학년 | 1학년 |
-| 학생 유형 | 못함+불성실 |
+| student_id | `lower-high-lazy` |
+| 이름 | 도윤 |
+| 학년 | 2학년 |
+| 학생 유형 | 잘함+불성실 |
 | 첫 과목 | 국어 - 받침이 있는 낱말 읽기 |
 | TP4 문제 | `lower_korean_reading_001` |
 | 다음 유도 과목 | 수학 - 한 자리 수 더하기 |
@@ -232,7 +232,7 @@ TP3는 도움 요청이 아니라 프론트 이탈 이벤트이기 때문이다.
 
 ```json
 {
-  "student_id": "lower-low-lazy",
+  "student_id": "lower-high-lazy",
   "use_case": "learning",
   "current_touchpoint": "tp4",
   "message": {"type": "init", "content": "lower_korean_reading_001"}

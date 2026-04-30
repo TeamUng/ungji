@@ -144,13 +144,13 @@
     "profile": {
       "name": "도윤",
       "grade": 2,
-      "preferred_subject": "수학",
-      "strong_subject": "수학",
+      "preferred_subject": "국어",
+      "strong_subject": "국어",
       "recent_avg_score": 94,
       "avg_completion_rate": 42
     },
     "learning_history": {
-      "subject_avg_scores": {"국어": 88, "수학": 94, "영어": 90, "통합": 91},
+      "subject_avg_scores": {"국어": 94, "수학": 88, "영어": 90, "통합": 91},
       "subject_completion_rates": {"국어": 45, "수학": 42, "영어": 44, "통합": 48}
     },
     "learning_pattern": {
@@ -162,21 +162,11 @@
       "careless_habit": true
     },
     "wrong_answer_pattern": {
-      "frequent_wrong_type": "받아올림 계산",
-      "repeated_wrong_subjects": ["수학"],
+      "frequent_wrong_type": "받침이 있는 낱말 읽기",
+      "repeated_wrong_subjects": ["국어"],
       "wrong_cause": "실수"
     },
     "today_tasks": [
-      {
-        "subject": "수학",
-        "unit": "한 자리 수 더하기",
-        "problem_ids": ["lower_math_addition_001"],
-        "problem_id": "lower_math_addition_001",
-        "problem_count": 5,
-        "estimated_time": 8,
-        "difficulty": "중",
-        "ai_predicted_score": 93
-      },
       {
         "subject": "국어",
         "unit": "받침이 있는 낱말 읽기",
@@ -185,6 +175,16 @@
         "problem_count": 5,
         "estimated_time": 10,
         "difficulty": "하",
+        "ai_predicted_score": 93
+      },
+      {
+        "subject": "수학",
+        "unit": "한 자리 수 더하기",
+        "problem_ids": ["lower_math_addition_001"],
+        "problem_id": "lower_math_addition_001",
+        "problem_count": 5,
+        "estimated_time": 8,
+        "difficulty": "중",
         "ai_predicted_score": 88
       },
       {

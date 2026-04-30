@@ -81,13 +81,13 @@ class Scenario:
 
 # PRD 케이스 1·2 학생 위주 + 양 학년 톤 차이를 보기 위해 TP1 두 학년 모두 포함.
 SCENARIOS: list[Scenario] = [
-    Scenario("TP1_뽀롱쌤_인사_저학년_불성실", "lower-low-lazy",      UseCase.TALK,     Touchpoint.TP1, 1, ""),
+    Scenario("TP1_뽀롱쌤_인사_저학년_불성실_고성취", "lower-high-lazy",     UseCase.TALK,     Touchpoint.TP1, 1, ""),
     Scenario("TP1_뽀롱쌤_인사_고학년_성실",   "upper-low-diligent",  UseCase.TALK,     Touchpoint.TP1, 1, ""),
-    Scenario("TP2_단원완료_피드백_저학년",    "lower-low-lazy",      UseCase.TALK,     Touchpoint.TP2, 1, ""),
-    Scenario("TP3_이탈방지_저학년_불성실",    "lower-low-lazy",      UseCase.TALK,     Touchpoint.TP3, 1, ""),
+    Scenario("TP2_단원완료_피드백_저학년",    "lower-high-lazy",     UseCase.TALK,     Touchpoint.TP2, 1, ""),
+    Scenario("TP3_이탈방지_저학년_불성실_고성취", "lower-high-lazy",     UseCase.TALK,     Touchpoint.TP3, 1, ""),
     Scenario("TP4_막힘_원인선택지_고학년",    "upper-low-diligent",  UseCase.LEARNING, Touchpoint.TP4, 1, ""),
     Scenario("TP4_막힘_코칭응답_고학년",      "upper-low-diligent",  UseCase.LEARNING, Touchpoint.TP4, 2, "__cause__"),
-    Scenario("TP5_학습종료_피드백_저학년",    "lower-low-lazy",      UseCase.TALK,     Touchpoint.TP5, 1, ""),
+    Scenario("TP5_학습종료_피드백_저학년",    "lower-high-lazy",     UseCase.TALK,     Touchpoint.TP5, 1, ""),
 ]
 
 TP4_CAUSE_BY_SUBJECT = {"국어": "too_long", "수학": "confused_concept"}

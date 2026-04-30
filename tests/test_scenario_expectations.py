@@ -13,14 +13,14 @@ def test_expected_cases_json_loads() -> None:
     assert expectations
     assert {expectation["student_id"] for expectation in expectations} == {
         "upper-low-diligent",
-        "lower-low-lazy",
+        "lower-high-lazy",
     }
 
 
 def test_expectation_evaluation_checks_required_and_forbidden_text() -> None:
     expectation = {
         "case_id": "case",
-        "student_id": "lower-low-lazy",
+        "student_id": "lower-high-lazy",
         "touchpoint": "tp3",
         "use_case": "talk",
         "turn": 1,
@@ -30,7 +30,7 @@ def test_expectation_evaluation_checks_required_and_forbidden_text() -> None:
         "max_choices": 0,
     }
     row = {
-        "student_id": "lower-low-lazy",
+        "student_id": "lower-high-lazy",
         "touchpoint": "tp3",
         "use_case": "talk",
         "turn": 1,

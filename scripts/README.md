@@ -58,7 +58,7 @@ uv --cache-dir .uv-cache run python scripts/run_scenarios.py
 Run one or two specific students:
 
 ```powershell
-uv --cache-dir .uv-cache run python scripts/run_scenarios.py --students lower-low-lazy upper-low-diligent
+uv --cache-dir .uv-cache run python scripts/run_scenarios.py --students lower-high-lazy upper-low-diligent
 ```
 
 Run all 12 mock student profiles:
@@ -70,7 +70,7 @@ uv --cache-dir .uv-cache run python scripts/run_scenarios.py --all
 Run a richer conversational pass where the script simulates student follow-up replies:
 
 ```powershell
-uv --cache-dir .uv-cache run python scripts/run_scenarios.py --students lower-low-lazy --simulate-conversation
+uv --cache-dir .uv-cache run python scripts/run_scenarios.py --students lower-high-lazy --simulate-conversation
 ```
 
 Every run writes:
@@ -102,7 +102,7 @@ Primary scenario regression runner.
 
 - Calls `app.services.graph.graph` directly.
 - Uses the 12 mock student profiles in `app/data/mock_students.json`.
-- Defaults to 4 smoke profiles: `lower-low-diligent`, `lower-low-lazy`, `upper-low-diligent`, `upper-low-lazy`.
+- Defaults to 2 team-focus profiles: `lower-high-lazy`, `upper-low-diligent`.
 - Runs 6 base touchpoint scenarios per selected student: TP1, TP2, TP3, TP4 turn 1, TP4 turn 2, TP5.
 - Writes a structured CSV, a human-readable Markdown transcript, and optional expectation-evaluation CSV.
 - `--simulate-conversation` adds extra graph turns after coach responses.

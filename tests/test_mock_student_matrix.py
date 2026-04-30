@@ -81,13 +81,11 @@ def test_each_curriculum_unit_has_resolvable_problem_ids(student_id: str) -> Non
             assert load_problem(problem_id)["problem_id"] == problem_id
 
 
-def test_runner_default_selection_is_previous_four_low_profiles() -> None:
+def test_runner_default_selection_is_two_team_focus_profiles() -> None:
     assert select_student_ids() == DEFAULT_STUDENT_IDS
     assert DEFAULT_STUDENT_IDS == [
-        "lower-low-diligent",
-        "lower-low-lazy",
+        "lower-high-lazy",
         "upper-low-diligent",
-        "upper-low-lazy",
     ]
 
 
@@ -119,10 +117,18 @@ def test_runner_unknown_student_selection_raises() -> None:
 
 
 def test_runner_tp4_problem_selection_reads_from_problem_ids() -> None:
-    student = load_student("lower-low-lazy")
+    student = load_student("lower-high-lazy")
     task = _select_scenario_task(student, Touchpoint.TP4)
 
     assert _task_problem_id(task) == student["today_tasks"][0]["problem_ids"][0]
+    assert _task_problem_id(task) == "lower_korean_reading_001"
+
+
+def test_focused_upper_case_still_uses_math_context() -> None:
+    student = load_student("upper-low-diligent")
+    task = _select_scenario_task(student, Touchpoint.TP4)
+
+    assert _task_problem_id(task) == "math_ratio_saltwater_001"
 
 
 def test_runner_available_units_includes_all_four_units() -> None:
@@ -214,7 +220,7 @@ def test_runner_simulated_reply_uses_neutral_fallback_without_detected_unit() ->
 
 
 def test_runner_tp4_followup_matches_korean_reading_context() -> None:
-    student = load_student("lower-low-lazy")
+    student = load_student("lower-high-lazy")
     task = _select_scenario_task(student, Touchpoint.TP4)
     fields = ResponseFields("", "", "text", "", "")
 

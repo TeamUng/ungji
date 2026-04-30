@@ -5,7 +5,7 @@ Examples:
     uv run python scripts/run_scenarios.py
     uv run python scripts/run_scenarios.py --all
     uv run python scripts/run_scenarios.py --grade-group middle --ability high
-    uv run python scripts/run_scenarios.py --students lower-low-lazy upper-high-diligent
+    uv run python scripts/run_scenarios.py --students lower-high-lazy upper-low-diligent
     uv run python scripts/run_scenarios.py --simulate-conversation
 """
 
@@ -79,10 +79,8 @@ EXPECTED_CASES: dict[str, ExpectedCase] = {
 }
 
 DEFAULT_STUDENT_IDS = [
-    "lower-low-diligent",
-    "lower-low-lazy",
+    "lower-high-lazy",
     "upper-low-diligent",
-    "upper-low-lazy",
 ]
 
 TP_SCENARIOS = [
