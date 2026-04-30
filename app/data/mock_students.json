@@ -142,15 +142,15 @@
   {
     "student_id": "lower-high-lazy",
     "profile": {
-      "name": "도윤",
+      "name": "성준",
       "grade": 2,
-      "preferred_subject": "수학",
-      "strong_subject": "수학",
+      "preferred_subject": "국어",
+      "strong_subject": "국어",
       "recent_avg_score": 94,
       "avg_completion_rate": 42
     },
     "learning_history": {
-      "subject_avg_scores": {"국어": 88, "수학": 94, "영어": 90, "통합": 91},
+      "subject_avg_scores": {"국어": 94, "수학": 88, "영어": 90, "통합": 91},
       "subject_completion_rates": {"국어": 45, "수학": 42, "영어": 44, "통합": 48}
     },
     "learning_pattern": {
@@ -162,11 +162,31 @@
       "careless_habit": true
     },
     "wrong_answer_pattern": {
-      "frequent_wrong_type": "받아올림 계산",
-      "repeated_wrong_subjects": ["수학"],
+      "frequent_wrong_type": "중심 문장 찾기",
+      "repeated_wrong_subjects": ["국어"],
       "wrong_cause": "실수"
     },
     "today_tasks": [
+      {
+        "subject": "국어",
+        "unit": "문단의 짜임 - 긴글 이해하기",
+        "problem_ids": ["lower_korean_paragraph_001"],
+        "problem_id": "lower_korean_paragraph_001",
+        "problem_count": 1,
+        "estimated_time": 5,
+        "difficulty": "중",
+        "ai_predicted_score": 94
+      },
+      {
+        "subject": "국어",
+        "unit": "문단의 짜임 - 중심 문장과 뒷받침 문장 찾기",
+        "problem_ids": ["lower_korean_paragraph_002"],
+        "problem_id": "lower_korean_paragraph_002",
+        "problem_count": 1,
+        "estimated_time": 5,
+        "difficulty": "상",
+        "ai_predicted_score": 88
+      },
       {
         "subject": "수학",
         "unit": "한 자리 수 더하기",
@@ -175,27 +195,7 @@
         "problem_count": 5,
         "estimated_time": 8,
         "difficulty": "중",
-        "ai_predicted_score": 93
-      },
-      {
-        "subject": "국어",
-        "unit": "받침이 있는 낱말 읽기",
-        "problem_ids": ["lower_korean_reading_001"],
-        "problem_id": "lower_korean_reading_001",
-        "problem_count": 5,
-        "estimated_time": 10,
-        "difficulty": "하",
         "ai_predicted_score": 88
-      },
-      {
-        "subject": "통합",
-        "unit": "봄 관찰하기",
-        "problem_ids": ["lower_integrated_season_001"],
-        "problem_id": "lower_integrated_season_001",
-        "problem_count": 4,
-        "estimated_time": 8,
-        "difficulty": "하",
-        "ai_predicted_score": 91
       },
       {
         "subject": "영어",
@@ -652,20 +652,30 @@
       "careless_habit": false
     },
     "wrong_answer_pattern": {
-      "frequent_wrong_type": "비율과 비례식",
+      "frequent_wrong_type": "비와 비율",
       "repeated_wrong_subjects": ["수학"],
       "wrong_cause": "개념 부족"
     },
     "today_tasks": [
       {
         "subject": "수학",
-        "unit": "비율과 비례식",
+        "unit": "비와 비율",
         "problem_ids": ["math_ratio_saltwater_001"],
         "problem_id": "math_ratio_saltwater_001",
         "problem_count": 4,
         "estimated_time": 15,
         "difficulty": "중",
         "ai_predicted_score": 73
+      },
+      {
+        "subject": "국어",
+        "unit": "정보와 표현 판단하기",
+        "problem_ids": ["upper_korean_argument_001"],
+        "problem_id": "upper_korean_argument_001",
+        "problem_count": 5,
+        "estimated_time": 12,
+        "difficulty": "중",
+        "ai_predicted_score": 76
       },
       {
         "subject": "과학",
@@ -676,16 +686,6 @@
         "estimated_time": 12,
         "difficulty": "중",
         "ai_predicted_score": 84
-      },
-      {
-        "subject": "국어",
-        "unit": "주장과 근거 파악하기",
-        "problem_ids": ["upper_korean_argument_001"],
-        "problem_id": "upper_korean_argument_001",
-        "problem_count": 5,
-        "estimated_time": 12,
-        "difficulty": "중",
-        "ai_predicted_score": 76
       },
       {
         "subject": "사회",
