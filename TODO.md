@@ -1,5 +1,27 @@
 # TODO
 
+## T11-MVP. 스마트올 홈 + 챗봇 오버레이
+
+> 기존 1차 UI 구현은 참고하되, 최종 구조는 스마트올 홈 정적 UI + 드래그형 챗봇 오버레이 + InteractionZone 감지 구조를 우선한다.
+
+- [x] `/` 루트를 스마트올 홈 + 챗봇 오버레이 단일 화면으로 정리
+- [x] 기존 `SmartAllCoachApp` 데모를 `/tp-demo`에 보존
+- [x] `1280x800` 기준의 스크롤 없는 태블릿 캔버스 구현
+- [x] TopHeader, DateSelector, SubjectRail, MainLearningCard, RightSidebar 구조 정리
+- [x] 깨진 한글 문자열을 기준 문서의 자연스러운 한국어 문구로 교체
+- [x] InteractionZoneProvider / InteractionZone / useInteractionZones 구조 추가
+- [x] 10개 감지 대상 zone 등록: learning-card, learning-start, subject-math, subject-korean, subject-literacy, subject-hanja, recommended-book, challenge-card, attendance, study-record, wrong-note
+- [x] 챗봇 오버레이를 별도 레이어로 분리하고 기존 UI 클릭을 막지 않도록 처리
+- [x] 챗봇 드래그를 Pointer Events + `transform: translate3d()` 기반으로 구현
+- [x] 드래그 종료 위치를 localStorage에 저장하고 새로고침 후 복원
+- [x] 드래그 중 zone rect 캐싱 및 activeZone 변경 시에만 React state 갱신
+- [x] 감지된 섹션별 말풍선 문구 변경 및 highlight 표시
+- [x] `/`와 `/tp-demo` 오버레이를 `PorongOverlay` 단일 구현으로 통합
+- [x] `PorongOverlay`에서 InteractionZone 감지와 홈 좌표 위치 저장/복원 연결
+- [x] Galaxy Tab A8 기준 성능 조건 점검
+- [x] `npx tsc --noEmit`, `npm run build`, `npm run lint` 결과 확인
+- [x] 브라우저에서 `/` 화면, 드래그, 위치 복원, zone 감지 확인
+
 ## 구현 목표
 
 PRD 케이스 1·2가 처음부터 끝까지 작동하는 것.
@@ -335,6 +357,7 @@ PRD 케이스 1·2가 처음부터 끝까지 작동하는 것.
 - [x] TP5 오답 복습 채팅창 전환
 - [x] 학생 선택 드롭다운 (student_id 전달용, mock 학생 목록)
 - [x] `/` 학생 화면과 `/tp-demo` 내부 검수 화면 분리
+- [x] `/`를 `FRONTEND_USER_FLOW.md` 기반 자연 흐름 진입점으로 연결
 - [x] mock/live chat adapter 인터페이스 분리
 - [x] 케이스 1 / 케이스 2 전환 가능하게
 - [x] 백엔드 `ChatRequest` / `ChatResponse`와 맞춘 프론트 타입 정의
@@ -372,13 +395,13 @@ PRD 케이스 1·2가 처음부터 끝까지 작동하는 것.
   - [x] `PorongSpeechBubble` — TP별 짧은 말풍선과 CTA 렌더링
   - [x] `PorongOverlay` — 캐릭터, 말풍선, 탭/드래그 상태 통합 제어
   - [x] `usePorongDrag` — 탭과 드래그 구분
-  - [x] `usePorongSnap` — 화면 안 safe snap 위치 계산
+  - [x] `usePorongSnap` — 초기 위치와 화면 안 safe 위치 계산
   - [x] `porongTypes` / `porongAssets` — 상태 타입과 asset 경로 분리
 - [x] 뽀롱쌤 드래그 인터랙션 1차 구현
   - [x] 짧게 탭하면 채팅창 또는 말풍선 열기
   - [x] 8px 이상 움직이면 드래그 상태로 전환
   - [x] 드래그 중 살짝 확대, 기울기, 매달림 느낌 적용
-  - [x] 손을 떼면 가까운 safe snap point로 이동
+  - [x] 손을 떼면 사이드로 밀리지 않고 놓은 좌표에 유지
   - [x] 채팅창이 열렸을 때 캐릭터와 패널이 겹치지 않도록 위치 보정
   - [x] 세로형 태블릿 화면에서 오버레이가 화면 밖으로 나가지 않도록 보정
 - [x] TP1~TP5 흐름과 뽀롱쌤 상태 연결
@@ -388,7 +411,7 @@ PRD 케이스 1·2가 처음부터 끝까지 작동하는 것.
   - [x] TP4 학습 중 도움 요청: `idle` / `hint` / `speaking`
   - [x] TP5 오늘 학습 종료/오답 복습: `cheer` / `comfort`
   - [x] 답변 생성 중: `thinking`
-- [x] CSS 기반 뽀롱쌤 모션 구현
+- [x] CSS + Motion 기반 뽀롱쌤 모션 구현
   - [x] idle/welcome 둥실둥실 모션
   - [x] touched 터치 반응 모션
   - [x] dragging 매달림 느낌 모션
@@ -399,13 +422,37 @@ PRD 케이스 1·2가 처음부터 끝까지 작동하는 것.
   - [x] comfort 부드러운 흔들림 모션
   - [x] confused 갸웃 모션
   - [x] `prefers-reduced-motion` 접근성 대응
+  - [x] `motion` 패키지 도입 및 `motion/react` 기반 위치/상태 모션 적용
+  - [x] `useMotionValue` / `useSpring` 기반 드래그 follow와 놓은 위치 유지 구현
+  - [x] `PorongCoachPanel`로 오른쪽 채팅창 컴포넌트 분리
+  - [x] `useDizzyShake`로 빠른 좌우 흔들기 감지 및 2초 cooldown 구현
+  - [x] `dizzy` 상태, 말풍선, star/sparkle 반응 연결
+  - [x] `dizzy` 발동 후 2초 동안 섹션별 말풍선보다 어지러움 메시지를 우선 표시
+  - [x] 초기 위치가 spring으로 미끄러져 들어오지 않도록 MotionValue와 spring 값을 함께 초기화
+  - [x] 초기 stage/overlay 측정 실패 시 `requestAnimationFrame` 재시도로 ready 상태 보강
+  - [x] 드래그 시작 시 실제 렌더링 좌표를 다시 측정해 stage offset으로 인한 위치 어긋남 방지
+- [x] 기존 섹션 감지 챗봇 레이어와 Motion 기반 `PorongOverlay` 통합
+  - [x] `/` 홈 화면에서 `ChatbotOverlayLayer` 대신 `PorongOverlay` 사용
+  - [x] `PorongOverlay` 내부에서 `InteractionZone` 감지 문맥을 읽도록 통합
+  - [x] `/tp-demo`를 `InteractionZoneProvider`로 감싸고 주요 섹션 zone 등록
+  - [x] 말풍선 우선순위 정리: dizzy → 섹션별 제안 → TP 말풍선
+  - [x] `/`, `/tp-demo` 모두 같은 `PorongOverlay` 경로에서 섹션별 제안 코멘트 표시 확인
+  - [x] 사용하지 않는 구형 `ChatbotOverlayLayer` / `useDraggableChatbot` 계열 파일 정리
 - [x] 뽀롱쌤 작업 워크로그 작성
   - [x] `docs/worklogs/2026-04-29_feature-T11-porong-asset-system.md`
+  - [x] `docs/worklogs/2026-04-30_feature-T11-porong-motion-zone-integration.md`
 - [x] `1280x800`, `800x1280` 태블릿 화면 검증
-- [x] `/`, `/tp-demo`, `/smartall-home`에서 뽀롱쌤 오버레이 표시 확인
+- [x] `/`, `/tp-demo`에서 뽀롱쌤 오버레이 표시 확인
 - [x] `npm run lint` 통과
 - [x] `npm run build` 통과
 - [x] **mock 기준 완료 기준**: 케이스 1·2 전체 흐름 브라우저에서 처음부터 끝까지 동작 확인
+- [x] `/tp-demo` 브라우저 smoke test: 화면 렌더, `PorongOverlay` ready, TP1 말풍선 확인
+- [x] `/tp-demo` 브라우저 smoke test: 뽀롱쌤 탭 시 `PorongCoachPanel` 열림 확인
+- [x] `/tp-demo` 브라우저 smoke test: 드래그 후 놓은 좌표에 유지 확인
+- [x] `/tp-demo` 브라우저 smoke test: dizzy shake 상태와 어지러움 말풍선 확인
+- [x] `/` 브라우저 smoke test: 뽀롱쌤을 `오답노트` zone으로 드래그하면 섹션별 제안 말풍선 표시 확인
+- [x] `/tp-demo` 브라우저 smoke test: 뽀롱쌤을 `오답노트` zone으로 드래그하면 섹션별 제안 말풍선 표시 확인
+- [ ] 실기기에서 dizzy shake cooldown 포함 수동 QA
 - [ ] 뽀롱쌤 캐릭터와 하단 `뽀롱쌤` 로고 텍스트를 완전히 분리한 원본 asset 확보
 - [ ] 실제 프레임/포즈 기반 뽀롱쌤 애니메이션 고도화
   - [ ] `porong-hanging-left.webp` / `porong-hanging-right.webp` 제작 및 드래그 방향별 적용

@@ -11,7 +11,7 @@ const SmartAllHome = dynamic(
     loading: () => (
       <main className={styles.smartallPage}>
         <section
-          className={`${styles.smartallStage} ${styles.themeToday}`}
+          className={styles.smartallStage}
           aria-label="스마트올 홈 화면을 불러오는 중"
         />
       </main>

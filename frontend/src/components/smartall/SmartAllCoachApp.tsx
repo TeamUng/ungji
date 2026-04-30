@@ -1,9 +1,10 @@
 "use client";
 
-import type {
-  FormEvent,
-} from "react";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
+import { InteractionZone } from "@/components/chatbot/InteractionZone";
+import { InteractionZoneProvider } from "@/components/chatbot/InteractionZoneProvider";
+import type { InteractionZoneId } from "@/components/chatbot/chatbotSuggestions";
+import { PorongCoachPanel } from "@/components/porong/PorongCoachPanel";
 import { PorongOverlay } from "@/components/porong/PorongOverlay";
 import type {
   PorongBubbleAction,
@@ -334,7 +335,8 @@ export function SmartAllCoachApp({
   };
 
   return (
-    <main className="demo-page">
+    <InteractionZoneProvider>
+      <main className="demo-page">
       <section
         ref={tabletRef}
         className={`smartall-tablet ${isUpper ? "theme-upper" : "theme-lower"}`}
@@ -381,9 +383,9 @@ export function SmartAllCoachApp({
           onBubbleAction={handleBubbleChoice}
         />
 
-        <ChatPanel
+        <PorongCoachPanel
           isOpen={chatOpen}
-          caseId={caseId}
+          title={caseLabels[caseId]}
           turns={chatTurns}
           isBusy={isStreaming}
           errorMessage={chatError}
@@ -403,7 +405,8 @@ export function SmartAllCoachApp({
           onStepChange={moveToStep}
         />
       )}
-    </main>
+      </main>
+    </InteractionZoneProvider>
   );
 }
 
@@ -459,13 +462,20 @@ function HomeScreen({
           />
         )}
 
-        <section className="study-zone" aria-label="오늘의 학습 카드">
+        <InteractionZone
+          id="learning-card"
+          label="오늘의 학습 카드"
+          type="content"
+          className="study-zone"
+          role="region"
+          ariaLabel="오늘의 학습 카드"
+        >
           {isUpper ? (
             <UpperSubjectCards onStartLearning={onStartLearning} />
           ) : (
             <LowerHeroCard onStartLearning={onStartLearning} />
           )}
-        </section>
+        </InteractionZone>
 
         <SmartAllRightRail caseId={caseId} />
       </div>
@@ -514,17 +524,47 @@ function SubjectRail({
   return (
     <aside className="subject-rail" aria-label="과목 순서">
       {subjects.map((subject, index) => (
-        <button
+        <InteractionZone
           key={subject}
-          type="button"
-          className={subject === activeSubject ? "active" : ""}
+          id={getSubjectZoneId(subject)}
+          label={subject}
+          type="subject"
         >
-          <span>{index + 1}</span>
-          {subject}
-        </button>
+          <button
+            type="button"
+            className={subject === activeSubject ? "active" : ""}
+          >
+            <span>{index + 1}</span>
+            {subject}
+          </button>
+        </InteractionZone>
       ))}
     </aside>
   );
+}
+
+function getSubjectZoneId(subject: string): InteractionZoneId {
+  if (subject === "국어") {
+    return "subject-korean";
+  }
+
+  if (subject === "문해력") {
+    return "subject-literacy";
+  }
+
+  if (subject === "한자") {
+    return "subject-hanja";
+  }
+
+  if (subject === "과학") {
+    return "subject-science";
+  }
+
+  if (subject === "사회") {
+    return "subject-social";
+  }
+
+  return "subject-math";
 }
 
 function LowerHeroCard({
@@ -577,42 +617,53 @@ function UpperSubjectCards({
       subtitle: "국어, 사회",
       tone: "green",
       action: "개념 보기",
+      zoneId: "subject-korean" as const,
     },
     {
       title: "수학",
       subtitle: "비율과 비례식",
       tone: "blue",
       action: "단계별로 풀기",
+      zoneId: "subject-math" as const,
     },
     {
       title: "과학",
       subtitle: "단원평가",
       tone: "mint",
       action: "복습하기",
+      zoneId: "subject-science" as const,
     },
     {
       title: "사회",
       subtitle: "옛날 사람들의 놀이",
       tone: "white",
       action: "학습하기",
+      zoneId: "subject-social" as const,
     },
   ];
 
   return (
     <div className="upper-card-grid">
       {cards.map((card) => (
-        <button
+        <InteractionZone
           key={card.title}
-          type="button"
-          className={`upper-card ${card.tone}`}
-          onClick={onStartLearning}
+          id={card.zoneId}
+          label={card.title}
+          type="subject"
+          className="upper-card-zone"
         >
-          <span className="card-title">{card.title}</span>
-          <span className="card-star">★</span>
-          <strong>{card.subtitle}</strong>
-          <span className="upper-card-art" aria-hidden="true" />
-          <em>{card.action}</em>
-        </button>
+          <button
+            type="button"
+            className={`upper-card ${card.tone}`}
+            onClick={onStartLearning}
+          >
+            <span className="card-title">{card.title}</span>
+            <span className="card-star">★</span>
+            <strong>{card.subtitle}</strong>
+            <span className="upper-card-art" aria-hidden="true" />
+            <em>{card.action}</em>
+          </button>
+        </InteractionZone>
       ))}
     </div>
   );
@@ -625,39 +676,62 @@ function SmartAllRightRail({ caseId }: { caseId: DemoCaseId }) {
     <aside className="right-rail" aria-label="추천과 학습 도구">
       <p className="recommend-title">김웅진님을 위한 추천</p>
 
-      <article className="book-card">
-        <button type="button" className="rail-arrow left" aria-label="이전 추천">
-          ‹
-        </button>
-        <div className="book-cover">
-          <strong>{isUpper ? "마을의 일 년 살이" : "예절 바른 훈랑이"}</strong>
-          <span>{isUpper ? "이번 주 추천" : "이번 주 독서"}</span>
-        </div>
-        <button type="button" className="rail-arrow right" aria-label="다음 추천">
-          ›
-        </button>
-        <div className="pager" aria-hidden="true">
-          <span className="active" />
-          <span />
-        </div>
-      </article>
+      <InteractionZone
+        id="recommended-book"
+        label="추천 독서"
+        type="recommendation"
+      >
+        <article className="book-card">
+          <button type="button" className="rail-arrow left" aria-label="이전 추천">
+            ‹
+          </button>
+          <div className="book-cover">
+            <strong>{isUpper ? "마을의 일 년 살이" : "예절 바른 훈랑이"}</strong>
+            <span>{isUpper ? "이번 주 추천" : "이번 주 독서"}</span>
+          </div>
+          <button type="button" className="rail-arrow right" aria-label="다음 추천">
+            ›
+          </button>
+          <div className="pager" aria-hidden="true">
+            <span className="active" />
+            <span />
+          </div>
+        </article>
+      </InteractionZone>
 
-      <article className="challenge-card">
-        <div>
-          <strong>올도전</strong>
-          <span>나의 별 {isUpper ? "12,750" : "17,250"}</span>
-        </div>
-        <div className="treasure-box" aria-hidden="true">
-          ?
-        </div>
-      </article>
+      <InteractionZone
+        id="challenge-card"
+        label="올도전"
+        type="recommendation"
+      >
+        <article className="challenge-card">
+          <div>
+            <strong>올도전</strong>
+            <span>나의 별 {isUpper ? "12,750" : "17,250"}</span>
+          </div>
+          <div className="treasure-box" aria-hidden="true">
+            ?
+          </div>
+        </article>
+      </InteractionZone>
 
       <div className="quick-menu" aria-label="빠른 메뉴">
-        {["출석", "학습기록", "오답노트"].map((label) => (
-          <button key={label} type="button">
-            <span aria-hidden="true" />
-            {label}
-          </button>
+        {[
+          { id: "attendance" as const, label: "출석" },
+          { id: "study-record" as const, label: "학습기록" },
+          { id: "wrong-note" as const, label: "오답노트" },
+        ].map((menu) => (
+          <InteractionZone
+            key={menu.id}
+            id={menu.id}
+            label={menu.label}
+            type="quick-menu"
+          >
+            <button type="button">
+              <span aria-hidden="true" />
+              {menu.label}
+            </button>
+          </InteractionZone>
         ))}
       </div>
     </aside>
@@ -685,9 +759,15 @@ function LearningScreen({
     <div className={`learning-screen ${isHelpOpen ? "with-panel" : ""}`}>
       <section className="learning-board" aria-label="학습 문제 화면">
         <div className="lesson-header">
-          <button type="button" onClick={onExit}>
-            나가기
-          </button>
+          <InteractionZone
+            id="exit-button"
+            label="나가기"
+            type="primary-action"
+          >
+            <button type="button" onClick={onExit}>
+              나가기
+            </button>
+          </InteractionZone>
           <div>
             <span>{isUpper ? "수학 · 비율과 비례식" : "국어 · 짧은 글 읽기"}</span>
             <strong>{isUpper ? "2단원 준비학습" : "주인공 마음 고르기"}</strong>
@@ -706,16 +786,28 @@ function LearningScreen({
         )}
 
         <div className="lesson-actions">
-          <button
-            type="button"
-            className="secondary-action"
-            onClick={onOpenHelp}
+          <InteractionZone
+            id="help-button"
+            label="힌트 보기"
+            type="primary-action"
           >
-            힌트 보기
-          </button>
-          <button type="button" className="primary-action" onClick={onComplete}>
-            채점하고 완료
-          </button>
+            <button
+              type="button"
+              className="secondary-action"
+              onClick={onOpenHelp}
+            >
+              힌트 보기
+            </button>
+          </InteractionZone>
+          <InteractionZone
+            id="complete-button"
+            label="채점하고 완료"
+            type="primary-action"
+          >
+            <button type="button" className="primary-action" onClick={onComplete}>
+              채점하고 완료
+            </button>
+          </InteractionZone>
         </div>
       </section>
     </div>
@@ -724,53 +816,67 @@ function LearningScreen({
 
 function LowerKoreanProblem() {
   return (
-    <article className="problem-card korean-problem">
-      <span className="problem-count">문제 1</span>
-      <h1>민지는 친구에게 색연필을 빌려주었어요.</h1>
-      <p>
-        친구가 고맙다고 말하자 민지는 활짝 웃었어요. 민지는 어떤 마음일까요?
-      </p>
-      <div className="picture-question" aria-hidden="true">
-        <div className="child-figure happy" />
-        <div className="pencil-box" />
-        <div className="child-figure friend" />
-      </div>
-      <div className="answer-grid">
-        {["기뻐요", "화나요", "무서워요"].map((answer) => (
-          <button key={answer} type="button">
-            {answer}
-          </button>
-        ))}
-      </div>
-    </article>
+    <InteractionZone
+      id="problem-board"
+      label="현재 문제"
+      type="content"
+      className="problem-zone"
+    >
+      <article className="problem-card korean-problem">
+        <span className="problem-count">문제 1</span>
+        <h1>민지는 친구에게 색연필을 빌려주었어요.</h1>
+        <p>
+          친구가 고맙다고 말하자 민지는 활짝 웃었어요. 민지는 어떤 마음일까요?
+        </p>
+        <div className="picture-question" aria-hidden="true">
+          <div className="child-figure happy" />
+          <div className="pencil-box" />
+          <div className="child-figure friend" />
+        </div>
+        <div className="answer-grid">
+          {["기뻐요", "화나요", "무서워요"].map((answer) => (
+            <button key={answer} type="button">
+              {answer}
+            </button>
+          ))}
+        </div>
+      </article>
+    </InteractionZone>
   );
 }
 
 function UpperMathProblem() {
   return (
-    <article className="problem-card math-problem">
-      <span className="problem-count">문제 3</span>
-      <h1>비례식을 세워 빈칸에 알맞은 수를 구하세요.</h1>
-      <p>
-        주스 원액 2컵에 물 5컵을 섞습니다. 같은 맛으로 원액 6컵을 만들려면 물은
-        몇 컵이 필요할까요?
-      </p>
-      <div className="ratio-board" aria-label="비율 문제 풀이 영역">
-        <div>
-          <span>원액</span>
-          <strong>2</strong>
-          <strong>6</strong>
+    <InteractionZone
+      id="problem-board"
+      label="현재 문제"
+      type="content"
+      className="problem-zone"
+    >
+      <article className="problem-card math-problem">
+        <span className="problem-count">문제 3</span>
+        <h1>비례식을 세워 빈칸에 알맞은 수를 구하세요.</h1>
+        <p>
+          주스 원액 2컵에 물 5컵을 섞습니다. 같은 맛으로 원액 6컵을 만들려면 물은
+          몇 컵이 필요할까요?
+        </p>
+        <div className="ratio-board" aria-label="비율 문제 풀이 영역">
+          <div>
+            <span>원액</span>
+            <strong>2</strong>
+            <strong>6</strong>
+          </div>
+          <div>
+            <span>물</span>
+            <strong>5</strong>
+            <strong>?</strong>
+          </div>
         </div>
-        <div>
-          <span>물</span>
-          <strong>5</strong>
-          <strong>?</strong>
+        <div className="equation-line">
+          2 : 5 = 6 : <input aria-label="정답 입력" placeholder="?" />
         </div>
-      </div>
-      <div className="equation-line">
-        2 : 5 = 6 : <input aria-label="정답 입력" placeholder="?" />
-      </div>
-    </article>
+      </article>
+    </InteractionZone>
   );
 }
 
@@ -790,7 +896,14 @@ function CompletionScreen({
   return (
     <div className="completion-screen">
       <WeekStrip isUpper={isUpper} />
-      <section className="completion-card" aria-label="학습 완료 화면">
+      <InteractionZone
+        id="completion-card"
+        label={isFinal ? "오늘 학습 마무리" : "단위 학습 완료"}
+        type="content"
+        className="completion-card"
+        role="region"
+        ariaLabel="학습 완료 화면"
+      >
         <div className="complete-medal" aria-hidden="true">
           ✓
         </div>
@@ -831,169 +944,8 @@ function CompletionScreen({
             오늘 마무리
           </button>
         </div>
-      </section>
+      </InteractionZone>
     </div>
-  );
-}
-
-function ChatPanel({
-  isOpen,
-  caseId,
-  turns,
-  isBusy,
-  errorMessage,
-  showTeachBackInput,
-  onClose,
-  onChoice,
-  onTextSubmit,
-  onComplete,
-}: {
-  isOpen: boolean;
-  caseId: DemoCaseId;
-  turns: ChatTurn[];
-  isBusy: boolean;
-  errorMessage: string;
-  showTeachBackInput: boolean;
-  onClose: () => void;
-  onChoice: (choiceLabel: string) => void;
-  onTextSubmit: (content: string) => void;
-  onComplete: () => void;
-}) {
-  const [teachBackText, setTeachBackText] = useState("");
-  const messagesRef = useRef<HTMLDivElement | null>(null);
-  const latestChoiceTurnId = findLatestChoiceTurnId(turns);
-
-  useEffect(() => {
-    const messageBox = messagesRef.current;
-
-    if (!messageBox) {
-      return;
-    }
-
-    messageBox.scrollTo({
-      top: messageBox.scrollHeight,
-      behavior: "smooth",
-    });
-  }, [turns, isBusy, errorMessage]);
-
-  const handleTeachBackSubmit = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    onTextSubmit(teachBackText);
-    setTeachBackText("");
-  };
-
-  return (
-    <aside className={`chat-panel ${isOpen ? "is-open" : ""}`} aria-label="AI 코치 채팅창">
-      <header>
-        <div>
-          <span>AI 학습코치</span>
-          <strong>{caseLabels[caseId]}</strong>
-        </div>
-        <button type="button" aria-label="채팅창 닫기" onClick={onClose}>
-          ×
-        </button>
-      </header>
-
-      <div ref={messagesRef} className="chat-messages">
-        {turns.map((turn) =>
-          turn.role === "student" ? (
-            <p key={turn.id} className="chat-student">
-              {turn.content}
-            </p>
-          ) : (
-            <MessageRenderer
-              key={turn.id}
-              message={turn.message}
-              isChoiceActive={!isBusy && turn.id === latestChoiceTurnId}
-              onChoice={onChoice}
-            />
-          ),
-        )}
-
-        {isBusy && <p className="chat-loading">코치가 생각하고 있어요...</p>}
-        {errorMessage && <p className="chat-error">{errorMessage}</p>}
-      </div>
-
-      <footer className={showTeachBackInput ? "teachback-footer" : ""}>
-        {showTeachBackInput ? (
-          <form className="teachback-form" onSubmit={handleTeachBackSubmit}>
-            <input
-              value={teachBackText}
-              onChange={(event) => setTeachBackText(event.target.value)}
-              placeholder="예: 원액이 3배라 물도 3배예요"
-              aria-label="내 말로 설명하기"
-            />
-            <button type="submit" className="primary-action" disabled={isBusy}>
-              보내기
-            </button>
-          </form>
-        ) : (
-          <>
-            <button type="button" className="secondary-action" onClick={onClose}>
-              문제로 돌아가기
-            </button>
-            <button type="button" className="primary-action" onClick={onComplete}>
-              풀고 완료
-            </button>
-          </>
-        )}
-      </footer>
-    </aside>
-  );
-}
-
-function MessageRenderer({
-  message,
-  isChoiceActive,
-  onChoice,
-}: {
-  message: ResponseMessage;
-  isChoiceActive: boolean;
-  onChoice: (choiceLabel: string) => void;
-}) {
-  if (message.type === "text") {
-    return <p className="chat-text">{message.content}</p>;
-  }
-
-  if (message.type === "choices") {
-    return (
-      <div className="chat-choice-list">
-        {message.items.map((item) => (
-          <button
-            key={item.id}
-            type="button"
-            disabled={!isChoiceActive}
-            onClick={() => onChoice(item.label)}
-          >
-            {item.label}
-          </button>
-        ))}
-      </div>
-    );
-  }
-
-  if (message.type === "image_card") {
-    return (
-      <article className="chat-image-card">
-        <div className={`mock-image ${message.image_url}`} aria-hidden="true">
-          <span />
-          <span />
-          <span />
-        </div>
-        <p>{message.caption}</p>
-      </article>
-    );
-  }
-
-  return (
-    <article className="hint-card">
-      {message.steps.map((step) => (
-        <div key={step.step}>
-          <span>{step.step}</span>
-          <p>{step.content}</p>
-        </div>
-      ))}
-    </article>
   );
 }
 
@@ -1038,13 +990,6 @@ function DemoControls({
       </div>
     </section>
   );
-}
-
-function findLatestChoiceTurnId(turns: ChatTurn[]) {
-  return [...turns]
-    .reverse()
-    .find((turn) => turn.role === "coach" && turn.message.type === "choices")
-    ?.id;
 }
 
 function isLastCoachTeachBackPrompt(turns: ChatTurn[]) {

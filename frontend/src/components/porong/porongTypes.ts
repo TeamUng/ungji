@@ -7,11 +7,13 @@ export type PorongOverlayState =
   | "cheer"
   | "comfort"
   | "confused"
+  | "dizzy"
   | "touched"
   | "dragging"
   | "hanging"
   | "snapping"
-  | "edge";
+  | "edge"
+  | "hidden";
 
 export type PorongTouchpoint = "tp1" | "tp2" | "tp3" | "tp4" | "tp5";
 
@@ -33,3 +35,7 @@ export type PorongPoint = {
   y: number;
 };
 
+export type PorongBounds = {
+  width: number;
+  height: number;
+};

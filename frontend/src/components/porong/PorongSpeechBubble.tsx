@@ -5,6 +5,7 @@ import type {
 
 type PorongSpeechBubbleProps = {
   touchpoint?: PorongTouchpoint;
+  eyebrow?: string;
   text?: string;
   actions?: PorongBubbleAction[];
   onAction?: (label: string) => void;
@@ -12,6 +13,7 @@ type PorongSpeechBubbleProps = {
 
 export function PorongSpeechBubble({
   touchpoint,
+  eyebrow,
   text,
   actions = [],
   onAction,
@@ -22,8 +24,10 @@ export function PorongSpeechBubble({
 
   return (
     <aside className="porong-speech-bubble" aria-label="뽀롱쌤 안내 말풍선">
-      {touchpoint && (
-        <span className="porong-touchpoint-chip">{touchpoint.toUpperCase()}</span>
+      {(eyebrow || touchpoint) && (
+        <span className="porong-touchpoint-chip">
+          {eyebrow ?? touchpoint?.toUpperCase()}
+        </span>
       )}
       {text && <p>{text}</p>}
       {actions.length > 0 && (
@@ -42,4 +46,3 @@ export function PorongSpeechBubble({
     </aside>
   );
 }
-

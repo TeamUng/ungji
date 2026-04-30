@@ -278,7 +278,7 @@ TP별 상태 연결:
 
 ### `ChatbotOverlay.tsx`
 
-`/` 및 `/smartall-home`에서 기존 `DraggableChatbot` 대신 `PorongOverlay`를 사용하도록 바꿨다.
+`/`에서 기존 `DraggableChatbot` 대신 `PorongOverlay`를 사용하도록 바꿨다.
 
 동작:
 
@@ -477,7 +477,6 @@ npm run build
 |------|------|
 | `/` | HTTP 200, 뽀롱쌤 오버레이 표시 확인 |
 | `/tp-demo` | HTTP 200, TP 흐름과 채팅창 연결 확인 |
-| `/smartall-home` | HTTP 200, 스마트올 홈 화면 위 오버레이 확인 |
 
 뷰포트 검증:
 
