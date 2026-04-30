@@ -1059,7 +1059,6 @@ function HomeScreen({
   onStartLearning: () => void;
 }) {
   const isUpper = caseId === "upper-math";
-  const demoCase = demoCases[caseId];
 
   return (
     <div className="home-screen">
@@ -1088,10 +1087,7 @@ function HomeScreen({
           )}
         </InteractionZone>
 
-        <SmartAllRightRail
-          caseId={caseId}
-          studentName={demoCase.studentName}
-        />
+        <SmartAllRightRail />
       </div>
     </div>
   );
@@ -1283,78 +1279,9 @@ function UpperSubjectCards({
   );
 }
 
-function SmartAllRightRail({
-  caseId,
-  studentName,
-}: {
-  caseId: DemoCaseId;
-  studentName: string;
-}) {
-  const isUpper = caseId === "upper-math";
-
+function SmartAllRightRail() {
   return (
-    <aside className="right-rail" aria-label="추천과 학습 도구">
-      <p className="recommend-title">{studentName}님을 위한 추천</p>
-
-      <InteractionZone
-        id="recommended-book"
-        label="추천 독서"
-        type="recommendation"
-      >
-        <article className="book-card">
-          <button type="button" className="rail-arrow left" aria-label="이전 추천">
-            ‹
-          </button>
-          <div className="book-cover">
-            <strong>{isUpper ? "마을의 일 년 살이" : "예절 바른 훈랑이"}</strong>
-            <span>{isUpper ? "이번 주 추천" : "이번 주 독서"}</span>
-          </div>
-          <button type="button" className="rail-arrow right" aria-label="다음 추천">
-            ›
-          </button>
-          <div className="pager" aria-hidden="true">
-            <span className="active" />
-            <span />
-          </div>
-        </article>
-      </InteractionZone>
-
-      <InteractionZone
-        id="challenge-card"
-        label="올도전"
-        type="recommendation"
-      >
-        <article className="challenge-card">
-          <div>
-            <strong>올도전</strong>
-            <span>나의 별 {isUpper ? "12,750" : "17,250"}</span>
-          </div>
-          <div className="treasure-box" aria-hidden="true">
-            ?
-          </div>
-        </article>
-      </InteractionZone>
-
-      <div className="quick-menu" aria-label="빠른 메뉴">
-        {[
-          { id: "attendance" as const, label: "출석" },
-          { id: "study-record" as const, label: "학습기록" },
-          { id: "wrong-note" as const, label: "오답노트" },
-        ].map((menu) => (
-          <InteractionZone
-            key={menu.id}
-            id={menu.id}
-            label={menu.label}
-            type="quick-menu"
-          >
-            <button type="button">
-              <span aria-hidden="true" />
-              {menu.label}
-            </button>
-          </InteractionZone>
-        ))}
-      </div>
-    </aside>
+    <aside className="right-rail coach-only-rail" aria-label="AI 학습코치 영역" />
   );
 }
 

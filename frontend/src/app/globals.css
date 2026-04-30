@@ -709,203 +709,12 @@ button {
 }
 
 .right-rail {
-  display: grid;
-  align-content: start;
-  gap: 24px;
-  padding: 6px 0 0;
+  min-height: 530px;
+  align-self: stretch;
 }
 
-.recommend-title {
-  margin: 0;
-  color: #3d3b2b;
-  font-size: 17px;
-  font-weight: 950;
-}
-
-.book-card {
-  position: relative;
-  display: grid;
-  justify-items: center;
-  gap: 12px;
-}
-
-.book-cover {
-  position: relative;
-  width: 218px;
-  height: 178px;
-  display: grid;
-  align-content: center;
-  justify-items: center;
-  gap: 16px;
-  overflow: hidden;
-  border-radius: 22px;
-  background:
-    radial-gradient(circle at 78% 24%, #ffe26c 0 16px, transparent 17px),
-    radial-gradient(circle at 22% 75%, #69c96f 0 28px, transparent 29px),
-    #df5b1f;
-  color: #ffffff;
-  box-shadow: var(--shadow-card);
-}
-
-.theme-upper .book-cover {
-  background:
-    radial-gradient(circle at 78% 18%, #f9d7e3 0 34px, transparent 35px),
-    radial-gradient(circle at 22% 75%, #6cc070 0 28px, transparent 29px),
-    #f4f0dd;
-  color: #6f4f62;
-}
-
-.book-cover::after {
-  content: "";
-  position: absolute;
-  left: 20px;
-  right: 20px;
-  bottom: 28px;
-  height: 34px;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.34);
-}
-
-.book-cover strong {
-  position: relative;
-  z-index: 1;
-  width: 160px;
-  font-size: 20px;
-  font-weight: 950;
-  line-height: 1.25;
-  text-align: center;
-}
-
-.book-cover span {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  display: grid;
-  place-items: center;
-  height: 36px;
-  background: rgba(0, 0, 0, 0.2);
-  color: #ffffff;
-  font-size: 14px;
-  font-weight: 900;
-}
-
-.rail-arrow {
-  position: absolute;
-  top: 70px;
-  z-index: 2;
-  width: 40px;
-  min-height: 48px;
-  height: 48px;
-  border: 0;
-  border-radius: 50%;
-  background: #ffffff;
-  color: #5d6470;
-  font-size: 30px;
-  font-weight: 800;
-  box-shadow: 0 8px 16px rgba(39, 65, 96, 0.16);
-}
-
-.rail-arrow.left {
-  left: 4px;
-}
-
-.rail-arrow.right {
-  right: 4px;
-}
-
-.pager {
-  display: flex;
-  gap: 8px;
-}
-
-.pager span {
-  width: 10px;
-  height: 8px;
-  border-radius: 999px;
-  background: rgba(37, 81, 122, 0.18);
-}
-
-.pager .active {
-  width: 26px;
-  background: #ff8b00;
-}
-
-.challenge-card {
-  width: 240px;
-  min-height: 92px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 14px;
-  padding: 18px 18px 18px 22px;
-  border-radius: 22px;
-  background: var(--purple);
-  color: #ffffff;
-  box-shadow: var(--shadow-card);
-}
-
-.challenge-card strong,
-.challenge-card span {
-  display: block;
-}
-
-.challenge-card strong {
-  margin-bottom: 12px;
-  font-size: 20px;
-  font-weight: 950;
-}
-
-.challenge-card span {
-  font-size: 14px;
-  font-weight: 850;
-}
-
-.treasure-box {
-  width: 74px;
-  height: 64px;
-  display: grid;
-  place-items: center;
-  border-radius: 18px;
-  background:
-    linear-gradient(180deg, #36d584 0 52%, #20a864 53%),
-    #20a864;
-  color: #ffe13a;
-  font-size: 62px;
-  font-weight: 950;
-  line-height: 1;
-  text-shadow: 0 4px 0 rgba(0, 0, 0, 0.16);
-}
-
-.quick-menu {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 12px;
-  width: 240px;
-}
-
-.quick-menu button {
-  min-height: 78px;
-  display: grid;
-  justify-items: center;
-  align-content: center;
-  gap: 6px;
-  border: 0;
-  border-radius: 18px;
-  background: #ffffff;
-  color: #2b3540;
-  font-size: 13px;
-  font-weight: 950;
-  box-shadow: 0 10px 22px rgba(39, 65, 96, 0.12);
-}
-
-.quick-menu button span {
-  width: 26px;
-  height: 26px;
-  border-radius: 50%;
-  background:
-    radial-gradient(circle at 38% 30%, #fff 0 4px, transparent 5px),
-    linear-gradient(135deg, #16b56b, #78d66b);
+.coach-only-rail {
+  pointer-events: none;
 }
 
 .learning-screen {
@@ -1497,7 +1306,6 @@ button {
 }
 
 .upper-card-zone .upper-card,
-.quick-menu > .interaction-zone > button,
 .lesson-actions > .interaction-zone > button {
   width: 100%;
 }
@@ -2229,18 +2037,7 @@ button {
   }
 
   .right-rail {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    align-items: start;
-  }
-
-  .recommend-title {
-    grid-column: 1 / -1;
-  }
-
-  .book-cover,
-  .challenge-card,
-  .quick-menu {
-    width: 100%;
+    display: none;
   }
 
   .learning-screen {
@@ -2300,10 +2097,6 @@ button {
   }
 
   .upper-card-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .right-rail {
     grid-template-columns: 1fr;
   }
 
