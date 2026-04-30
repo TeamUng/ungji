@@ -1062,7 +1062,7 @@ function HomeScreen({
 
   return (
     <div className="home-screen">
-      <WeekStrip isUpper={isUpper} />
+      <WeekStrip />
 
       <div className={`home-grid ${isUpper ? "upper-grid" : "lower-grid"}`}>
         {!isUpper && (
@@ -1093,26 +1093,26 @@ function HomeScreen({
   );
 }
 
-function WeekStrip({ isUpper }: { isUpper: boolean }) {
+function WeekStrip() {
   const days = ["월", "화", "수", "목", "금", "토", "일"];
 
   return (
     <div className="week-strip">
-      <div className="date-pill">
-        <span className="calendar-mark" aria-hidden="true" />
-        <strong>{isUpper ? "10월 1일" : "7월 12일"}</strong>
-        <span>수요일</span>
-      </div>
-
       <div className="day-row" aria-label="이번 주 학습 현황">
         {days.map((day) => (
           <span
             key={day}
-            className={day === "수" ? "today" : day === "월" || day === "화" ? "done" : ""}
+            className={day === "금" ? "today" : ""}
           >
             {day}
           </span>
         ))}
+      </div>
+
+      <div className="date-pill">
+        <span className="calendar-mark" aria-hidden="true" />
+        <strong>5월 1일</strong>
+        <span>금요일</span>
       </div>
     </div>
   );
@@ -1555,7 +1555,7 @@ function CompletionScreen({
 
   return (
     <div className="completion-screen">
-      <WeekStrip isUpper={isUpper} />
+      <WeekStrip />
       <InteractionZone
         id="completion-card"
         label="단위 학습 완료"
