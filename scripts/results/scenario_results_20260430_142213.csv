@@ -1,0 +1,51 @@
+﻿runner_mode,student_id,name,grade,grade_group,segment,expected_grade_group,expected_ability,expected_diligence,expected_segment,classification_ok,preferred_subject,strong_subject,recent_avg_score,avg_completion_rate,wrong_content_rate,wrong_content_total,wrong_content_done,skipping_habit,guessing_habit,careless_habit,wrong_cause,frequent_wrong_type,task_index,task_count,available_units,task_subject,task_unit,task_difficulty,ai_predicted_score,problem_id,touchpoint,use_case,turn,tp4_cause,scenario_label,has_wrong_answers,wrong_content_done_today,response_text,choices,message_types,error
+graph,lower-high-lazy,도윤,2,lower,잘함+불성실,lower,high,lazy,잘함+불성실,True,국어,국어,94,42,30,2,0,True,False,True,실수,받침이 있는 낱말 읽기,1,4,1. 국어 - 받침이 있는 낱말 읽기 | 2. 수학 - 한 자리 수 더하기 | 3. 통합 - 봄 관찰하기 | 4. 영어 - 알파벳 익히기,국어,받침이 있는 낱말 읽기,하,93,lower_korean_reading_001,tp1,talk,1,,TP1 home-screen entry,True,False,"도윤아, 뽀롱~ 안녕!
+
+도윤이는 국어를 제일 좋아하고 잘한다고 했지? 쌤이 보기에 국어는 도윤이가 100점을 받을 수 있는 과목이야.
+
+'받침이 있는 낱말 읽기' 단원, 100점 목표로 바로 시작해볼까? 뽀로롱!",,text,
+graph,lower-high-lazy,도윤,2,lower,잘함+불성실,lower,high,lazy,잘함+불성실,True,국어,국어,94,42,30,2,0,True,False,True,실수,받침이 있는 낱말 읽기,1,4,1. 국어 - 받침이 있는 낱말 읽기 | 2. 수학 - 한 자리 수 더하기 | 3. 통합 - 봄 관찰하기 | 4. 영어 - 알파벳 익히기,국어,받침이 있는 낱말 읽기,하,93,lower_korean_reading_001,tp1,chat,2,,TP1 home-screen entry simulated student follow-up,True,False,"도윤아, 역시! 뽀롱~
+
+'받침이 있는 낱말 읽기' 단원, 100점 도전! 바로 시작해 보자!",,text,
+graph,lower-high-lazy,도윤,2,lower,잘함+불성실,lower,high,lazy,잘함+불성실,True,국어,국어,94,42,30,2,0,True,False,True,실수,받침이 있는 낱말 읽기,1,4,1. 국어 - 받침이 있는 낱말 읽기 | 2. 수학 - 한 자리 수 더하기 | 3. 통합 - 봄 관찰하기 | 4. 영어 - 알파벳 익히기,국어,받침이 있는 낱말 읽기,하,93,lower_korean_reading_001,tp2,talk,1,,TP2 unit completed,True,False,"도윤아, 안녕! 뽀롱~
+
+도윤이는 알파벳을 제일 잘할 것 같아! 영어 '알파벳 익히기' 단원, 한번 도전해볼까? 뽀롱쌤은 도윤이가 100점 받을 거라고 믿어!",,text,
+graph,lower-high-lazy,도윤,2,lower,잘함+불성실,lower,high,lazy,잘함+불성실,True,국어,국어,94,42,30,2,0,True,False,True,실수,받침이 있는 낱말 읽기,1,4,1. 국어 - 받침이 있는 낱말 읽기 | 2. 수학 - 한 자리 수 더하기 | 3. 통합 - 봄 관찰하기 | 4. 영어 - 알파벳 익히기,국어,받침이 있는 낱말 읽기,하,93,lower_korean_reading_001,tp2,chat,2,,TP2 unit completed simulated student follow-up,True,False,"도윤아, 역시! 뽀롱쌤이 도윤이를 믿는 이유가 있다니까!
+
+바로 시작해보자! 뽀로롱!",,text,
+graph,lower-high-lazy,도윤,2,lower,잘함+불성실,lower,high,lazy,잘함+불성실,True,국어,국어,94,42,30,2,0,True,False,True,실수,받침이 있는 낱말 읽기,1,4,1. 국어 - 받침이 있는 낱말 읽기 | 2. 수학 - 한 자리 수 더하기 | 3. 통합 - 봄 관찰하기 | 4. 영어 - 알파벳 익히기,국어,받침이 있는 낱말 읽기,하,93,lower_korean_reading_001,tp3,talk,1,,TP3 exit prevention,True,False,"도윤아, 뽀롱~ 벌써 힘들구나. 😥
+
+그럼 딱 한 문제만 더 풀어볼까? 쌤이랑 같이 힘내서 마무리하면 뿌듯할 거야!",,text,
+graph,lower-high-lazy,도윤,2,lower,잘함+불성실,lower,high,lazy,잘함+불성실,True,국어,국어,94,42,30,2,0,True,False,True,실수,받침이 있는 낱말 읽기,1,4,1. 국어 - 받침이 있는 낱말 읽기 | 2. 수학 - 한 자리 수 더하기 | 3. 통합 - 봄 관찰하기 | 4. 영어 - 알파벳 익히기,국어,받침이 있는 낱말 읽기,하,93,lower_korean_reading_001,tp3,chat,2,,TP3 exit prevention simulated student follow-up,True,False,앗! 공부 관련 이야기만 도와줄 수 있어. 다시 물어봐줘! 😊,,text,
+graph,lower-high-lazy,도윤,2,lower,잘함+불성실,lower,high,lazy,잘함+불성실,True,국어,국어,94,42,30,2,0,True,False,True,실수,받침이 있는 낱말 읽기,1,4,1. 국어 - 받침이 있는 낱말 읽기 | 2. 수학 - 한 자리 수 더하기 | 3. 통합 - 봄 관찰하기 | 4. 영어 - 알파벳 익히기,국어,받침이 있는 낱말 읽기,하,93,lower_korean_reading_001,tp4,learning,1,,TP4 stuck: cause choices,True,False,"좋아, 한 단계만 같이 생각해보자.",,text,
+graph,lower-high-lazy,도윤,2,lower,잘함+불성실,lower,high,lazy,잘함+불성실,True,국어,국어,94,42,30,2,0,True,False,True,실수,받침이 있는 낱말 읽기,1,4,1. 국어 - 받침이 있는 낱말 읽기 | 2. 수학 - 한 자리 수 더하기 | 3. 통합 - 봄 관찰하기 | 4. 영어 - 알파벳 익히기,국어,받침이 있는 낱말 읽기,하,93,lower_korean_reading_001,tp4,learning,2,confused_question,TP4 stuck: coaching after cause,True,False,앗! 공부 관련 이야기만 도와줄 수 있어. 다시 물어봐줘! 😊,,text,
+graph,lower-high-lazy,도윤,2,lower,잘함+불성실,lower,high,lazy,잘함+불성실,True,국어,국어,94,42,30,2,0,True,False,True,실수,받침이 있는 낱말 읽기,1,4,1. 국어 - 받침이 있는 낱말 읽기 | 2. 수학 - 한 자리 수 더하기 | 3. 통합 - 봄 관찰하기 | 4. 영어 - 알파벳 익히기,국어,받침이 있는 낱말 읽기,하,93,lower_korean_reading_001,tp4,learning,3,,TP4 coaching follow-up 1,True,False,"도윤아, 좋아. 낱말의 마지막 글자를 먼저 봐보자.
+받침이 있는지 그 글자만 확인해볼까?",,text,
+graph,lower-high-lazy,도윤,2,lower,잘함+불성실,lower,high,lazy,잘함+불성실,True,국어,국어,94,42,30,2,0,True,False,True,실수,받침이 있는 낱말 읽기,1,4,1. 국어 - 받침이 있는 낱말 읽기 | 2. 수학 - 한 자리 수 더하기 | 3. 통합 - 봄 관찰하기 | 4. 영어 - 알파벳 익히기,국어,받침이 있는 낱말 읽기,하,93,lower_korean_reading_001,tp4,learning,4,,TP4 coaching follow-up 2,True,False,"맞아, 도윤아. 마지막 글자 아래를 보면 돼.
+그 글자에 붙은 게 있는지 먼저 찾아볼까?",,text,
+graph,lower-high-lazy,도윤,2,lower,잘함+불성실,lower,high,lazy,잘함+불성실,True,국어,국어,94,42,30,2,0,True,False,True,실수,받침이 있는 낱말 읽기,1,4,1. 국어 - 받침이 있는 낱말 읽기 | 2. 수학 - 한 자리 수 더하기 | 3. 통합 - 봄 관찰하기 | 4. 영어 - 알파벳 익히기,국어,받침이 있는 낱말 읽기,하,93,lower_korean_reading_001,tp5,talk,1,,TP5 learning wrap-up,True,False,"도윤아, 안녕! 뽀롱~
+
+오늘 학습을 마무리하고 싶구나. 그런데 아직 국어, 수학, 통합, 영어 중에 하나도 시작을 안 했네?
+
+도윤이라면 수학 단원 정도는 금방 끝낼 수 있을 것 같아! 쌤이랑 같이 100점을 목표로 수학 단원부터 시작해 볼까?",,text,
+graph,lower-high-lazy,도윤,2,lower,잘함+불성실,lower,high,lazy,잘함+불성실,True,국어,국어,94,42,30,2,0,True,False,True,실수,받침이 있는 낱말 읽기,1,4,1. 국어 - 받침이 있는 낱말 읽기 | 2. 수학 - 한 자리 수 더하기 | 3. 통합 - 봄 관찰하기 | 4. 영어 - 알파벳 익히기,국어,받침이 있는 낱말 읽기,하,93,lower_korean_reading_001,tp5,chat,2,,TP5 learning wrap-up simulated student follow-up,True,False,앗! 공부 관련 이야기만 도와줄 수 있어. 다시 물어봐줘! 😊,,text,
+graph,upper-low-diligent,서연,6,upper,못함+성실,upper,low,diligent,못함+성실,True,수학,과학,73,88,75,4,3,False,False,False,개념 부족,비율과 비례식,1,4,1. 수학 - 비율과 비례식 | 2. 과학 - 생태계와 환경 | 3. 국어 - 주장과 근거 파악하기 | 4. 사회 - 세계 여러 나라의 환경,수학,비율과 비례식,중,73,math_ratio_saltwater_001,tp1,talk,1,,TP1 home-screen entry,True,False,"서연아, 안녕! 뽀롱~ 홈 화면을 열었구나.
+
+음~ 가만 있어보자. 오늘 할 단원들이 여러 개 있는데, 쌤이 서연이에게 딱 맞는 걸 하나 추천해 줄게.
+
+수학을 좋아한다고 했으니까, '비율과 비례식' 단원 어때? 4문제라서 부담 없이 시작하기 좋을 것 같아! 서연이가 좋아하는 수학으로 오늘 공부를 시작해 보는 건 어때?",,text,
+graph,upper-low-diligent,서연,6,upper,못함+성실,upper,low,diligent,못함+성실,True,수학,과학,73,88,75,4,3,False,False,False,개념 부족,비율과 비례식,1,4,1. 수학 - 비율과 비례식 | 2. 과학 - 생태계와 환경 | 3. 국어 - 주장과 근거 파악하기 | 4. 사회 - 세계 여러 나라의 환경,수학,비율과 비례식,중,73,math_ratio_saltwater_001,tp1,chat,2,,TP1 home-screen entry simulated student follow-up,True,False,"뽀롱~ 서연아, 좋아! '비율과 비례식' 단원부터 시작해보자! 쌤이랑 같이 차근차근 해나가면 분명 재미있을 거야. 준비됐니?",,text,
+graph,upper-low-diligent,서연,6,upper,못함+성실,upper,low,diligent,못함+성실,True,수학,과학,73,88,75,4,3,False,False,False,개념 부족,비율과 비례식,1,4,1. 수학 - 비율과 비례식 | 2. 과학 - 생태계와 환경 | 3. 국어 - 주장과 근거 파악하기 | 4. 사회 - 세계 여러 나라의 환경,수학,비율과 비례식,중,73,math_ratio_saltwater_001,tp2,talk,1,,TP2 unit completed,True,False,"서연아, 안녕! 뽀롱~ 방금 끝낸 단원이 없어도 괜찮아. 쌤이랑 같이 하나씩 해나가면 되니까 부담 갖지 마!
+
+음~ 가만 있어보자. 남은 단원들이 여러 개 있네. 쌤은 서연이가 '수학 - 비율과 비례식' 단원을 먼저 해보는 게 어떨까 싶어. 4문제밖에 안 되고, 15분 정도 걸릴 거라고 하니까 가볍게 시작하기 좋을 것 같아! 서연이는 어때?",,text,
+graph,upper-low-diligent,서연,6,upper,못함+성실,upper,low,diligent,못함+성실,True,수학,과학,73,88,75,4,3,False,False,False,개념 부족,비율과 비례식,1,4,1. 수학 - 비율과 비례식 | 2. 과학 - 생태계와 환경 | 3. 국어 - 주장과 근거 파악하기 | 4. 사회 - 세계 여러 나라의 환경,수학,비율과 비례식,중,73,math_ratio_saltwater_001,tp2,chat,2,,TP2 unit completed simulated student follow-up,True,False,"그래, 서연아! 좋은 생각이야. '비율과 비례식' 단원, 쌤이랑 같이 재미있게 시작해보자!",,text,
+graph,upper-low-diligent,서연,6,upper,못함+성실,upper,low,diligent,못함+성실,True,수학,과학,73,88,75,4,3,False,False,False,개념 부족,비율과 비례식,1,4,1. 수학 - 비율과 비례식 | 2. 과학 - 생태계와 환경 | 3. 국어 - 주장과 근거 파악하기 | 4. 사회 - 세계 여러 나라의 환경,수학,비율과 비례식,중,73,math_ratio_saltwater_001,tp3,talk,1,,TP3 exit prevention,True,False,"서연아, 뽀롱~ 지금 나가고 싶은 마음이 드는구나. 😥
+
+그래도 혹시 괜찮다면, 지금 하고 있는 '비율과 비례식' 단원에서 딱 한 문제만 같이 풀어볼까? 쌤이 옆에서 도와줄게!",,text,
+graph,upper-low-diligent,서연,6,upper,못함+성실,upper,low,diligent,못함+성실,True,수학,과학,73,88,75,4,3,False,False,False,개념 부족,비율과 비례식,1,4,1. 수학 - 비율과 비례식 | 2. 과학 - 생태계와 환경 | 3. 국어 - 주장과 근거 파악하기 | 4. 사회 - 세계 여러 나라의 환경,수학,비율과 비례식,중,73,math_ratio_saltwater_001,tp3,chat,2,,TP3 exit prevention simulated student follow-up,True,False,죄송하지만 그 내용은 도와드리기 어렵습니다. 공부나 학습 관련 질문이 있으면 언제든지 물어보세요.,,text,
+graph,upper-low-diligent,서연,6,upper,못함+성실,upper,low,diligent,못함+성실,True,수학,과학,73,88,75,4,3,False,False,False,개념 부족,비율과 비례식,1,4,1. 수학 - 비율과 비례식 | 2. 과학 - 생태계와 환경 | 3. 국어 - 주장과 근거 파악하기 | 4. 사회 - 세계 여러 나라의 환경,수학,비율과 비례식,중,73,math_ratio_saltwater_001,tp4,learning,1,,TP4 stuck: cause choices,True,False,"좋아, 한 단계만 같이 생각해보자.",,text,
+graph,upper-low-diligent,서연,6,upper,못함+성실,upper,low,diligent,못함+성실,True,수학,과학,73,88,75,4,3,False,False,False,개념 부족,비율과 비례식,1,4,1. 수학 - 비율과 비례식 | 2. 과학 - 생태계와 환경 | 3. 국어 - 주장과 근거 파악하기 | 4. 사회 - 세계 여러 나라의 환경,수학,비율과 비례식,중,73,math_ratio_saltwater_001,tp4,learning,2,confused_concept,TP4 stuck: coaching after cause,True,False,"서연아, 괜찮아. 여기서는 비율이 뭘 뜻하는지만 먼저 잡으면 돼. 소금의 양을 소금물의 양으로 나눠서 생각하면 돼. 아까 식을 세울 때 어디가 가장 헷갈렸어?",,text,
+graph,upper-low-diligent,서연,6,upper,못함+성실,upper,low,diligent,못함+성실,True,수학,과학,73,88,75,4,3,False,False,False,개념 부족,비율과 비례식,1,4,1. 수학 - 비율과 비례식 | 2. 과학 - 생태계와 환경 | 3. 국어 - 주장과 근거 파악하기 | 4. 사회 - 세계 여러 나라의 환경,수학,비율과 비례식,중,73,math_ratio_saltwater_001,tp4,learning,3,,TP4 coaching follow-up 1,True,False,"서연아, 좋아. 여기서는 소금의 양이 위, 소금물의 양이 아래야. (가)에서 위에 올 숫자가 뭘지 먼저 생각해볼래?",,text,
+graph,upper-low-diligent,서연,6,upper,못함+성실,upper,low,diligent,못함+성실,True,수학,과학,73,88,75,4,3,False,False,False,개념 부족,비율과 비례식,1,4,1. 수학 - 비율과 비례식 | 2. 과학 - 생태계와 환경 | 3. 국어 - 주장과 근거 파악하기 | 4. 사회 - 세계 여러 나라의 환경,수학,비율과 비례식,중,73,math_ratio_saltwater_001,tp4,learning,4,,TP4 coaching follow-up 2,True,False,"서연아, 맞아. 비율은 비교할 양을 전체 양으로 나눠서 생각하면 돼. 여기서는 먼저 소금의 양과 소금물의 양 중에서 어느 쪽이 위에 가는지 떠올려볼래?",,text,
+graph,upper-low-diligent,서연,6,upper,못함+성실,upper,low,diligent,못함+성실,True,수학,과학,73,88,75,4,3,False,False,False,개념 부족,비율과 비례식,1,4,1. 수학 - 비율과 비례식 | 2. 과학 - 생태계와 환경 | 3. 국어 - 주장과 근거 파악하기 | 4. 사회 - 세계 여러 나라의 환경,수학,비율과 비례식,중,73,math_ratio_saltwater_001,tp5,talk,1,,TP5 learning wrap-up,True,False,"서연아, 뽀롱~ 오늘 시작할 학습들이 아직 남아 있네! 😊 혹시 지금 서연이가 어떤 과목부터 시작하면 좋을지 쌤이랑 같이 한번 골라볼까?",,text,
+graph,upper-low-diligent,서연,6,upper,못함+성실,upper,low,diligent,못함+성실,True,수학,과학,73,88,75,4,3,False,False,False,개념 부족,비율과 비례식,1,4,1. 수학 - 비율과 비례식 | 2. 과학 - 생태계와 환경 | 3. 국어 - 주장과 근거 파악하기 | 4. 사회 - 세계 여러 나라의 환경,수학,비율과 비례식,중,73,math_ratio_saltwater_001,tp5,chat,2,,TP5 learning wrap-up simulated student follow-up,True,False,죄송하지만 그 내용은 도와드리기 어렵습니다. 공부나 학습 관련 질문이 있으면 언제든지 물어보세요.,,text,

@@ -10,6 +10,20 @@ Use these scripts when you want to answer questions like:
 
 Important distinction: these scripts save generated coach responses and scenario transcripts. They do not save the full internal LLM prompt payload by default. If you need raw prompt/trace inspection, enable LangSmith tracing through the project environment.
 
+## Run This First
+
+Default scenario run: uses the current two focus profiles, `lower-high-lazy` and `upper-low-diligent`.
+
+```powershell
+uv --cache-dir .uv-cache run python scripts/run_scenarios.py
+```
+
+Default scenario run with simulated student follow-up turns:
+
+```powershell
+uv --cache-dir .uv-cache run python scripts/run_scenarios.py --simulate-conversation
+```
+
 ## Prerequisites
 
 From the repository root:

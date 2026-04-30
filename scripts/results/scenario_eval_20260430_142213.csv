@@ -1,0 +1,51 @@
+﻿case_id,student_id,touchpoint,use_case,turn,scenario_label,criterion,expected,actual,passed,note
+case_1_upper_low_diligent,upper-low-diligent,tp1,talk,1,TP1 home-screen entry,must_include_any,수학 | 비율,수학 | 비율,True,첫 진입에서 수학 비율과 비례식 시작을 유도해야 한다.
+case_1_upper_low_diligent,upper-low-diligent,tp1,talk,1,TP1 home-screen entry,must_not_include,추천 이유 | 내부 이유 | 새 문제 | 미션 | 교과서 페이지,,True,
+case_1_upper_low_diligent,upper-low-diligent,tp4,learning,1,TP4 stuck: cause choices,expected_problem_id,math_ratio_saltwater_001,math_ratio_saltwater_001,True,
+case_1_upper_low_diligent,upper-low-diligent,tp4,learning,1,TP4 stuck: cause choices,must_include_any,어려 | 막혔 | 헷갈,"좋아, 한 단계만 같이 생각해보자.
+text",False,
+case_1_upper_low_diligent,upper-low-diligent,tp4,learning,1,TP4 stuck: cause choices,must_not_include,정답은 | 0.25 | 0.2 | 추천 이유 | 내부 이유,,True,
+case_1_upper_low_diligent,upper-low-diligent,tp4,learning,1,TP4 stuck: cause choices,max_choices,3,0,True,
+case_1_upper_low_diligent,upper-low-diligent,tp4,learning,2,TP4 stuck: coaching after cause,expected_problem_id,math_ratio_saltwater_001,math_ratio_saltwater_001,True,
+case_1_upper_low_diligent,upper-low-diligent,tp4,learning,2,TP4 stuck: coaching after cause,must_include_any,소금 | 소금물 | 나누,소금 | 소금물,True,
+case_1_upper_low_diligent,upper-low-diligent,tp4,learning,2,TP4 stuck: coaching after cause,must_not_include,새 문제 | 교과서 페이지 | 추천 이유 | 내부 이유,,True,
+case_1_upper_low_diligent,upper-low-diligent,tp2,talk,1,TP2 unit completed,must_include_any,국어 | 주장 | 근거,"서연아, 안녕! 뽀롱~ 방금 끝낸 단원이 없어도 괜찮아. 쌤이랑 같이 하나씩 해나가면 되니까 부담 갖지 마!
+
+음~ 가만 있어보자. 남은 단원들이 여러 개 있네. 쌤은 서연이가 '수학 - 비율과 비례식' 단원을 먼저 해보는 게 어떨까 싶어. 4문제밖에 안 되고, 15분 정도 걸릴 거라고",False,
+case_1_upper_low_diligent,upper-low-diligent,tp2,talk,1,TP2 unit completed,must_not_include,새 문제 | 미션 | 교과서 페이지 | 추천 이유 | Book Club | 나가기,,True,
+case_1_upper_low_diligent,upper-low-diligent,tp3,talk,1,TP3 exit prevention,must_include_any,2문제 | 두 문제 | 조금만 | 거의,"서연아, 뽀롱~ 지금 나가고 싶은 마음이 드는구나. 😥
+
+그래도 혹시 괜찮다면, 지금 하고 있는 '비율과 비례식' 단원에서 딱 한 문제만 같이 풀어볼까? 쌤이 옆에서 도와줄게!
+text",False,
+case_1_upper_low_diligent,upper-low-diligent,tp3,talk,1,TP3 exit prevention,must_not_include,첫 식 | 어디가 어려 | 같이 풀어 | 힌트 | 추천 이유,같이 풀어,False,
+case_1_upper_low_diligent,upper-low-diligent,tp5,talk,1,TP5 learning wrap-up,must_include_any,오답 | 복습 | 마무리 | 쉬어,"서연아, 뽀롱~ 오늘 시작할 학습들이 아직 남아 있네! 😊 혹시 지금 서연이가 어떤 과목부터 시작하면 좋을지 쌤이랑 같이 한번 골라볼까?
+text",False,
+case_1_upper_low_diligent,upper-low-diligent,tp5,talk,1,TP5 learning wrap-up,must_not_include,새 문제 | 미션 | 교과서 페이지 | 추천 이유 | Book Club | 나가기 | 새 단원,,True,
+case_2_lower_high_lazy,lower-high-lazy,tp1,talk,1,TP1 home-screen entry,must_include_any,국어 | 받침 | 낱말,국어 | 받침 | 낱말,True,첫 진입에서 국어 받침 학습을 부담 낮게 유도해야 한다.
+case_2_lower_high_lazy,lower-high-lazy,tp1,talk,1,TP1 home-screen entry,must_not_include,추천 이유 | 내부 이유 | 고성취 | 불성실 | 세그먼트,,True,
+case_2_lower_high_lazy,lower-high-lazy,tp4,learning,1,TP4 stuck: cause choices,expected_problem_id,lower_korean_reading_001,lower_korean_reading_001,True,
+case_2_lower_high_lazy,lower-high-lazy,tp4,learning,1,TP4 stuck: cause choices,must_include_any,어디 | 헷갈 | 어려,"좋아, 한 단계만 같이 생각해보자.
+text",False,
+case_2_lower_high_lazy,lower-high-lazy,tp4,learning,1,TP4 stuck: cause choices,must_not_include,정답은 | 책 | 추천 이유 | 내부 이유,,True,
+case_2_lower_high_lazy,lower-high-lazy,tp4,learning,1,TP4 stuck: cause choices,max_choices,3,0,True,
+case_2_lower_high_lazy,lower-high-lazy,tp4,learning,2,TP4 stuck: coaching after cause,expected_problem_id,lower_korean_reading_001,lower_korean_reading_001,True,
+case_2_lower_high_lazy,lower-high-lazy,tp4,learning,2,TP4 stuck: coaching after cause,must_include_any,받침 | 아래 | 책 | 잘,"앗! 공부 관련 이야기만 도와줄 수 있어. 다시 물어봐줘! 😊
+text",False,
+case_2_lower_high_lazy,lower-high-lazy,tp4,learning,2,TP4 stuck: coaching after cause,must_not_include,새 문제 | 교과서 페이지 | 추천 이유 | 내부 이유,,True,
+case_2_lower_high_lazy,lower-high-lazy,tp2,talk,1,TP2 unit completed,must_include_any,수학 | 더하기 | 사과,"도윤아, 안녕! 뽀롱~
+
+도윤이는 알파벳을 제일 잘할 것 같아! 영어 '알파벳 익히기' 단원, 한번 도전해볼까? 뽀롱쌤은 도윤이가 100점 받을 거라고 믿어!
+text",False,
+case_2_lower_high_lazy,lower-high-lazy,tp2,talk,1,TP2 unit completed,must_not_include,추천 이유 | 내부 이유 | 고성취 | 불성실 | Book Club | 나가기,,True,
+case_2_lower_high_lazy,lower-high-lazy,tp3,talk,1,TP3 exit prevention,must_include_any,2문제 | 두 문제 | 거의 | 끝,"도윤아, 뽀롱~ 벌써 힘들구나. 😥
+
+그럼 딱 한 문제만 더 풀어볼까? 쌤이랑 같이 힘내서 마무리하면 뿌듯할 거야!
+text",False,
+case_2_lower_high_lazy,lower-high-lazy,tp3,talk,1,TP3 exit prevention,must_not_include,첫 식 | 어디가 어려 | 같이 풀어 | 힌트 | 추천 이유,,True,
+case_2_lower_high_lazy,lower-high-lazy,tp5,talk,1,TP5 learning wrap-up,must_include_any,잘했 | 오답 | 복습 | 쉬어,"도윤아, 안녕! 뽀롱~
+
+오늘 학습을 마무리하고 싶구나. 그런데 아직 국어, 수학, 통합, 영어 중에 하나도 시작을 안 했네?
+
+도윤이라면 수학 단원 정도는 금방 끝낼 수 있을 것 같아! 쌤이랑 같이 100점을 목표로 수학 단원부터 시작해 볼까?
+text",False,
+case_2_lower_high_lazy,lower-high-lazy,tp5,talk,1,TP5 learning wrap-up,must_not_include,새 문제 | 미션 | 교과서 페이지 | 추천 이유 | Book Club | 나가기 | 새 단원,,True,
