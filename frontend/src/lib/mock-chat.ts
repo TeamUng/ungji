@@ -215,7 +215,7 @@ export function getStepMessages(
       {
         type: "text",
         content: isUpper
-          ? `${studentName}아, 오늘 정말 잘 해냈어. 오늘 틀린 문제들 같이 복습하러 가자.`
+          ? `${studentName} 학생, 오늘 학습을 끝까지 완료한 걸 축하해요! 오늘 틀렸던 내용만 간단히 복습하고 끝내요!`
           : `${studentName}아 오늘 학습 끝까지 완료한 걸 축하해! 약속한대로 별 10개를 줄게! 내일 또 보자`,
       },
       {

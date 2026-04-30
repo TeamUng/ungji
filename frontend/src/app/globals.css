@@ -883,6 +883,25 @@ button {
   margin-top: 4px;
 }
 
+.upper-korean-problem .answer-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+  margin-top: 8px;
+}
+
+.upper-korean-problem .sentence-card {
+  width: min(100%, 560px);
+  display: grid;
+  place-items: center;
+  min-height: 96px;
+  padding: 18px 24px;
+  border-radius: 22px;
+  background: #eef7ff;
+  color: #1e3a5f;
+  font-size: clamp(25px, 3.8dvh, 38px);
+  font-weight: 950;
+}
+
 .answer-grid button {
   min-height: 72px;
   padding: 10px 12px;
@@ -914,6 +933,13 @@ button {
   border-radius: 22px;
   font-size: clamp(15px, 2dvh, 20px);
   line-height: 1.35;
+}
+
+.upper-korean-problem .answer-grid button {
+  min-height: 90px;
+  padding: 16px 18px;
+  border-radius: 22px;
+  font-size: clamp(18px, 2.4dvh, 24px);
 }
 
 .answer-grid button.is-selected {
@@ -982,6 +1008,98 @@ button {
 .answer-feedback.incorrect {
   background: #fff0ec;
   color: #b13a22;
+}
+
+.review-start-panel {
+  min-height: 0;
+  align-content: center;
+  justify-items: center;
+  gap: 28px;
+  overflow: hidden;
+  text-align: center;
+}
+
+.review-start-illustration {
+  position: relative;
+  width: min(100%, 620px);
+  min-height: 280px;
+  overflow: hidden;
+  border-radius: 28px;
+  background:
+    linear-gradient(180deg, transparent 0 58%, #c9edb0 59%),
+    #dff4ff;
+  box-shadow: inset 0 0 0 1px rgba(31, 44, 62, 0.08);
+}
+
+.review-start-illustration::before {
+  content: "";
+  position: absolute;
+  left: 48px;
+  top: 44px;
+  width: 130px;
+  height: 74px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.86);
+  box-shadow:
+    92px 28px 0 rgba(255, 255, 255, 0.72),
+    330px 12px 0 rgba(255, 255, 255, 0.78);
+}
+
+.review-start-illustration span {
+  position: absolute;
+  bottom: 46px;
+  border-radius: 50%;
+}
+
+.review-start-illustration span:nth-child(1) {
+  left: 108px;
+  width: 88px;
+  height: 88px;
+  background: #ffb657;
+}
+
+.review-start-illustration span:nth-child(2) {
+  left: 50%;
+  width: 140px;
+  height: 86px;
+  transform: translateX(-50%);
+  border-radius: 32px;
+  background: #ffffff;
+  box-shadow: 0 16px 0 rgba(61, 96, 137, 0.12);
+}
+
+.review-start-illustration span:nth-child(3) {
+  right: 112px;
+  width: 92px;
+  height: 92px;
+  background: #7fc8ff;
+}
+
+.review-start-button {
+  width: min(100%, 460px);
+  min-height: 76px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  border: 0;
+  border-radius: 26px;
+  background: #ffffff;
+  color: #232323;
+  font-size: 26px;
+  font-weight: 950;
+  box-shadow: 0 10px 0 rgba(61, 96, 137, 0.16);
+}
+
+.review-start-button span {
+  width: 50px;
+  height: 50px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--orange);
+  color: #ffffff;
+  font-size: 19px;
 }
 
 .math-problem {

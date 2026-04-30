@@ -71,6 +71,7 @@ type DemoFlowStageId =
   | "lower_final"
   | "upper_math_corrected"
   | "upper_math_complete"
+  | "upper_korean_corrected"
   | "upper_today_done"
   | "upper_review";
 
@@ -144,6 +145,14 @@ function getFlowContext(
     return {
       flow_event: "today_completed",
       today_tasks_completed: true,
+    };
+  }
+
+  if (stageId === "upper_korean_corrected") {
+    return {
+      flow_event: "answer_submitted",
+      answer_result: "correct",
+      today_tasks_completed: false,
     };
   }
 
@@ -539,6 +548,9 @@ export function SmartAllCoachApp({
   const upperMathCompletionTimerRef = useRef<ReturnType<
     typeof setTimeout
   > | null>(null);
+  const upperKoreanCompletionTimerRef = useRef<ReturnType<
+    typeof setTimeout
+  > | null>(null);
   const resolvedChatAdapter =
     demoMode === "script" ? mockChatAdapter : chatAdapter ?? defaultChatAdapter;
 
@@ -673,12 +685,24 @@ export function SmartAllCoachApp({
     }
   }, []);
 
+  const clearUpperKoreanCompletionTimer = useCallback(() => {
+    if (upperKoreanCompletionTimerRef.current) {
+      clearTimeout(upperKoreanCompletionTimerRef.current);
+      upperKoreanCompletionTimerRef.current = null;
+    }
+  }, []);
+
   useEffect(() => {
     return () => {
       clearLowerSecondResolutionTimer();
       clearUpperMathCompletionTimer();
+      clearUpperKoreanCompletionTimer();
     };
-  }, [clearLowerSecondResolutionTimer, clearUpperMathCompletionTimer]);
+  }, [
+    clearLowerSecondResolutionTimer,
+    clearUpperKoreanCompletionTimer,
+    clearUpperMathCompletionTimer,
+  ]);
 
   const sendToAdapter = async ({
     targetStepId,
@@ -779,6 +803,7 @@ export function SmartAllCoachApp({
 
   const setCase = useCallback((nextCaseId: DemoCaseId) => {
     clearLowerSecondResolutionTimer();
+    clearUpperKoreanCompletionTimer();
     clearUpperMathCompletionTimer();
     stopCurrentStream();
     setDemoRunSeq((current) => current + 1);
@@ -793,6 +818,7 @@ export function SmartAllCoachApp({
     setLowerSecondCoachReady(false);
   }, [
     clearLowerSecondResolutionTimer,
+    clearUpperKoreanCompletionTimer,
     clearUpperMathCompletionTimer,
     stopCurrentStream,
   ]);
@@ -851,6 +877,7 @@ export function SmartAllCoachApp({
 
   const openTask = (taskIndex: number) => {
     clearLowerSecondResolutionTimer();
+    clearUpperKoreanCompletionTimer();
     clearUpperMathCompletionTimer();
     stopCurrentStream();
     setActiveTaskIndex(taskIndex);
@@ -940,7 +967,7 @@ export function SmartAllCoachApp({
 
     if (action.id === "review_wrong_answers") {
       setFlowStageId("upper_review");
-      setStepId("wrapup");
+      setStepId("learning");
       setChatOpen(false);
       setBubbleResponseMessages(null);
       return;
@@ -1084,8 +1111,18 @@ export function SmartAllCoachApp({
       return;
     }
 
-    setFlowStageId("upper_today_done");
-    setStepId("wrapup");
+    if (flowStageId === "upper_korean_corrected") {
+      return;
+    }
+
+    clearUpperKoreanCompletionTimer();
+    setFlowStageId("upper_korean_corrected");
+    setStepId("learning");
+    upperKoreanCompletionTimerRef.current = setTimeout(() => {
+      upperKoreanCompletionTimerRef.current = null;
+      setFlowStageId("upper_today_done");
+      setStepId("wrapup");
+    }, 3000);
   };
 
   const handleAnswerSubmit = (
@@ -1539,6 +1576,8 @@ function LearningScreen({
   const subject = activeTask?.subject ?? (isUpper ? "수학" : "국어");
   const unit = activeTask?.unit ?? (isUpper ? "비와 비율" : "긴글 이해하기");
   const isUpperMathProblem = isUpper && subject === "수학";
+  const isReviewStart = flowStageId === "upper_review";
+  const lessonTitleText = isReviewStart ? "오답 복습 · 오늘 틀린 문제" : `${subject} · ${unit}`;
   const answerResult: AnswerResult =
     flowStageId === "lower_first_correct"
       ? "correct"
@@ -1547,6 +1586,8 @@ function LearningScreen({
         : flowStageId === "lower_second_corrected"
           ? "corrected"
           : flowStageId === "upper_math_corrected"
+            ? "correct"
+          : flowStageId === "upper_korean_corrected"
             ? "correct"
           : null;
   const primaryActionLabel = "완료";
@@ -1574,13 +1615,18 @@ function LearningScreen({
               </button>
             </InteractionZone>
             <div className="lesson-title">
-              <span>{subject} · {unit}</span>
+              <span>{lessonTitleText}</span>
             </div>
             <span className="lesson-header-spacer" aria-hidden="true" />
           </div>
 
-          {isUpper && subject === "국어" ? (
-            <UpperKoreanProblem onAnswerSubmit={() => onAnswerSubmit("correct")} />
+          {isReviewStart ? (
+            <ReviewStartPanel />
+          ) : isUpper && subject === "국어" ? (
+            <UpperKoreanProblem
+              answerResult={answerResult}
+              onAnswerSubmit={onAnswerSubmit}
+            />
           ) : isUpper ? (
             <UpperMathProblem answerResult={answerResult} />
           ) : (
@@ -1597,17 +1643,19 @@ function LearningScreen({
             </div>
           )}
 
-          <div className="lesson-actions">
-            <InteractionZone
-              id="complete-button"
-              label="완료"
-              type="primary-action"
-            >
-              <button type="button" className="primary-action" onClick={onComplete}>
-                {primaryActionLabel}
-              </button>
-            </InteractionZone>
-          </div>
+          {!isReviewStart && (
+            <div className="lesson-actions">
+              <InteractionZone
+                id="complete-button"
+                label="완료"
+                type="primary-action"
+              >
+                <button type="button" className="primary-action" onClick={onComplete}>
+                  {primaryActionLabel}
+                </button>
+              </InteractionZone>
+            </div>
+          )}
         </section>
         <SmartAllRightRail
           caseId={caseId}
@@ -1767,10 +1815,19 @@ function UpperMathProblem({
 }
 
 function UpperKoreanProblem({
+  answerResult,
   onAnswerSubmit,
 }: {
-  onAnswerSubmit: () => void;
+  answerResult: AnswerResult;
+  onAnswerSubmit: (result: Exclude<AnswerResult, null>) => void;
 }) {
+  const choices = [
+    { label: "도착 장소", result: "correct" as const },
+    { label: "행동 주체", result: "correct" as const },
+    { label: "시간 표현", result: "correct" as const },
+    { label: "원인 이유", result: "correct" as const },
+  ];
+
   return (
     <InteractionZone
       id="problem-board"
@@ -1778,24 +1835,48 @@ function UpperKoreanProblem({
       type="content"
       className="problem-zone"
     >
-      <article className="problem-card korean-problem">
+      <article className="problem-card korean-problem upper-korean-problem">
+        {answerResult === "correct" && (
+          <span className="answer-result-mark circle" aria-hidden="true" />
+        )}
         <span className="problem-count">문제 1</span>
-        <h1>정보와 표현이 알맞은지 판단해 보세요.</h1>
-        <p>
-          글에 나온 정보가 사실인지, 글쓴이의 생각인지 나누어 봅시다.
-          다음 문장은 글쓴이의 생각에 가까운 표현입니다.
-        </p>
+        <h1>위 문장에서 “에”의 쓰임으로 알맞은 것을 고르세요.</h1>
+        <p className="sentence-card">나는 학교에 갔다.</p>
         <div className="answer-grid">
-          {[
-            "사실 정보",
-            "글쓴이의 생각",
-            "문제와 상관없는 표현",
-          ].map((answer) => (
-            <button key={answer} type="button" onClick={onAnswerSubmit}>
-              {answer}
+          {choices.map((choice) => (
+            <button
+              key={choice.label}
+              type="button"
+              onClick={() => onAnswerSubmit(choice.result)}
+            >
+              {choice.label}
             </button>
           ))}
         </div>
+      </article>
+    </InteractionZone>
+  );
+}
+
+function ReviewStartPanel() {
+  return (
+    <InteractionZone
+      id="problem-board"
+      label="오답 복습 시작"
+      type="content"
+      className="problem-zone"
+    >
+      <article className="problem-card review-start-panel">
+        <span className="problem-count">오답 복습</span>
+        <div className="review-start-illustration" aria-hidden="true">
+          <span />
+          <span />
+          <span />
+        </div>
+        <button type="button" className="review-start-button">
+          <span aria-hidden="true">▶</span>
+          복습 시작하기
+        </button>
       </article>
     </InteractionZone>
   );
@@ -1820,7 +1901,7 @@ function CompletionScreen({
   const description = isReview
     ? "오늘 틀렸던 문제만 가볍게 다시 볼 수 있어요."
     : isTodayDone
-      ? "수학과 국어를 끝까지 해낸 뒤, 짧은 복습으로 마무리할 수 있어요."
+      ? "오늘의 학습 4개를 전부 완료했어요~"
       : isLowerAllDone
         ? "오늘의 학습 4개를 전부 완료했어요~"
       : isUpperMathDone
@@ -1850,7 +1931,7 @@ function CompletionScreen({
             {isReview
               ? "오답 복습으로 이동했어요"
               : isTodayDone
-                ? "오늘의 학습을 모두 마쳤어요"
+                ? "모든 학습을 완료했어요!"
                 : isLowerAllDone
                   ? "모든 학습을 완료했어요!"
                 : isUpperMathDone
