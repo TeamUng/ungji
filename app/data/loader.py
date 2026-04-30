@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
-from typing import Any, TypedDict, cast
+from typing import Any, NotRequired, TypedDict, cast
 
 from app.core.logging import get_logger
 from app.schemas.chat import Task
@@ -31,6 +31,16 @@ class StudentRecord(TypedDict):
     today_tasks: list[Task]
 
 
+class ProblemPassage(TypedDict):
+    label: str
+    text: str
+
+
+class ProblemChoice(TypedDict):
+    id: str
+    label: str
+
+
 class ProblemRecord(TypedDict):
     """학습 중 도움 요청(TP4)에서 참조할 문제 목업 데이터."""
 
@@ -42,6 +52,11 @@ class ProblemRecord(TypedDict):
     explanation: str
     hints: list[str]
     steps: list[str]
+    source_image_path: NotRequired[str]
+    passage: NotRequired[list[ProblemPassage]]
+    topic_sentence: NotRequired[str]
+    choices: NotRequired[list[ProblemChoice]]
+    evidence: NotRequired[dict[str, str]]
 
 
 def _read_json_array(path: Path, data_name: str) -> list[dict[str, Any]]:
