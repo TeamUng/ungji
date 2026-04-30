@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useId, useRef, useState } from "react";
+import { useCallback, useEffect, useId, useRef, useState } from "react";
 import { InteractionZone } from "@/components/chatbot/InteractionZone";
 import { InteractionZoneProvider } from "@/components/chatbot/InteractionZoneProvider";
 import type { InteractionZoneId } from "@/components/chatbot/chatbotSuggestions";
@@ -414,6 +414,54 @@ function getPorongState({
   return "idle";
 }
 
+function isTextEntryTarget(target: EventTarget | null) {
+  if (!(target instanceof HTMLElement)) {
+    return false;
+  }
+
+  const tagName = target.tagName.toLowerCase();
+
+  return (
+    target.isContentEditable ||
+    tagName === "input" ||
+    tagName === "textarea" ||
+    tagName === "select"
+  );
+}
+
+function replaceDemoUrl({
+  caseId,
+  demoMode,
+  showDemoControls,
+}: {
+  caseId: DemoCaseId;
+  demoMode: DemoRunMode;
+  showDemoControls: boolean;
+}) {
+  const url = new URL(window.location.href);
+
+  url.searchParams.set("case", caseId);
+
+  if (demoMode === "script") {
+    url.searchParams.set("mode", "script");
+  } else {
+    url.searchParams.delete("mode");
+  }
+
+  if (showDemoControls) {
+    url.searchParams.set("controls", "1");
+  } else {
+    url.searchParams.delete("controls");
+  }
+
+  const query = url.searchParams.toString();
+  window.history.replaceState(
+    null,
+    "",
+    `${url.pathname}${query ? `?${query}` : ""}${url.hash}`,
+  );
+}
+
 export function SmartAllCoachApp({
   showDemoControls = false,
   initialCaseId = "lower-korean",
@@ -541,11 +589,11 @@ export function SmartAllCoachApp({
     message,
   });
 
-  const stopCurrentStream = () => {
+  const stopCurrentStream = useCallback(() => {
     streamRunRef.current += 1;
     setIsStreaming(false);
     setChatError("");
-  };
+  }, []);
 
   const sendToAdapter = async ({
     targetStepId,
@@ -642,7 +690,7 @@ export function SmartAllCoachApp({
     });
   };
 
-  const setCase = (nextCaseId: DemoCaseId) => {
+  const setCase = useCallback((nextCaseId: DemoCaseId) => {
     stopCurrentStream();
     setDemoRunSeq((current) => current + 1);
     setCaseId(nextCaseId);
@@ -652,7 +700,59 @@ export function SmartAllCoachApp({
     setChatOpen(false);
     setChatTurns([]);
     setBubbleResponseMessages(null);
-  };
+  }, [stopCurrentStream]);
+
+  useEffect(() => {
+    const handleDemoShortcut = (event: KeyboardEvent) => {
+      if (
+        event.defaultPrevented ||
+        event.metaKey ||
+        event.ctrlKey ||
+        event.altKey ||
+        isTextEntryTarget(event.target)
+      ) {
+        return;
+      }
+
+      if (event.code === "Digit1" || event.key === "1") {
+        event.preventDefault();
+        replaceDemoUrl({
+          caseId: "lower-korean",
+          demoMode,
+          showDemoControls,
+        });
+        setCase("lower-korean");
+        return;
+      }
+
+      if (event.code === "Digit2" || event.key === "2") {
+        event.preventDefault();
+        replaceDemoUrl({
+          caseId: "upper-math",
+          demoMode,
+          showDemoControls,
+        });
+        setCase("upper-math");
+        return;
+      }
+
+      if (event.code === "KeyR" || event.key.toLowerCase() === "r") {
+        event.preventDefault();
+        replaceDemoUrl({
+          caseId,
+          demoMode,
+          showDemoControls,
+        });
+        setCase(caseId);
+      }
+    };
+
+    window.addEventListener("keydown", handleDemoShortcut);
+
+    return () => {
+      window.removeEventListener("keydown", handleDemoShortcut);
+    };
+  }, [caseId, demoMode, setCase, showDemoControls]);
 
   const openTask = (taskIndex: number) => {
     stopCurrentStream();
