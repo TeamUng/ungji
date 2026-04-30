@@ -501,16 +501,26 @@ export function SmartAllCoachApp({
     flowStageId !== "upper_review";
   const bubbleMessages =
     bubbleResponseMessages ?? (isStreaming ? [] : fallbackBubbleMessages);
+  const shouldShowLearningHintBubble =
+    caseId === "lower-korean" &&
+    stepId === "learning" &&
+    activeTaskIndex === 0 &&
+    !chatOpen;
   const bubbleText = getTextMessageContent(bubbleMessages);
   const visibleBubbleText =
-    bubbleText ?? (isStreaming && shouldRequestBubble ? THINKING_BUBBLE_TEXT : undefined);
-  const bubbleActions = getBubbleActions(bubbleMessages, stepId, caseId);
+    shouldShowLearningHintBubble
+      ? "궁금한 게 있으면 언제든 나를 눌러서 물어봐줘"
+      : bubbleText ?? (isStreaming && shouldRequestBubble ? THINKING_BUBBLE_TEXT : undefined);
+  const bubbleActions = shouldShowLearningHintBubble
+    ? []
+    : getBubbleActions(bubbleMessages, stepId, caseId);
   const isUpper = caseId === "upper-math";
   const activeTask = demoCase.tasks[activeTaskIndex] ?? demoCase.tasks[0];
   const shouldShowBubble =
     !chatOpen &&
-    ["home", "complete", "exit", "wrapup"].includes(stepId) &&
-    flowStageId !== "upper_review";
+    ((["home", "complete", "exit", "wrapup"].includes(stepId) &&
+      flowStageId !== "upper_review") ||
+      shouldShowLearningHintBubble);
   const activeTouchpoint =
     flowStageId === "lower_final" || flowStageId === "upper_review"
       ? undefined
@@ -930,13 +940,23 @@ export function SmartAllCoachApp({
 
   const handleAnswerSubmit = (result: Exclude<AnswerResult, null>) => {
     if (caseId === "lower-korean") {
-      if (activeTaskIndex === 0 && result === "correct") {
-        completeCurrentLearning();
+      if (activeTaskIndex === 0) {
+        stopCurrentStream();
+        setFlowStageId("lower_first_correct");
+        setStepId("learning");
+        setChatOpen(false);
+        setChatTurns([]);
+        setBubbleResponseMessages(null);
         return;
       }
 
-      setFlowStageId("lower_second_wrong");
-      setStepId("learning");
+      if (result === "correct") {
+        completeCurrentLearning();
+      } else {
+        setFlowStageId("lower_second_wrong");
+        setStepId("learning");
+      }
+
       return;
     }
 
@@ -1436,6 +1456,10 @@ function LowerKoreanProblem({
   onAnswerSubmit: (result: Exclude<AnswerResult, null>) => void;
 }) {
   const isFirstTask = taskIndex === 0;
+  const [selectedChoice, setSelectedChoice] = useState<{
+    id: string;
+    taskIndex: number;
+  } | null>(null);
   const choices = isFirstTask
     ? [
         { id: "1", label: "물과 우유", result: "incorrect" as const },
@@ -1449,6 +1473,14 @@ function LowerKoreanProblem({
         { id: "3", label: "바다에서 물고기를 잡을 수 있습니다.", result: "incorrect" as const },
         { id: "4", label: "바다는 태풍 때 해일을 일으킬 수 있습니다.", result: "incorrect" as const },
       ];
+  const isAnsweredCorrectly = isFirstTask && answerResult === "correct";
+  const selectedChoiceId =
+    selectedChoice?.taskIndex === taskIndex ? selectedChoice.id : null;
+
+  const handleChoiceClick = (choice: (typeof choices)[number]) => {
+    setSelectedChoice({ id: choice.id, taskIndex });
+    onAnswerSubmit(isFirstTask ? "correct" : choice.result);
+  };
 
   return (
     <InteractionZone
@@ -1457,7 +1489,10 @@ function LowerKoreanProblem({
       type="content"
       className="problem-zone"
     >
-      <article className="problem-card korean-problem">
+      <article className={`problem-card korean-problem ${isFirstTask ? "basic-korean-problem" : "advanced-korean-problem"}`}>
+        {isAnsweredCorrectly && (
+          <span className="answer-result-mark" aria-hidden="true" />
+        )}
         <span className="problem-count">{isFirstTask ? "국어 1" : "국어 2"}</span>
         <h1>
           {isFirstTask
@@ -1479,13 +1514,15 @@ function LowerKoreanProblem({
             <button
               key={choice.id}
               type="button"
-              onClick={() => onAnswerSubmit(choice.result)}
+              className={selectedChoiceId === choice.id ? "is-selected" : ""}
+              aria-pressed={selectedChoiceId === choice.id}
+              onClick={() => handleChoiceClick(choice)}
             >
               {choice.label}
             </button>
           ))}
         </div>
-        {answerResult && (
+        {answerResult && !isFirstTask && (
           <div className={`answer-feedback ${answerResult}`}>
             {answerResult === "correct"
               ? "정답이에요! 글에서 필요한 것을 잘 찾았어요."
