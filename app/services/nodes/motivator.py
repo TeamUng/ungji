@@ -78,6 +78,37 @@ def _student_call_name(name: str) -> str:
     return f"{name}야"
 
 
+def _request_context_lines(state: ChatState) -> str:
+    context = state.get("request_context")
+    if context is None:
+        return ""
+
+    lines: list[str] = []
+    flow_event = _context_value(context, "flow_event")
+    answer_result = _context_value(context, "answer_result")
+    today_tasks_completed = _context_value(context, "today_tasks_completed")
+
+    if flow_event:
+        lines.append(f"프론트 이벤트: {flow_event}")
+    if answer_result:
+        lines.append(f"직전 채점 결과: {answer_result}")
+    if today_tasks_completed is not None:
+        lines.append(f"오늘 학습목록 완료 여부: {today_tasks_completed}")
+
+    if not lines:
+        return ""
+
+    return "시연 화면 상태:\n" + "\n".join(f"- {line}" for line in lines) + "\n\n"
+
+
+def _context_value(context, field: str, default=None):
+    if context is None:
+        return default
+    if isinstance(context, dict):
+        return context.get(field, default)
+    return getattr(context, field, default)
+
+
 def motivator(state: ChatState) -> ChatResponse:
     """Handle TP1, TP2, TP3, TP5, and non-TP4 free chat turns."""
     from app.clients.llm import motivator_llm as llm
@@ -223,6 +254,7 @@ def _situation_tp1(state: ChatState) -> str:
         f"내 최근 평균 점수는 {profile['recent_avg_score']}점이고, "
         f"좋아하는 과목은 {profile['preferred_subject']}, 잘하는 과목은 {profile['strong_subject']}야.\n"
         f"{habit_line}"
+        f"{_request_context_lines(state)}"
         "오늘 홈 화면에는 4개 단원이 보여:\n"
         f"{_task_lines(today_tasks)}\n\n"
         f"{_decision_lines(decision)}\n\n"
@@ -243,6 +275,7 @@ def _situation_tp2(state: ChatState) -> str:
             f"안녕, 나는 {profile['name']}이고 {profile['grade']}학년이야. 나를 부를 때는 '{call_name}'라고 불러줘. "
             "방금 아래 단원을 끝냈어:\n"
             f"{_task_lines(completed_tasks)}\n\n"
+            f"{_request_context_lines(state)}"
             f"아직 남은 단원은 {len(remaining)}개야:\n"
             f"{_task_lines(remaining)}\n\n"
             f"{_decision_lines(decision)}\n\n"
@@ -253,6 +286,7 @@ def _situation_tp2(state: ChatState) -> str:
         f"안녕, 나는 {profile['name']}이고 {profile['grade']}학년이야. 나를 부를 때는 '{call_name}'라고 불러줘. "
         f"오늘 할 단원 {len(today_tasks)}개를 모두 끝냈어.\n"
         f"완료한 단원:\n{_task_lines(completed_tasks)}\n\n"
+        f"{_request_context_lines(state)}"
         f"오답 상황: {_build_wrong_answer_summary(state)}\n\n"
         f"{_decision_lines(decision)}"
     )
@@ -287,6 +321,7 @@ def _situation_tp3(state: ChatState) -> str:
         f"나는 {profile['name']}이고 {profile['grade']}학년이야. 나를 부를 때는 '{call_name}'라고 불러줘. {task_info}\n"
         f"아직 남은 단원 수는 {remaining_count}개야.\n\n"
         f"{problem_count_line}"
+        f"{_request_context_lines(state)}"
         f"{_decision_lines(decision)}\n\n"
         "나가기 버튼을 눌러서 이탈하려는 상황이야. 나가기 방법을 안내하지 말고, 강요하지 말고 공감해줘. "
         "그래도 계속할 수 있게 현재 단원 안에서 할 수 있는 아주 작은 행동 하나만 말해줘."
@@ -314,6 +349,7 @@ def _situation_tp5(state: ChatState) -> str:
         f"나는 {profile['name']}이고 {profile['grade']}학년이야. 나를 부를 때는 '{call_name}'라고 불러줘. 오늘 학습을 마치려 해.\n"
         f"완료한 단원 ({len(completed_tasks)}/{len(today_tasks)}개):\n"
         f"{_task_lines(completed_tasks)}\n\n"
+        f"{_request_context_lines(state)}"
         f"남은 단원:\n{_task_lines(remaining)}\n"
         f"오답 상황: {wrong_summary}\n"
         f"오늘 평균 점수: {state['today_score']}점\n\n"

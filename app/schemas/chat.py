@@ -88,6 +88,21 @@ class ChatRequestContext(BaseModel):
     current_task_ref: TaskRef | None = None
     current_task_remaining_count: int | None = None
     current_problem_id: str | None = None
+    flow_event: (
+        Literal[
+            "home_entered",
+            "answer_submitted",
+            "exit_attempt",
+            "porong_help_opened",
+            "task_completed",
+            "today_completed",
+            "review_clicked",
+            "finish_clicked",
+        ]
+        | None
+    ) = None
+    answer_result: Literal["correct", "incorrect"] | None = None
+    today_tasks_completed: bool | None = None
 
 
 class ChatRequest(BaseModel):

@@ -187,6 +187,7 @@ def _coach_tp4(
         f"안녕, 나는 {profile['name']}이고 {profile['grade']}학년이야.\n"
         f"나를 부를 때는 반드시 '{call_name}'라고 불러줘.\n"
         "지금 이 문제를 보다가 막혀서 도움을 받고 싶어.\n\n"
+        f"{_request_context_lines(state)}"
         f"{_problem_context(problem, state)}\n\n"
         f"최근 대화:\n{history}\n\n"
         f"{_helper_decision_lines(decision)}"
@@ -209,7 +210,24 @@ def _coach_tp4(
         decision,
     )
 
-    return _parse_helper_response(response, required_tool=decision["required_tool"])
+    parsed_messages = _parse_helper_response(response, required_tool=decision["required_tool"])
+    if decision["required_tool"] == "send_causes":
+        parsed_messages = [
+            make_text(_initial_cause_intro(state)),
+            *parsed_messages,
+        ]
+
+    return parsed_messages
+
+
+def _initial_cause_intro(state: ChatState) -> str:
+    grade_group = state.get("grade_group")
+    grade_group_value = getattr(grade_group, "value", grade_group)
+
+    if grade_group_value == "lower":
+        return "어려웠구나. 어디가 헷갈렸는지 골라볼래?"
+
+    return "괜찮아. 어디에서 막혔는지 먼저 골라볼래?"
 
 
 def _student_call_name(name: str) -> str:
@@ -220,6 +238,34 @@ def _student_call_name(name: str) -> str:
     if 0 <= code <= 11171 and code % 28:
         return f"{name}아"
     return f"{name}야"
+
+
+def _request_context_lines(state: ChatState) -> str:
+    context = state.get("request_context")
+    if context is None:
+        return ""
+
+    lines: list[str] = []
+    flow_event = _context_value(context, "flow_event")
+    answer_result = _context_value(context, "answer_result")
+
+    if flow_event:
+        lines.append(f"프론트 이벤트: {flow_event}")
+    if answer_result:
+        lines.append(f"직전 채점 결과: {answer_result}")
+
+    if not lines:
+        return ""
+
+    return "시연 화면 상태:\n" + "\n".join(f"- {line}" for line in lines) + "\n\n"
+
+
+def _context_value(context, field: str, default=None):
+    if context is None:
+        return default
+    if isinstance(context, dict):
+        return context.get(field, default)
+    return getattr(context, field, default)
 
 
 def _render_helper_output_for_guard(response) -> str:

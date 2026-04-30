@@ -1086,12 +1086,31 @@ button {
 
 .answer-grid button {
   min-height: 72px;
+  padding: 10px 12px;
   border: 0;
   border-radius: 20px;
   background: #fff4dc;
   color: #382d20;
-  font-size: 22px;
+  font-size: clamp(16px, 2.2dvh, 22px);
   font-weight: 950;
+  line-height: 1.25;
+}
+
+.answer-feedback {
+  padding: 14px 18px;
+  border-radius: 18px;
+  font-size: 18px;
+  font-weight: 950;
+}
+
+.answer-feedback.correct {
+  background: #e6f8ed;
+  color: #176c3a;
+}
+
+.answer-feedback.incorrect {
+  background: #fff0ec;
+  color: #b13a22;
 }
 
 .math-problem {
@@ -1158,6 +1177,12 @@ button {
   display: flex;
   justify-content: flex-end;
   gap: 12px;
+}
+
+@media (min-width: 981px) {
+  .learning-screen.with-panel .lesson-actions {
+    padding-right: 164px;
+  }
 }
 
 .secondary-action,

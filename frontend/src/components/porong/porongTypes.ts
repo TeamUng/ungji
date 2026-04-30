@@ -29,7 +29,7 @@ export type PorongBubbleAction = {
   id: string;
   label: string;
   action?: "navigate" | "open_chat";
-  targetStep?: "home" | "learning" | "help" | "complete" | "exit";
+  targetStep?: "home" | "learning" | "help" | "complete" | "exit" | "wrapup";
   targetTaskIndex?: number;
 };
 

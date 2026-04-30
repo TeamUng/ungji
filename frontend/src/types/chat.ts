@@ -4,6 +4,16 @@ export type Touchpoint = "tp1" | "tp2" | "tp3" | "tp4" | "tp5";
 
 export type IncomingMessageType = "init" | "text" | "choice";
 
+export type DemoFlowEvent =
+  | "home_entered"
+  | "answer_submitted"
+  | "exit_attempt"
+  | "porong_help_opened"
+  | "task_completed"
+  | "today_completed"
+  | "review_clicked"
+  | "finish_clicked";
+
 export type IncomingMessage = {
   type: IncomingMessageType;
   content: string;
@@ -20,6 +30,9 @@ export type ChatRequestContext = {
   current_task_ref?: TaskRef;
   current_task_remaining_count?: number;
   current_problem_id?: string;
+  flow_event?: DemoFlowEvent;
+  answer_result?: "correct" | "incorrect";
+  today_tasks_completed?: boolean;
 };
 
 export type ChatRequest = {
@@ -75,12 +88,15 @@ export type ChatResponse = {
 
 export type DemoCaseId = "lower-korean" | "upper-math";
 
+export type DemoRunMode = "hybrid" | "script";
+
 export type DemoStepId =
   | "home"
   | "learning"
   | "help"
   | "complete"
-  | "exit";
+  | "exit"
+  | "wrapup";
 
 export type ChatAdapterContext = {
   caseId: DemoCaseId;
