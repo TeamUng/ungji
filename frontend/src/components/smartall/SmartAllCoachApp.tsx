@@ -442,8 +442,8 @@ function replaceDemoUrl({
 
   url.searchParams.set("case", caseId);
 
-  if (demoMode === "script") {
-    url.searchParams.set("mode", "script");
+  if (demoMode === "hybrid") {
+    url.searchParams.set("mode", "hybrid");
   } else {
     url.searchParams.delete("mode");
   }
@@ -465,7 +465,7 @@ function replaceDemoUrl({
 export function SmartAllCoachApp({
   showDemoControls = false,
   initialCaseId = "lower-korean",
-  demoMode = "hybrid",
+  demoMode = "script",
   chatAdapter,
 }: SmartAllCoachAppProps) {
   const [caseId, setCaseId] = useState<DemoCaseId>(initialCaseId);

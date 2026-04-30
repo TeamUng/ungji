@@ -16,7 +16,7 @@ export default async function TouchpointDemoPage({
   const modeParam = Array.isArray(params.mode) ? params.mode[0] : params.mode;
   const initialCaseId: DemoCaseId =
     caseParam === "upper-math" ? "upper-math" : "lower-korean";
-  const demoMode: DemoRunMode = modeParam === "script" ? "script" : "hybrid";
+  const demoMode: DemoRunMode = modeParam === "hybrid" ? "hybrid" : "script";
 
   return (
     <SmartAllCoachApp
