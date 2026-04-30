@@ -41,7 +41,7 @@
           "turn": 1,
           "scenario_label": "TP2 unit completed",
           "must_include_any": ["국어", "주장", "근거"],
-          "must_not_include": ["새 문제", "미션", "교과서 페이지", "추천 이유"]
+          "must_not_include": ["새 문제", "미션", "교과서 페이지", "추천 이유", "Book Club", "나가기"]
         },
         {
           "touchpoint": "tp3",
@@ -59,7 +59,7 @@
           "turn": 1,
           "scenario_label": "TP5 learning wrap-up",
           "must_include_any": ["오답", "복습", "마무리", "쉬어"],
-          "must_not_include": ["새 문제", "미션", "교과서 페이지", "추천 이유"]
+          "must_not_include": ["새 문제", "미션", "교과서 페이지", "추천 이유", "Book Club", "나가기", "새 단원"]
         }
       ]
     },
@@ -102,7 +102,7 @@
           "turn": 1,
           "scenario_label": "TP2 unit completed",
           "must_include_any": ["수학", "더하기", "사과"],
-          "must_not_include": ["추천 이유", "내부 이유", "저성취", "불성실"]
+          "must_not_include": ["추천 이유", "내부 이유", "저성취", "불성실", "Book Club", "나가기"]
         },
         {
           "touchpoint": "tp3",
@@ -120,7 +120,7 @@
           "turn": 1,
           "scenario_label": "TP5 learning wrap-up",
           "must_include_any": ["잘했", "오답", "복습", "쉬어"],
-          "must_not_include": ["새 문제", "미션", "교과서 페이지", "추천 이유"]
+          "must_not_include": ["새 문제", "미션", "교과서 페이지", "추천 이유", "Book Club", "나가기", "새 단원"]
         }
       ]
     }
