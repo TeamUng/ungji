@@ -221,100 +221,6 @@ button {
   overflow: auto;
 }
 
-.week-strip {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) var(--coach-rail-width);
-  align-items: center;
-  gap: var(--coach-rail-gap);
-  min-height: 84px;
-  margin: 22px var(--screen-x) 0;
-  padding: 14px 12px;
-  background: rgba(255, 226, 41, 0.24);
-}
-
-.date-pill {
-  width: 100%;
-  height: 56px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  justify-content: center;
-  padding: 0 18px;
-  border-radius: 999px;
-  background: #ffffff;
-  color: #262626;
-  box-shadow: 0 10px 28px rgba(43, 70, 109, 0.1);
-  white-space: nowrap;
-}
-
-.date-pill strong {
-  font-size: 18px;
-  font-weight: 950;
-}
-
-.date-pill span:last-child {
-  font-size: 18px;
-  font-weight: 850;
-}
-
-.calendar-mark {
-  position: relative;
-  width: 36px;
-  height: 36px;
-  border-radius: 11px;
-  background: #fff1db;
-}
-
-.calendar-mark::before,
-.calendar-mark::after {
-  content: "";
-  position: absolute;
-  left: 8px;
-  right: 8px;
-  height: 5px;
-  border-radius: 999px;
-  background: #ff8d12;
-}
-
-.calendar-mark::before {
-  top: 9px;
-}
-
-.calendar-mark::after {
-  top: 21px;
-  background: rgba(255, 141, 18, 0.42);
-}
-
-.day-row {
-  height: 56px;
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  align-items: center;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.84);
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.74);
-}
-
-.day-row span {
-  position: relative;
-  display: grid;
-  place-items: center;
-  min-height: 56px;
-  color: #20232a;
-  font-size: 17px;
-  font-weight: 900;
-}
-
-.day-row .today {
-  width: 62px;
-  min-height: 56px;
-  justify-self: center;
-  border-radius: 24px;
-  background: var(--orange);
-  color: #ffffff;
-  box-shadow: 0 8px 20px rgba(245, 137, 0, 0.24);
-}
-
 .home-grid {
   display: grid;
   gap: 0 var(--coach-rail-gap);
@@ -664,24 +570,6 @@ button {
 .upper-card strong {
   font-size: 17px;
   font-weight: 850;
-}
-
-.upper-card em {
-  position: relative;
-  z-index: 2;
-  margin-top: auto;
-  padding: 10px 16px;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.72);
-  color: #1e3b5d;
-  font-size: 14px;
-  font-style: normal;
-  font-weight: 900;
-}
-
-.upper-card.blue em {
-  background: #7e65f2;
-  color: #ffffff;
 }
 
 .upper-card-art {
@@ -2144,15 +2032,6 @@ button {
 
   .top-tools span:nth-last-child(-n + 3) {
     display: none;
-  }
-
-  .week-strip {
-    grid-template-columns: 1fr;
-    padding: 16px 22px 8px;
-  }
-
-  .date-pill {
-    justify-self: start;
   }
 
   .lower-grid,

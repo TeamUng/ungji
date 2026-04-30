@@ -1071,8 +1071,6 @@ function HomeScreen({
 
   return (
     <div className="home-screen">
-      <WeekStrip />
-
       <div className={`home-grid today-home-grid ${isUpper ? "upper-home-grid" : ""}`}>
         {!isUpper && (
           <SubjectRail
@@ -1119,28 +1117,24 @@ function UpperSubjectCards({
       title: "수학",
       subtitle: "비와 비율",
       tone: "blue",
-      action: "단계별로 풀기",
       zoneId: "subject-math" as const,
     },
     {
       title: "국어",
       subtitle: "정보와 표현 판단하기",
       tone: "green",
-      action: "이어서 하기",
       zoneId: "subject-korean" as const,
     },
     {
       title: "과학",
       subtitle: "생태계와 환경",
       tone: "mint",
-      action: "예정",
       zoneId: "subject-science" as const,
     },
     {
       title: "사회",
       subtitle: "세계 여러 나라",
       tone: "white",
-      action: "예정",
       zoneId: "subject-social" as const,
     },
   ];
@@ -1164,35 +1158,9 @@ function UpperSubjectCards({
             <span className="card-star">★</span>
             <strong>{card.subtitle}</strong>
             <span className="upper-card-art" aria-hidden="true" />
-            <em>{card.action}</em>
           </button>
         </InteractionZone>
       ))}
-    </div>
-  );
-}
-
-function WeekStrip() {
-  const days = ["월", "화", "수", "목", "금", "토", "일"];
-
-  return (
-    <div className="week-strip">
-      <div className="day-row" aria-label="이번 주 학습 현황">
-        {days.map((day) => (
-          <span
-            key={day}
-            className={day === "금" ? "today" : ""}
-          >
-            {day}
-          </span>
-        ))}
-      </div>
-
-      <div className="date-pill">
-        <span className="calendar-mark" aria-hidden="true" />
-        <strong>5월 1일</strong>
-        <span>금요일</span>
-      </div>
     </div>
   );
 }
@@ -1625,7 +1593,6 @@ function CompletionScreen({
 
   return (
     <div className="completion-screen">
-      <WeekStrip />
       <div className="completion-layout">
         <InteractionZone
           id="completion-card"
