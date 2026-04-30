@@ -1110,15 +1110,9 @@ function WeekStrip({ isUpper }: { isUpper: boolean }) {
             key={day}
             className={day === "수" ? "today" : day === "월" || day === "화" ? "done" : ""}
           >
-            {day === "수" && <em>오늘</em>}
             {day}
           </span>
         ))}
-      </div>
-
-      <div className="week-actions" aria-label="기간 선택">
-        <button type="button">오늘</button>
-        <button type="button">이번 주</button>
       </div>
     </div>
   );

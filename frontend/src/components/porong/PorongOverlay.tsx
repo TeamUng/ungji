@@ -37,7 +37,6 @@ const DIZZY_VISIBLE_MS = 2000;
 
 export function PorongOverlay({
   stageRef,
-  touchpoint,
   state = "idle",
   defaultPosition = "bottom-right",
   initialPosition,
@@ -127,9 +126,6 @@ export function PorongOverlay({
   const resolvedBubbleEyebrow = hasActiveZoneBubble
     ? activeZone?.label
     : undefined;
-  const resolvedTouchpoint =
-    isDizzy || hasActiveZoneBubble ? undefined : touchpoint;
-
   useEffect(() => {
     return () => {
       if (dizzyTimerRef.current !== null) {
@@ -177,7 +173,6 @@ export function PorongOverlay({
             transition={{ duration: shouldReduceMotion ? 0 : 0.18 }}
           >
             <PorongSpeechBubble
-              touchpoint={resolvedTouchpoint}
               eyebrow={resolvedBubbleEyebrow}
               text={resolvedBubbleText}
               actions={resolvedBubbleActions}

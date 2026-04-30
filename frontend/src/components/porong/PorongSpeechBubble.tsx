@@ -1,11 +1,9 @@
 import type {
   PorongBubbleAction,
-  PorongTouchpoint,
 } from "@/components/porong/porongTypes";
 import { FormattedText } from "./FormattedText";
 
 type PorongSpeechBubbleProps = {
-  touchpoint?: PorongTouchpoint;
   eyebrow?: string;
   text?: string;
   actions?: PorongBubbleAction[];
@@ -13,7 +11,6 @@ type PorongSpeechBubbleProps = {
 };
 
 export function PorongSpeechBubble({
-  touchpoint,
   eyebrow,
   text,
   actions = [],
@@ -25,11 +22,7 @@ export function PorongSpeechBubble({
 
   return (
     <aside className="porong-speech-bubble" aria-label="뽀롱쌤 안내 말풍선">
-      {(eyebrow || touchpoint) && (
-        <span className="porong-touchpoint-chip">
-          {eyebrow ?? touchpoint?.toUpperCase()}
-        </span>
-      )}
+      {eyebrow && <span className="porong-touchpoint-chip">{eyebrow}</span>}
       {text && (
         <p>
           <FormattedText text={text} />

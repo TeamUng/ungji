@@ -214,19 +214,19 @@ button {
 
 .week-strip {
   display: grid;
-  grid-template-columns: minmax(190px, 250px) 1fr minmax(170px, 220px);
+  grid-template-columns: 190px minmax(420px, 704px);
   align-items: center;
-  gap: 22px;
-  min-height: 92px;
-  padding: 16px 34px 12px 54px;
+  gap: 14px;
+  min-height: 72px;
+  padding: 16px 34px 0;
 }
 
 .date-pill {
-  height: 58px;
+  height: 46px;
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 0 22px;
+  gap: 10px;
+  padding: 0 18px;
   border-radius: 999px;
   background: #ffffff;
   color: #262626;
@@ -235,7 +235,7 @@ button {
 }
 
 .date-pill strong {
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 950;
 }
 
@@ -245,9 +245,9 @@ button {
 
 .calendar-mark {
   position: relative;
-  width: 34px;
-  height: 34px;
-  border-radius: 10px;
+  width: 30px;
+  height: 30px;
+  border-radius: 9px;
   background: #fff1db;
 }
 
@@ -272,7 +272,7 @@ button {
 }
 
 .day-row {
-  height: 58px;
+  height: 46px;
   display: grid;
   grid-template-columns: repeat(7, 1fr);
   align-items: center;
@@ -285,9 +285,9 @@ button {
   position: relative;
   display: grid;
   place-items: center;
-  min-height: 58px;
+  min-height: 46px;
   color: #20232a;
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 900;
 }
 
@@ -311,42 +311,13 @@ button {
 }
 
 .day-row .today {
-  width: 64px;
-  min-height: 78px;
+  width: 52px;
+  min-height: 46px;
   justify-self: center;
-  margin-top: -20px;
-  border-radius: 24px;
+  border-radius: 20px;
   background: var(--orange);
   color: #ffffff;
-  box-shadow: 0 10px 26px rgba(245, 137, 0, 0.28);
-}
-
-.day-row .today em {
-  display: block;
-  margin-bottom: -4px;
-  font-size: 11px;
-  font-style: normal;
-  font-weight: 900;
-}
-
-.week-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 8px;
-}
-
-.week-actions button {
-  min-width: 82px;
-  border: 0;
-  border-radius: 999px;
-  background: #ff9800;
-  color: #ffffff;
-  font-weight: 950;
-  box-shadow: 0 8px 18px rgba(255, 132, 0, 0.22);
-}
-
-.theme-upper .week-actions button:first-child {
-  background: #1f69df;
+  box-shadow: 0 8px 20px rgba(245, 137, 0, 0.24);
 }
 
 .home-grid {
@@ -1989,10 +1960,6 @@ button {
   .week-strip {
     grid-template-columns: 1fr;
     padding: 16px 22px 8px;
-  }
-
-  .week-actions {
-    justify-content: flex-start;
   }
 
   .lower-grid,
