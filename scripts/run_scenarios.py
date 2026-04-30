@@ -85,6 +85,15 @@ DEFAULT_STUDENT_IDS = [
     "upper-low-diligent",
 ]
 
+DEMO_TP4_PROBLEM_IDS = {
+    "lower-high-lazy": "lower_korean_paragraph_002",
+    "upper-low-diligent": "math_ratio_saltwater_001",
+}
+
+DEMO_TP3_REMAINING_COUNTS = {
+    "lower-high-lazy": 1,
+}
+
 TP_SCENARIOS = [
     (UseCase.TALK, Touchpoint.TP1, 1, "", "TP1 home-screen entry"),
     (UseCase.TALK, Touchpoint.TP2, 1, "", "TP2 unit completed"),
@@ -110,8 +119,8 @@ TP4_SIMULATED_FOLLOWUPS = [
 
 TP4_SIMULATED_FOLLOWUPS_BY_SUBJECT = {
     "국어": [
-        "아직 어느 글자를 봐야 하는지 잘 모르겠어요.",
-        "그럼 글자 아래에 붙은 걸 먼저 보면 되나요?",
+        "아직 어느 문장을 봐야 하는지 잘 모르겠어요.",
+        "그럼 중심 문장과 어울리는지 먼저 보면 되나요?",
     ],
     "수학": [
         "아직 어떤 숫자를 써야 하는지 잘 모르겠어요.",
@@ -433,6 +442,11 @@ def _scenario_state_overrides(
         current_task = task or (today_tasks[0] if today_tasks else None)
 
     pattern = record["learning_pattern"]
+    remaining_count = (
+        DEMO_TP3_REMAINING_COUNTS.get(record["student_id"], 2)
+        if touchpoint == Touchpoint.TP3
+        else None
+    )
     return {
         "student_profile": record["profile"],
         "learning_history": record["learning_history"],
@@ -441,7 +455,7 @@ def _scenario_state_overrides(
         "today_tasks": today_tasks,
         "completed_tasks": completed_tasks,
         "current_task": current_task,
-        "current_task_remaining_count": 2 if touchpoint == Touchpoint.TP3 else None,
+        "current_task_remaining_count": remaining_count,
         "current_problem": None,
         "tp4_phase": "awaiting_problem",
         "tp4_turn_count": 0,
@@ -469,6 +483,11 @@ def _select_scenario_task(record: StudentRecord, touchpoint: Touchpoint) -> Task
         return {}
 
     if touchpoint == Touchpoint.TP4:
+        target_problem_id = DEMO_TP4_PROBLEM_IDS.get(record["student_id"])
+        if target_problem_id:
+            for task in tasks:
+                if target_problem_id in _task_problem_ids(task):
+                    return task
         for task in tasks:
             if _task_problem_ids(task):
                 return task

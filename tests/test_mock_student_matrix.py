@@ -122,8 +122,8 @@ def test_runner_tp4_problem_selection_reads_from_problem_ids() -> None:
     student = load_student("lower-high-lazy")
     task = _select_scenario_task(student, Touchpoint.TP4)
 
-    assert _task_problem_id(task) == student["today_tasks"][0]["problem_ids"][0]
-    assert _task_problem_id(task) == "lower_korean_reading_001"
+    assert student["today_tasks"][0]["problem_ids"][0] == "lower_korean_paragraph_001"
+    assert _task_problem_id(task) == "lower_korean_paragraph_002"
 
 
 def test_focused_upper_case_still_uses_math_context() -> None:
@@ -137,16 +137,16 @@ def test_upper_case_tp2_state_moves_from_math_to_korean() -> None:
     student = load_student("upper-low-diligent")
     state = _scenario_state_overrides(student, Touchpoint.TP2, student["today_tasks"][0])
 
-    assert state["completed_tasks"][0]["unit"] == "비율과 비례식"
+    assert state["completed_tasks"][0]["unit"] == "비와 비율"
     assert state["current_task"]["subject"] == "국어"
-    assert state["current_task"]["unit"] == "주장과 근거 파악하기"
+    assert state["current_task"]["unit"] == "정보와 표현 판단하기"
 
 
-def test_tp3_state_has_two_remaining_current_task_problems() -> None:
+def test_tp3_state_has_one_remaining_current_task_problem_for_lower_demo() -> None:
     student = load_student("lower-high-lazy")
     state = _scenario_state_overrides(student, Touchpoint.TP3, student["today_tasks"][0])
 
-    assert state["current_task_remaining_count"] == 2
+    assert state["current_task_remaining_count"] == 1
 
 
 def test_tp5_state_marks_today_tasks_completed() -> None:
@@ -261,7 +261,7 @@ def test_runner_tp4_followup_matches_korean_reading_context() -> None:
     reply = _simulated_student_reply(Touchpoint.TP4, 3, task, fields)
 
     assert "숫자" not in reply
-    assert "글자" in reply
+    assert "문장" in reply
 
 
 def test_runner_main_writes_csv_and_transcript(tmp_path, monkeypatch) -> None:
