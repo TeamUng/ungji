@@ -46,7 +46,7 @@ const orderedSteps: (keyof typeof demoStepLabels)[] = [
 ];
 
 const subjectsByCase: Record<DemoCaseId, string[]> = {
-  "lower-korean": ["국어", "국어 심화", "수학", "영어"],
+  "lower-korean": ["국어", "심화 국어", "수학", "영어"],
   "upper-math": ["수학", "국어", "과학", "사회"],
 };
 
@@ -956,6 +956,8 @@ export function SmartAllCoachApp({
         {stepId === "home" && (
           <HomeScreen
             caseId={caseId}
+            activeTaskIndex={activeTaskIndex}
+            flowStageId={flowStageId}
             onStartLearning={openLearning}
           />
         )}
@@ -968,7 +970,6 @@ export function SmartAllCoachApp({
             flowStageId={flowStageId}
             isHelpOpen={chatOpen}
             isExitMoment={stepId === "exit"}
-            onOpenHelp={openHelpPanel}
             onComplete={completeCurrentLearning}
             onExit={() => moveToStep("exit")}
             onAnswerSubmit={handleAnswerSubmit}
@@ -978,6 +979,7 @@ export function SmartAllCoachApp({
         {(stepId === "complete" || stepId === "wrapup") && (
           <CompletionScreen
             caseId={caseId}
+            activeTaskIndex={activeTaskIndex}
             flowStageId={flowStageId}
             onRestart={() => moveToStep("home")}
           />
@@ -988,6 +990,7 @@ export function SmartAllCoachApp({
           touchpoint={activeTouchpoint}
           state={porongState}
           chatOpen={chatOpen}
+          snapBackToDefault
           showBubble={shouldShowBubble}
           bubbleText={visibleBubbleText}
           bubbleActions={bubbleActions}
@@ -997,7 +1000,6 @@ export function SmartAllCoachApp({
 
         <PorongCoachPanel
           isOpen={chatOpen}
-          title={`${demoCase.studentName} · ${demoCase.label}`}
           turns={chatTurns}
           isBusy={isStreaming}
           errorMessage={chatError}
@@ -1053,22 +1055,29 @@ function SmartAllTopNav() {
 
 function HomeScreen({
   caseId,
+  activeTaskIndex,
+  flowStageId,
   onStartLearning,
 }: {
   caseId: DemoCaseId;
+  activeTaskIndex: number;
+  flowStageId: DemoFlowStageId;
   onStartLearning: () => void;
 }) {
   const isUpper = caseId === "upper-math";
+  const demoCase = demoCases[caseId];
+  const primaryTask = demoCase.tasks[0];
+  const activeSubject = primaryTask?.subject ?? "국어";
 
   return (
     <div className="home-screen">
       <WeekStrip />
 
-      <div className={`home-grid ${isUpper ? "upper-grid" : "lower-grid"}`}>
+      <div className={`home-grid today-home-grid ${isUpper ? "upper-home-grid" : ""}`}>
         {!isUpper && (
           <SubjectRail
             subjects={subjectsByCase[caseId]}
-            activeSubject="국어"
+            activeSubject={activeSubject}
           />
         )}
 
@@ -1083,12 +1092,82 @@ function HomeScreen({
           {isUpper ? (
             <UpperSubjectCards onStartLearning={onStartLearning} />
           ) : (
-            <LowerHeroCard onStartLearning={onStartLearning} />
+            <TodayHeroCard
+              caseId={caseId}
+              onStartLearning={onStartLearning}
+            />
           )}
         </InteractionZone>
 
-        <SmartAllRightRail />
+        <SmartAllRightRail
+          caseId={caseId}
+          activeTaskIndex={activeTaskIndex}
+          flowStageId={flowStageId}
+        />
       </div>
+    </div>
+  );
+}
+
+function UpperSubjectCards({
+  onStartLearning,
+}: {
+  onStartLearning: () => void;
+}) {
+  const cards = [
+    {
+      title: "수학",
+      subtitle: "비와 비율",
+      tone: "blue",
+      action: "단계별로 풀기",
+      zoneId: "subject-math" as const,
+    },
+    {
+      title: "국어",
+      subtitle: "정보와 표현 판단하기",
+      tone: "green",
+      action: "이어서 하기",
+      zoneId: "subject-korean" as const,
+    },
+    {
+      title: "과학",
+      subtitle: "생태계와 환경",
+      tone: "mint",
+      action: "예정",
+      zoneId: "subject-science" as const,
+    },
+    {
+      title: "사회",
+      subtitle: "세계 여러 나라",
+      tone: "white",
+      action: "예정",
+      zoneId: "subject-social" as const,
+    },
+  ];
+
+  return (
+    <div className="upper-card-grid">
+      {cards.map((card) => (
+        <InteractionZone
+          key={card.title}
+          id={card.zoneId}
+          label={card.title}
+          type="subject"
+          className="upper-card-zone"
+        >
+          <button
+            type="button"
+            className={`upper-card ${card.tone}`}
+            onClick={onStartLearning}
+          >
+            <span className="card-title">{card.title}</span>
+            <span className="card-star">★</span>
+            <strong>{card.subtitle}</strong>
+            <span className="upper-card-art" aria-hidden="true" />
+            <em>{card.action}</em>
+          </button>
+        </InteractionZone>
+      ))}
     </div>
   );
 }
@@ -1171,26 +1250,41 @@ function getSubjectZoneId(subject: string): InteractionZoneId {
   return "subject-math";
 }
 
-function LowerHeroCard({
+function TodayHeroCard({
+  caseId,
   onStartLearning,
 }: {
+  caseId: DemoCaseId;
   onStartLearning: () => void;
 }) {
+  const isUpper = caseId === "upper-math";
+  const hero = isUpper
+    ? {
+        subject: "수학",
+        title: "비와 비율",
+        description: "소금물의 비율을 차근차근 알아볼까요",
+        unit: "6학년 수학 · 비율과 비례식",
+      }
+    : {
+        subject: "국어",
+        title: "문단의 짜임",
+        description: "긴글에서 필요한 정보를 빠르게 찾아볼까요",
+        unit: "2학년 국어 · 긴글 이해하기",
+      };
+
   return (
     <article className="lower-hero-card">
       <div className="hero-copy">
-        <span className="subject-name">국어</span>
-        <h1>문단의 짜임</h1>
-        <p>긴글에서 필요한 정보를 빠르게 찾아볼까요</p>
-        <small>2학년 국어 · 긴글 이해하기</small>
+        <span className="subject-name">{hero.subject}</span>
+        <h1>{hero.title}</h1>
+        <p>{hero.description}</p>
+        <small>{hero.unit}</small>
       </div>
 
       <div className="story-illustration" aria-hidden="true">
         <div className="story-sky" />
-        <div className="story-book">
-          <span>긴글</span>
-          <span>읽기</span>
-        </div>
+        <span className="number-token token-six">6</span>
+        <span className="number-token token-eight">8</span>
         <div className="story-character">
           <span className="face-eye left" />
           <span className="face-eye right" />
@@ -1203,79 +1297,70 @@ function LowerHeroCard({
         className="primary-study-button"
         onClick={onStartLearning}
       >
-        <span aria-hidden="true">▶</span>
+          <span aria-hidden="true">▶</span>
         학습시작
       </button>
     </article>
   );
 }
 
-function UpperSubjectCards({
-  onStartLearning,
+function SmartAllRightRail({
+  caseId,
+  activeTaskIndex,
+  flowStageId,
 }: {
-  onStartLearning: () => void;
+  caseId: DemoCaseId;
+  activeTaskIndex: number;
+  flowStageId: DemoFlowStageId;
 }) {
-  const cards = [
-    {
-      title: "수학",
-      subtitle: "비와 비율",
-      tone: "blue",
-      action: "단계별로 풀기",
-      zoneId: "subject-math" as const,
-    },
-    {
-      title: "국어",
-      subtitle: "정보와 표현 판단하기",
-      tone: "green",
-      action: "이어서 하기",
-      zoneId: "subject-korean" as const,
-    },
-    {
-      title: "과학",
-      subtitle: "오늘 완료",
-      tone: "mint",
-      action: "완료",
-      zoneId: "subject-science" as const,
-    },
-    {
-      title: "사회",
-      subtitle: "오늘 완료",
-      tone: "white",
-      action: "완료",
-      zoneId: "subject-social" as const,
-    },
-  ];
-
   return (
-    <div className="upper-card-grid">
-      {cards.map((card) => (
-        <InteractionZone
-          key={card.title}
-          id={card.zoneId}
-          label={card.title}
-          type="subject"
-          className="upper-card-zone"
-        >
-          <button
-            type="button"
-            className={`upper-card ${card.tone}`}
-            onClick={onStartLearning}
-          >
-            <span className="card-title">{card.title}</span>
-            <span className="card-star">★</span>
-            <strong>{card.subtitle}</strong>
-            <span className="upper-card-art" aria-hidden="true" />
-            <em>{card.action}</em>
-          </button>
-        </InteractionZone>
-      ))}
-    </div>
+    <aside className="right-rail today-right-rail" aria-label="AI 학습코치 영역">
+      <TodayTaskStatusCard
+        caseId={caseId}
+        activeTaskIndex={activeTaskIndex}
+        flowStageId={flowStageId}
+      />
+    </aside>
   );
 }
 
-function SmartAllRightRail() {
+function TodayTaskStatusCard({
+  caseId,
+  activeTaskIndex,
+  flowStageId,
+}: {
+  caseId: DemoCaseId;
+  activeTaskIndex: number;
+  flowStageId: DemoFlowStageId;
+}) {
+  const isUpper = caseId === "upper-math";
+  const accentClass = isUpper ? "accent-blue" : "accent-orange";
+  const subjects = subjectsByCase[caseId];
+  const completedAll =
+    flowStageId === "lower_final" ||
+    flowStageId === "upper_today_done" ||
+    flowStageId === "upper_review";
+  const highlightedIndex = completedAll
+    ? subjects.length - 1
+    : Math.min(activeTaskIndex, subjects.length - 1);
+
   return (
-    <aside className="right-rail coach-only-rail" aria-label="AI 학습코치 영역" />
+    <section className={`today-task-card ${accentClass}`} aria-label="오늘의 학습">
+      <header>
+        <strong>오늘의 학습</strong>
+        <span aria-hidden="true">✎</span>
+      </header>
+      <div className="today-task-list">
+        {subjects.map((subject, index) => (
+          <span
+            key={subject}
+            className={index <= highlightedIndex ? "active" : ""}
+          >
+            {subject}
+          </span>
+        ))}
+      </div>
+    </section>
   );
 }
 
@@ -1286,7 +1371,6 @@ function LearningScreen({
   flowStageId,
   isHelpOpen,
   isExitMoment,
-  onOpenHelp,
   onComplete,
   onExit,
   onAnswerSubmit,
@@ -1297,7 +1381,6 @@ function LearningScreen({
   flowStageId: DemoFlowStageId;
   isHelpOpen: boolean;
   isExitMoment: boolean;
-  onOpenHelp: () => void;
   onComplete: () => void;
   onExit: () => void;
   onAnswerSubmit: (result: Exclude<AnswerResult, null>) => void;
@@ -1305,94 +1388,79 @@ function LearningScreen({
   const isUpper = caseId === "upper-math";
   const subject = activeTask?.subject ?? (isUpper ? "수학" : "국어");
   const unit = activeTask?.unit ?? (isUpper ? "비와 비율" : "긴글 이해하기");
+  const isUpperMathProblem = isUpper && subject === "수학";
   const answerResult: AnswerResult =
     flowStageId === "lower_first_correct"
       ? "correct"
       : flowStageId === "lower_second_wrong"
         ? "incorrect"
         : null;
-  const lessonTitle =
-    subject === "국어"
-      ? isUpper
-        ? "정보와 표현 판단하기"
-        : activeTaskIndex === 0
-          ? "긴글 이해하기"
-          : "중심 문장과 뒷받침 문장 찾기"
-      : isUpper
-        ? "2단원 준비학습"
-        : "한 자리 수 더하기";
-  const primaryActionLabel =
-    caseId === "lower-korean" && flowStageId === "lower_second_wrong"
-      ? "이해했어요"
-      : isUpper && activeTaskIndex === 1
-        ? "오늘 학습 완료"
-        : "채점하고 완료";
+  const primaryActionLabel = "완료";
 
   return (
-    <div className={`learning-screen ${isHelpOpen ? "with-panel" : ""}`}>
-      <section className="learning-board" aria-label="학습 문제 화면">
-        <div className="lesson-header">
-          <InteractionZone
-            id="exit-button"
-            label="나가기"
-            type="primary-action"
-          >
-            <button type="button" onClick={onExit}>
-              나가기
-            </button>
-          </InteractionZone>
-          <div>
-            <span>{subject} · {unit}</span>
-            <strong>{lessonTitle}</strong>
-          </div>
-          <button type="button" onClick={onOpenHelp}>
-            AI 도움
-          </button>
-        </div>
-
-        {isUpper && subject === "국어" ? (
-          <UpperKoreanProblem onAnswerSubmit={() => onAnswerSubmit("correct")} />
-        ) : isUpper ? (
-          <UpperMathProblem />
-        ) : (
-          <LowerKoreanProblem
-            taskIndex={activeTaskIndex}
-            answerResult={answerResult}
-            onAnswerSubmit={onAnswerSubmit}
-          />
-        )}
-
-        {isExitMoment && (
-          <div className="exit-toast">
-            나가기 전, 지금 문제를 조금만 더 이어볼 수 있어요.
-          </div>
-        )}
-
-        <div className="lesson-actions">
-          <InteractionZone
-            id="help-button"
-            label="힌트 보기"
-            type="primary-action"
-          >
-            <button
-              type="button"
-              className="secondary-action"
-              onClick={onOpenHelp}
+    <div
+      className={[
+        "learning-screen",
+        isHelpOpen ? "with-panel" : "",
+        isUpperMathProblem ? "upper-math-problem-layout" : "",
+      ]
+        .filter(Boolean)
+        .join(" ")}
+    >
+      <div className="learning-layout">
+        <section className="learning-board" aria-label="학습 문제 화면">
+          <div className="lesson-header">
+            <InteractionZone
+              id="exit-button"
+              label="나가기"
+              type="primary-action"
             >
-              힌트 보기
-            </button>
-          </InteractionZone>
-          <InteractionZone
-            id="complete-button"
-            label="채점하고 완료"
-            type="primary-action"
-          >
-            <button type="button" className="primary-action" onClick={onComplete}>
-              {primaryActionLabel}
-            </button>
-          </InteractionZone>
-        </div>
-      </section>
+              <button type="button" onClick={onExit}>
+                나가기
+              </button>
+            </InteractionZone>
+            <div className="lesson-title">
+              <span>{subject} · {unit}</span>
+            </div>
+            <span className="lesson-header-spacer" aria-hidden="true" />
+          </div>
+
+          {isUpper && subject === "국어" ? (
+            <UpperKoreanProblem onAnswerSubmit={() => onAnswerSubmit("correct")} />
+          ) : isUpper ? (
+            <UpperMathProblem />
+          ) : (
+            <LowerKoreanProblem
+              taskIndex={activeTaskIndex}
+              answerResult={answerResult}
+              onAnswerSubmit={onAnswerSubmit}
+            />
+          )}
+
+          {isExitMoment && (
+            <div className="exit-toast">
+              나가기 전, 지금 문제를 조금만 더 이어볼 수 있어요.
+            </div>
+          )}
+
+          <div className="lesson-actions">
+            <InteractionZone
+              id="complete-button"
+              label="완료"
+              type="primary-action"
+            >
+              <button type="button" className="primary-action" onClick={onComplete}>
+                {primaryActionLabel}
+              </button>
+            </InteractionZone>
+          </div>
+        </section>
+        <SmartAllRightRail
+          caseId={caseId}
+          activeTaskIndex={activeTaskIndex}
+          flowStageId={flowStageId}
+        />
+      </div>
     </div>
   );
 }
@@ -1542,10 +1610,12 @@ function UpperKoreanProblem({
 
 function CompletionScreen({
   caseId,
+  activeTaskIndex,
   flowStageId,
   onRestart,
 }: {
   caseId: DemoCaseId;
+  activeTaskIndex: number;
   flowStageId: DemoFlowStageId;
   onRestart: () => void;
 }) {
@@ -1556,56 +1626,63 @@ function CompletionScreen({
   return (
     <div className="completion-screen">
       <WeekStrip />
-      <InteractionZone
-        id="completion-card"
-        label="단위 학습 완료"
-        type="content"
-        className="completion-card"
-        role="region"
-        ariaLabel="학습 완료 화면"
-      >
-        <div className="complete-medal" aria-hidden="true">
-          ✓
-        </div>
-        <span>단위 학습 완료</span>
-        <h1>
-          {isReview
-            ? "오답 복습으로 이동했어요"
-            : isTodayDone
-              ? "오늘의 학습을 모두 마쳤어요"
-              : isUpper
-              ? "비와 비율을 끝냈어요"
-              : "국어 활동을 끝냈어요"}
-        </h1>
-        <p>
-          {isReview
-            ? "오늘 틀렸던 문제만 가볍게 다시 볼 수 있어요."
-            : isTodayDone
-              ? "수학과 국어를 끝까지 해낸 뒤, 짧은 복습으로 마무리할 수 있어요."
-            : "AI 코치가 다음 학습을 짧게 이어갈 수 있게 추천해 줄 거예요."}
-        </p>
+      <div className="completion-layout">
+        <InteractionZone
+          id="completion-card"
+          label="단위 학습 완료"
+          type="content"
+          className="completion-card"
+          role="region"
+          ariaLabel="학습 완료 화면"
+        >
+          <div className="complete-medal" aria-hidden="true">
+            ✓
+          </div>
+          <span>단위 학습 완료</span>
+          <h1>
+            {isReview
+              ? "오답 복습으로 이동했어요"
+              : isTodayDone
+                ? "오늘의 학습을 모두 마쳤어요"
+                : isUpper
+                ? "비와 비율을 끝냈어요"
+                : "국어 활동을 끝냈어요"}
+          </h1>
+          <p>
+            {isReview
+              ? "오늘 틀렸던 문제만 가볍게 다시 볼 수 있어요."
+              : isTodayDone
+                ? "수학과 국어를 끝까지 해낸 뒤, 짧은 복습으로 마무리할 수 있어요."
+              : "AI 코치가 다음 학습을 짧게 이어갈 수 있게 추천해 줄 거예요."}
+          </p>
 
-        <div className="completion-stats">
-          <div>
-            <strong>{isUpper ? "86" : "100"}</strong>
-            <span>점수</span>
+          <div className="completion-stats">
+            <div>
+              <strong>{isUpper ? "86" : "100"}</strong>
+              <span>점수</span>
+            </div>
+            <div>
+              <strong>{isUpper ? "1" : "0"}</strong>
+              <span>남은 오답</span>
+            </div>
+            <div>
+              <strong>{isUpper ? "7분" : "3분"}</strong>
+              <span>학습 시간</span>
+            </div>
           </div>
-          <div>
-            <strong>{isUpper ? "1" : "0"}</strong>
-            <span>남은 오답</span>
-          </div>
-          <div>
-            <strong>{isUpper ? "7분" : "3분"}</strong>
-            <span>학습 시간</span>
-          </div>
-        </div>
 
-        <div className="completion-actions">
-          <button type="button" className="secondary-action" onClick={onRestart}>
-            홈으로
-          </button>
-        </div>
-      </InteractionZone>
+          <div className="completion-actions">
+            <button type="button" className="secondary-action" onClick={onRestart}>
+              홈으로
+            </button>
+          </div>
+        </InteractionZone>
+        <SmartAllRightRail
+          caseId={caseId}
+          activeTaskIndex={activeTaskIndex}
+          flowStageId={flowStageId}
+        />
+      </div>
     </div>
   );
 }

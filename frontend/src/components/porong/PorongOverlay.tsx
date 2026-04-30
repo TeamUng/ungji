@@ -23,6 +23,7 @@ type PorongOverlayProps = {
   defaultPosition?: PorongSnapPoint;
   initialPosition?: PorongPoint | null;
   chatOpen?: boolean;
+  snapBackToDefault?: boolean;
   showBubble?: boolean;
   bubbleText?: string;
   bubbleActions?: PorongBubbleAction[];
@@ -41,6 +42,7 @@ export function PorongOverlay({
   defaultPosition = "bottom-right",
   initialPosition,
   chatOpen = false,
+  snapBackToDefault = false,
   showBubble = false,
   bubbleText,
   bubbleActions = [],
@@ -100,6 +102,7 @@ export function PorongOverlay({
     defaultPosition,
     initialPosition,
     chatOpen,
+    snapBackToDefault,
     onTap,
     onDragEnd,
     onDizzy: triggerDizzy,

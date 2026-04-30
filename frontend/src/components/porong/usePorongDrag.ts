@@ -47,6 +47,7 @@ export function usePorongDrag({
   defaultPosition,
   initialPosition,
   chatOpen,
+  snapBackToDefault = false,
   onTap,
   onDragEnd,
   onDizzy,
@@ -59,6 +60,7 @@ export function usePorongDrag({
   defaultPosition: PorongSnapPoint;
   initialPosition?: PorongPoint | null;
   chatOpen: boolean;
+  snapBackToDefault?: boolean;
   onTap?: () => void;
   onDragEnd?: (position: PorongPoint) => void;
   onDizzy?: () => void;
@@ -137,26 +139,33 @@ export function usePorongDrag({
       }
 
       const current = positionRef.current;
-      const nextPosition = current
-        ? clampPorongPosition({
-            point: current,
-            stage: measurements.stage,
-            overlay: measurements.overlay,
-            chatOpen,
-          })
-        : initialPosition
-          ? clampPorongPosition({
-              point: initialPosition,
-              stage: measurements.stage,
-              overlay: measurements.overlay,
-              chatOpen,
-            })
-        : getPorongSnapPosition({
+      const nextPosition = snapBackToDefault
+        ? getPorongSnapPosition({
             snapPoint: defaultPosition,
             stage: measurements.stage,
             overlay: measurements.overlay,
             chatOpen,
-          });
+          })
+        : current
+          ? clampPorongPosition({
+              point: current,
+              stage: measurements.stage,
+              overlay: measurements.overlay,
+              chatOpen,
+            })
+          : initialPosition
+            ? clampPorongPosition({
+                point: initialPosition,
+                stage: measurements.stage,
+                overlay: measurements.overlay,
+                chatOpen,
+              })
+            : getPorongSnapPosition({
+                snapPoint: defaultPosition,
+                stage: measurements.stage,
+                overlay: measurements.overlay,
+                chatOpen,
+              });
 
       moveToPosition(nextPosition, { immediate: !isReady });
       setIsReady(true);
@@ -179,6 +188,7 @@ export function usePorongDrag({
     isReady,
     moveToPosition,
     overlayRef,
+    snapBackToDefault,
     stageRef,
   ]);
 
@@ -322,12 +332,19 @@ export function usePorongDrag({
       x: dragState.startX,
       y: dragState.startY,
     };
-    const finalPosition = clampPorongPosition({
-      point: currentPosition,
-      stage: measurements.stage,
-      overlay: measurements.overlay,
-      chatOpen,
-    });
+    const finalPosition = snapBackToDefault
+      ? getPorongSnapPosition({
+          snapPoint: defaultPosition,
+          stage: measurements.stage,
+          overlay: measurements.overlay,
+          chatOpen,
+        })
+      : clampPorongPosition({
+          point: currentPosition,
+          stage: measurements.stage,
+          overlay: measurements.overlay,
+          chatOpen,
+        });
 
     onInteractionEnd?.(finalPosition);
     moveToPosition(finalPosition);

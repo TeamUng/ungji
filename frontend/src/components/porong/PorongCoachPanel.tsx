@@ -15,7 +15,6 @@ import { FormattedText } from "./FormattedText";
 
 type PorongCoachPanelProps = {
   isOpen: boolean;
-  title: string;
   turns: ChatTurn[];
   isBusy: boolean;
   errorMessage: string;
@@ -26,7 +25,6 @@ type PorongCoachPanelProps = {
 
 export function PorongCoachPanel({
   isOpen,
-  title,
   turns,
   isBusy,
   errorMessage,
@@ -63,11 +61,10 @@ export function PorongCoachPanel({
   };
 
   return (
-    <aside className={`chat-panel ${isOpen ? "is-open" : ""}`} aria-label="AI 코치 채팅창">
+    <aside className={`chat-panel ${isOpen ? "is-open" : ""}`} aria-label="맞춤 학습 코치 채팅창">
       <header>
         <div>
-          <span>AI 학습코치</span>
-          <strong>{title}</strong>
+          <strong>맞춤 학습 코치</strong>
         </div>
         <button type="button" aria-label="채팅창 닫기" onClick={onClose}>
           ×
