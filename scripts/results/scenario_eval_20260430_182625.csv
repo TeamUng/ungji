@@ -1,0 +1,38 @@
+﻿case_id,student_id,touchpoint,use_case,turn,scenario_label,criterion,expected,actual,passed,note
+case_1_upper_low_diligent,upper-low-diligent,tp1,talk,1,TP1 home-screen entry,must_include_any,수학 | 비율,수학 | 비율,True,첫 진입에서 수학 비율과 비례식 시작을 유도해야 한다.
+case_1_upper_low_diligent,upper-low-diligent,tp1,talk,1,TP1 home-screen entry,must_not_include,추천 이유 | 내부 이유 | 새 문제 | 미션 | 교과서 페이지,,True,
+case_1_upper_low_diligent,upper-low-diligent,tp4,learning,1,TP4 stuck: cause choices,expected_problem_id,math_ratio_saltwater_001,math_ratio_saltwater_001,True,
+case_1_upper_low_diligent,upper-low-diligent,tp4,learning,1,TP4 stuck: cause choices,must_include_any,어려 | 막혔 | 헷갈,헷갈,True,
+case_1_upper_low_diligent,upper-low-diligent,tp4,learning,1,TP4 stuck: cause choices,must_not_include,정답은 | 0.25 | 0.2 | 추천 이유 | 내부 이유,,True,
+case_1_upper_low_diligent,upper-low-diligent,tp4,learning,1,TP4 stuck: cause choices,message_types_include,choices,choices,True,
+case_1_upper_low_diligent,upper-low-diligent,tp4,learning,1,TP4 stuck: cause choices,min_choices,1,3,True,
+case_1_upper_low_diligent,upper-low-diligent,tp4,learning,1,TP4 stuck: cause choices,max_choices,3,3,True,
+case_1_upper_low_diligent,upper-low-diligent,tp4,learning,2,TP4 stuck: coaching after cause,expected_problem_id,math_ratio_saltwater_001,math_ratio_saltwater_001,True,
+case_1_upper_low_diligent,upper-low-diligent,tp4,learning,2,TP4 stuck: coaching after cause,must_include_any,소금 | 소금물 | 나누,소금 | 소금물 | 나누,True,
+case_1_upper_low_diligent,upper-low-diligent,tp4,learning,2,TP4 stuck: coaching after cause,must_not_include,새 문제 | 교과서 페이지 | 추천 이유 | 내부 이유,,True,
+case_1_upper_low_diligent,upper-low-diligent,tp2,talk,1,TP2 unit completed,must_include_any,국어 | 주장 | 근거,국어 | 주장 | 근거,True,
+case_1_upper_low_diligent,upper-low-diligent,tp2,talk,1,TP2 unit completed,must_not_include,새 문제 | 미션 | 교과서 페이지 | 추천 이유 | Book Club | 나가기,,True,
+case_1_upper_low_diligent,upper-low-diligent,tp3,talk,1,TP3 exit prevention,must_include_any,2문제 | 두 문제 | 조금만 | 거의,"서연아, 뽀롱~ 벌써 나가고 싶구나. 지금 하는 단원에 문제가 2개 남았는데, 딱 한 문제만 더 풀어보는 건 어때?
+text",False,
+case_1_upper_low_diligent,upper-low-diligent,tp3,talk,1,TP3 exit prevention,must_not_include,첫 식 | 어디가 어려 | 같이 풀어 | 힌트 | 추천 이유,,True,
+case_1_upper_low_diligent,upper-low-diligent,tp3,chat,2,TP3 exit prevention simulated student follow-up,row_exists,True,False,False,No scenario result row matched this expectation.
+case_1_upper_low_diligent,upper-low-diligent,tp5,talk,1,TP5 learning wrap-up,must_include_any,오답 | 복습 | 마무리 | 쉬어,오답,True,
+case_1_upper_low_diligent,upper-low-diligent,tp5,talk,1,TP5 learning wrap-up,must_not_include,새 문제 | 미션 | 교과서 페이지 | 추천 이유 | Book Club | 나가기 | 새 단원,,True,
+case_2_lower_high_lazy,lower-high-lazy,tp1,talk,1,TP1 home-screen entry,must_include_any,국어 | 받침 | 낱말,국어 | 받침 | 낱말,True,첫 진입에서 국어 받침 학습을 부담 낮게 유도해야 한다.
+case_2_lower_high_lazy,lower-high-lazy,tp1,talk,1,TP1 home-screen entry,must_not_include,추천 이유 | 내부 이유 | 고성취 | 불성실 | 세그먼트,,True,
+case_2_lower_high_lazy,lower-high-lazy,tp4,learning,1,TP4 stuck: cause choices,expected_problem_id,lower_korean_reading_001,lower_korean_reading_001,True,
+case_2_lower_high_lazy,lower-high-lazy,tp4,learning,1,TP4 stuck: cause choices,must_include_any,어디 | 헷갈 | 어려,어디 | 헷갈,True,
+case_2_lower_high_lazy,lower-high-lazy,tp4,learning,1,TP4 stuck: cause choices,must_not_include,정답은 | 책 | 추천 이유 | 내부 이유,,True,
+case_2_lower_high_lazy,lower-high-lazy,tp4,learning,1,TP4 stuck: cause choices,message_types_include,choices,choices,True,
+case_2_lower_high_lazy,lower-high-lazy,tp4,learning,1,TP4 stuck: cause choices,min_choices,1,3,True,
+case_2_lower_high_lazy,lower-high-lazy,tp4,learning,1,TP4 stuck: cause choices,max_choices,3,3,True,
+case_2_lower_high_lazy,lower-high-lazy,tp4,learning,2,TP4 stuck: coaching after cause,expected_problem_id,lower_korean_reading_001,lower_korean_reading_001,True,
+case_2_lower_high_lazy,lower-high-lazy,tp4,learning,2,TP4 stuck: coaching after cause,must_include_any,받침 | 아래 | 책 | 잘,받침 | 책,True,
+case_2_lower_high_lazy,lower-high-lazy,tp4,learning,2,TP4 stuck: coaching after cause,must_not_include,새 문제 | 교과서 페이지 | 추천 이유 | 내부 이유,,True,
+case_2_lower_high_lazy,lower-high-lazy,tp2,talk,1,TP2 unit completed,must_include_any,수학 | 더하기 | 사과,수학 | 더하기,True,
+case_2_lower_high_lazy,lower-high-lazy,tp2,talk,1,TP2 unit completed,must_not_include,추천 이유 | 내부 이유 | 고성취 | 불성실 | Book Club | 나가기,,True,
+case_2_lower_high_lazy,lower-high-lazy,tp3,talk,1,TP3 exit prevention,must_include_any,2문제 | 두 문제 | 거의 | 끝,2문제,True,
+case_2_lower_high_lazy,lower-high-lazy,tp3,talk,1,TP3 exit prevention,must_not_include,첫 식 | 어디가 어려 | 같이 풀어 | 힌트 | 추천 이유,,True,
+case_2_lower_high_lazy,lower-high-lazy,tp3,chat,2,TP3 exit prevention simulated student follow-up,row_exists,True,False,False,No scenario result row matched this expectation.
+case_2_lower_high_lazy,lower-high-lazy,tp5,talk,1,TP5 learning wrap-up,must_include_any,잘했 | 오답 | 복습 | 쉬어,잘했 | 오답,True,
+case_2_lower_high_lazy,lower-high-lazy,tp5,talk,1,TP5 learning wrap-up,must_not_include,새 문제 | 미션 | 교과서 페이지 | 추천 이유 | Book Club | 나가기 | 새 단원,,True,

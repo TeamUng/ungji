@@ -1,6 +1,10 @@
 from __future__ import annotations
 
+from contextlib import contextmanager
+from contextvars import ContextVar, Token
 from dataclasses import dataclass
+from dataclasses import field
+from typing import Any
 
 from langchain_core.runnables import Runnable
 from langchain_openai import ChatOpenAI
@@ -47,6 +51,44 @@ class LLMRoute:
     model: str
 
 
+@dataclass
+class LLMTokenUsageRun:
+    label: str
+    records: list[dict[str, Any]] = field(default_factory=list)
+
+    @property
+    def prompt_tokens(self) -> int:
+        return sum(int(record.get("prompt_tokens", 0) or 0) for record in self.records)
+
+    @property
+    def completion_tokens(self) -> int:
+        return sum(int(record.get("completion_tokens", 0) or 0) for record in self.records)
+
+    @property
+    def total_tokens(self) -> int:
+        return sum(int(record.get("total_tokens", 0) or 0) for record in self.records)
+
+    @property
+    def measured_calls(self) -> int:
+        return sum(1 for record in self.records if record.get("usage_source") != "unavailable")
+
+    def summary(self) -> dict[str, Any]:
+        return {
+            "label": self.label,
+            "llm_calls": len(self.records),
+            "measured_llm_calls": self.measured_calls,
+            "prompt_tokens": self.prompt_tokens,
+            "completion_tokens": self.completion_tokens,
+            "total_tokens": self.total_tokens,
+        }
+
+
+_ACTIVE_TOKEN_USAGE_RUN: ContextVar[LLMTokenUsageRun | None] = ContextVar(
+    "active_llm_token_usage_run",
+    default=None,
+)
+
+
 MOTIVATOR_ROUTE = LLMRoute("motivator", MOTIVATOR_PROVIDER, MOTIVATOR_MODEL)
 HELPER_ROUTE = LLMRoute("helper", HELPER_PROVIDER, HELPER_MODEL)
 JUDGE_ROUTE = LLMRoute("judge", JUDGE_PROVIDER, JUDGE_MODEL)
@@ -55,6 +97,25 @@ COMMON_FALLBACK_ROUTE = LLMRoute(
     COMMON_FALLBACK_PROVIDER,
     COMMON_FALLBACK_MODEL,
 )
+
+
+@contextmanager
+def collect_llm_token_usage(label: str):
+    run, token = start_llm_token_usage_run(label)
+    try:
+        yield run
+    finally:
+        stop_llm_token_usage_run(token)
+
+
+def start_llm_token_usage_run(label: str) -> tuple[LLMTokenUsageRun, Token]:
+    run = LLMTokenUsageRun(label=label)
+    token = _ACTIVE_TOKEN_USAGE_RUN.set(run)
+    return run, token
+
+
+def stop_llm_token_usage_run(token: Token) -> None:
+    _ACTIVE_TOKEN_USAGE_RUN.reset(token)
 
 
 class CommonFallbackChatModel:
@@ -78,14 +139,30 @@ class CommonFallbackChatModel:
 
     async def ainvoke(self, messages, **kwargs):
         try:
-            return await self.primary.ainvoke(messages, **kwargs)
+            response = await self.primary.ainvoke(messages, **kwargs)
+            _record_llm_token_usage(
+                response,
+                requested_route=self.primary_route,
+                actual_route=self.primary_route,
+                used_fallback=False,
+                method_name="ainvoke",
+            )
+            return response
         except Exception as primary_exc:
             self._log_primary_failure(primary_exc)
             if self.fallback is None:
                 raise self._no_fallback_error(primary_exc) from primary_exc
 
             try:
-                return await self.fallback.ainvoke(messages, **kwargs)
+                response = await self.fallback.ainvoke(messages, **kwargs)
+                _record_llm_token_usage(
+                    response,
+                    requested_route=self.primary_route,
+                    actual_route=self.fallback_route,
+                    used_fallback=True,
+                    method_name="ainvoke",
+                )
+                return response
             except Exception as fallback_exc:
                 self._log_fallback_failure(fallback_exc)
                 raise self._fallback_error(primary_exc, fallback_exc) from fallback_exc
@@ -121,14 +198,30 @@ class CommonFallbackChatModel:
 
     def _invoke_with_fallback(self, method_name: str, messages, **kwargs):
         try:
-            return getattr(self.primary, method_name)(messages, **kwargs)
+            response = getattr(self.primary, method_name)(messages, **kwargs)
+            _record_llm_token_usage(
+                response,
+                requested_route=self.primary_route,
+                actual_route=self.primary_route,
+                used_fallback=False,
+                method_name=method_name,
+            )
+            return response
         except Exception as primary_exc:
             self._log_primary_failure(primary_exc)
             if self.fallback is None:
                 raise self._no_fallback_error(primary_exc) from primary_exc
 
             try:
-                return getattr(self.fallback, method_name)(messages, **kwargs)
+                response = getattr(self.fallback, method_name)(messages, **kwargs)
+                _record_llm_token_usage(
+                    response,
+                    requested_route=self.primary_route,
+                    actual_route=self.fallback_route,
+                    used_fallback=True,
+                    method_name=method_name,
+                )
+                return response
             except Exception as fallback_exc:
                 self._log_fallback_failure(fallback_exc)
                 raise self._fallback_error(primary_exc, fallback_exc) from fallback_exc
@@ -194,6 +287,102 @@ def _bind_tools(model: Runnable, tools, route: LLMRoute) -> Runnable:
             exc_info=True,
         )
         return model
+
+
+def _record_llm_token_usage(
+    response,
+    *,
+    requested_route: LLMRoute,
+    actual_route: LLMRoute,
+    used_fallback: bool,
+    method_name: str,
+) -> None:
+    usage = _extract_token_usage(response)
+    record = {
+        "llm_role": requested_route.role,
+        "provider": actual_route.provider,
+        "model": actual_route.model,
+        "method": method_name,
+        "used_fallback": used_fallback,
+        **usage,
+    }
+
+    active_run = _ACTIVE_TOKEN_USAGE_RUN.get()
+    if active_run is not None:
+        active_run.records.append(record)
+        record["usage_run_label"] = active_run.label
+
+    logger.info("LLM token usage recorded", extra=record)
+
+
+def _extract_token_usage(response) -> dict[str, int | str]:
+    usage_metadata = getattr(response, "usage_metadata", None) or {}
+    if usage_metadata:
+        prompt_tokens = _token_int(
+            usage_metadata.get("input_tokens")
+            or usage_metadata.get("prompt_tokens")
+        )
+        completion_tokens = _token_int(
+            usage_metadata.get("output_tokens")
+            or usage_metadata.get("completion_tokens")
+        )
+        total_tokens = _token_int(usage_metadata.get("total_tokens"))
+        return _usage_dict(
+            prompt_tokens,
+            completion_tokens,
+            total_tokens,
+            source="usage_metadata",
+        )
+
+    response_metadata = getattr(response, "response_metadata", None) or {}
+    token_usage = (
+        response_metadata.get("token_usage")
+        or response_metadata.get("usage")
+        or response_metadata
+    )
+    if token_usage:
+        prompt_tokens = _token_int(
+            token_usage.get("prompt_tokens")
+            or token_usage.get("input_tokens")
+        )
+        completion_tokens = _token_int(
+            token_usage.get("completion_tokens")
+            or token_usage.get("output_tokens")
+        )
+        total_tokens = _token_int(token_usage.get("total_tokens"))
+        if prompt_tokens or completion_tokens or total_tokens:
+            return _usage_dict(
+                prompt_tokens,
+                completion_tokens,
+                total_tokens,
+                source="response_metadata",
+            )
+
+    return _usage_dict(0, 0, 0, source="unavailable")
+
+
+def _usage_dict(
+    prompt_tokens: int,
+    completion_tokens: int,
+    total_tokens: int,
+    *,
+    source: str,
+) -> dict[str, int | str]:
+    if not total_tokens and (prompt_tokens or completion_tokens):
+        total_tokens = prompt_tokens + completion_tokens
+    return {
+        "prompt_tokens": prompt_tokens,
+        "completion_tokens": completion_tokens,
+        "total_tokens": total_tokens,
+        "usage_source": source,
+    }
+
+
+def _token_int(value) -> int:
+    try:
+        return int(value or 0)
+    except (TypeError, ValueError):
+        return 0
 
 
 def _build_chat_model(route: LLMRoute) -> Runnable:

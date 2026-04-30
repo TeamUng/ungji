@@ -15,6 +15,8 @@ from app.core.config import configure_langsmith_tracing, settings
 class FakeLLMResponse:
     content: str
     tool_calls: list = field(default_factory=list)
+    usage_metadata: dict = field(default_factory=dict)
+    response_metadata: dict = field(default_factory=dict)
 
 
 class FakeChatOpenAI:
@@ -140,6 +142,51 @@ def test_common_fallback_chat_model_uses_shared_fallback_after_primary_failure(m
     assert response.content == "fallback response"
     assert primary.calls == [{"messages": ["hello"], "kwargs": {"temperature": 0}}]
     assert fallback.calls == [{"messages": ["hello"], "kwargs": {"temperature": 0}}]
+
+
+def test_token_usage_run_collects_llm_response_usage(monkeypatch):
+    _setup_fake_openai(monkeypatch)
+    _setup_fake_upstage(monkeypatch)
+    monkeypatch.setattr(settings, "OPENROUTER_API_KEY", "test-or-key")
+    monkeypatch.setattr(settings, "UPSTAGE_API_KEY", "test-upstage-key")
+    monkeypatch.setattr(settings, "LANGSMITH_API_KEY", "")
+    monkeypatch.setattr(settings, "UNGJI_DISABLE_LANGSMITH_TRACING", False)
+    sys.modules.pop("app.clients.llm", None)
+    llm_module = importlib.import_module("app.clients.llm")
+
+    class PrimarySucceeds:
+        def invoke(self, messages, **kwargs):
+            return FakeLLMResponse(
+                content="primary response",
+                usage_metadata={
+                    "input_tokens": 11,
+                    "output_tokens": 7,
+                    "total_tokens": 18,
+                },
+            )
+
+    model = llm_module.CommonFallbackChatModel(
+        primary=PrimarySucceeds(),
+        fallback=None,
+        primary_route=llm_module.HELPER_ROUTE,
+        fallback_route=llm_module.COMMON_FALLBACK_ROUTE,
+    )
+    usage_run, token = llm_module.start_llm_token_usage_run("test-run")
+    try:
+        model.invoke(["hello"])
+    finally:
+        llm_module.stop_llm_token_usage_run(token)
+
+    assert usage_run.summary() == {
+        "label": "test-run",
+        "llm_calls": 1,
+        "measured_llm_calls": 1,
+        "prompt_tokens": 11,
+        "completion_tokens": 7,
+        "total_tokens": 18,
+    }
+    assert usage_run.records[0]["llm_role"] == "helper"
+    assert usage_run.records[0]["model"] == llm_module.HELPER_MODEL
 
 
 def test_llm_client_enables_langsmith_tracing_when_key_exists(monkeypatch):

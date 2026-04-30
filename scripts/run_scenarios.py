@@ -32,6 +32,7 @@ configure_langsmith_tracing()
 
 from langchain_core.messages import HumanMessage
 
+from app.clients.llm import start_llm_token_usage_run, stop_llm_token_usage_run
 from app.core.enums import GradeGroup, MessageType, Segment, Touchpoint, UseCase
 from app.core.logging import get_logger, setup_logging
 from app.data.loader import StudentRecord, load_student
@@ -915,6 +916,9 @@ def main(argv: Sequence[str] | None = None) -> None:
     student_ids = _student_ids_from_args(args)
 
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    token_usage_run, token_usage_token = start_llm_token_usage_run(
+        f"scenario-runner:{timestamp}"
+    )
     csv_path = RESULTS_DIR / f"scenario_results_{timestamp}.csv"
     transcript_path = _transcript_path(csv_path)
     eval_path = RESULTS_DIR / f"scenario_eval_{timestamp}.csv"
@@ -1165,6 +1169,10 @@ def main(argv: Sequence[str] | None = None) -> None:
             "eval_path": str(eval_path) if eval_rows else "",
         },
     )
+
+    token_usage_summary = token_usage_run.summary()
+    logger.info("LangGraph scenario runner token usage", extra=token_usage_summary)
+    stop_llm_token_usage_run(token_usage_token)
     _flush_langsmith_traces()
 
     print(f"\n{'=' * 70}")
@@ -1174,6 +1182,14 @@ def main(argv: Sequence[str] | None = None) -> None:
     )
     if eval_rows:
         print(f"  Expectation checks: {len(eval_rows)} | failures: {eval_failures}")
+    print(
+        "  Token usage: "
+        f"input {token_usage_summary['prompt_tokens']} | "
+        f"output {token_usage_summary['completion_tokens']} | "
+        f"total {token_usage_summary['total_tokens']} | "
+        f"LLM calls {token_usage_summary['llm_calls']} "
+        f"(measured {token_usage_summary['measured_llm_calls']})"
+    )
     print(f"  CSV saved: {csv_path}")
     print(f"  Transcript saved: {transcript_path}")
     if eval_rows:
