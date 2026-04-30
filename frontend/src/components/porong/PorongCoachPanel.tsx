@@ -8,8 +8,10 @@ import {
 } from "react";
 import type {
   ChatTurn,
+  ChoiceSelection,
   ResponseMessage,
 } from "@/types/chat";
+import { FormattedText } from "./FormattedText";
 
 type PorongCoachPanelProps = {
   isOpen: boolean;
@@ -17,11 +19,9 @@ type PorongCoachPanelProps = {
   turns: ChatTurn[];
   isBusy: boolean;
   errorMessage: string;
-  showTeachBackInput: boolean;
   onClose: () => void;
-  onChoice: (choiceLabel: string) => void;
+  onChoice: (choice: ChoiceSelection) => void;
   onTextSubmit: (content: string) => void;
-  onComplete: () => void;
 };
 
 export function PorongCoachPanel({
@@ -30,13 +30,11 @@ export function PorongCoachPanel({
   turns,
   isBusy,
   errorMessage,
-  showTeachBackInput,
   onClose,
   onChoice,
   onTextSubmit,
-  onComplete,
 }: PorongCoachPanelProps) {
-  const [teachBackText, setTeachBackText] = useState("");
+  const [replyText, setReplyText] = useState("");
   const messagesRef = useRef<HTMLDivElement | null>(null);
   const latestChoiceTurnId = findLatestChoiceTurnId(turns);
 
@@ -53,10 +51,15 @@ export function PorongCoachPanel({
     });
   }, [turns, isBusy, errorMessage]);
 
-  const handleTeachBackSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const handleReplySubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    onTextSubmit(teachBackText);
-    setTeachBackText("");
+    const trimmed = replyText.trim();
+    if (!trimmed || isBusy) {
+      return;
+    }
+
+    onTextSubmit(trimmed);
+    setReplyText("");
   };
 
   return (
@@ -91,29 +94,22 @@ export function PorongCoachPanel({
         {errorMessage && <p className="chat-error">{errorMessage}</p>}
       </div>
 
-      <footer className={showTeachBackInput ? "teachback-footer" : ""}>
-        {showTeachBackInput ? (
-          <form className="teachback-form" onSubmit={handleTeachBackSubmit}>
-            <input
-              value={teachBackText}
-              onChange={(event) => setTeachBackText(event.target.value)}
-              placeholder="예: 원액이 3배라 물도 3배예요"
-              aria-label="내 말로 설명하기"
-            />
-            <button type="submit" className="primary-action" disabled={isBusy}>
-              보내기
-            </button>
-          </form>
-        ) : (
-          <>
-            <button type="button" className="secondary-action" onClick={onClose}>
-              문제로 돌아가기
-            </button>
-            <button type="button" className="primary-action" onClick={onComplete}>
-              풀고 완료
-            </button>
-          </>
-        )}
+      <footer>
+        <form className="chat-reply-form" onSubmit={handleReplySubmit}>
+          <input
+            value={replyText}
+            onChange={(event) => setReplyText(event.target.value)}
+            placeholder="답장을 입력해 주세요"
+            aria-label="코치에게 답장하기"
+          />
+          <button
+            type="submit"
+            className="primary-action"
+            disabled={isBusy || replyText.trim() === ""}
+          >
+            보내기
+          </button>
+        </form>
       </footer>
     </aside>
   );
@@ -126,10 +122,14 @@ function MessageRenderer({
 }: {
   message: ResponseMessage;
   isChoiceActive: boolean;
-  onChoice: (choiceLabel: string) => void;
+  onChoice: (choice: ChoiceSelection) => void;
 }) {
   if (message.type === "text") {
-    return <p className="chat-text">{message.content}</p>;
+    return (
+      <p className="chat-text">
+        <FormattedText text={message.content} />
+      </p>
+    );
   }
 
   if (message.type === "choices") {
@@ -140,7 +140,7 @@ function MessageRenderer({
             key={item.id}
             type="button"
             disabled={!isChoiceActive}
-            onClick={() => onChoice(item.label)}
+            onClick={() => onChoice(item)}
           >
             {item.label}
           </button>
@@ -157,7 +157,9 @@ function MessageRenderer({
           <span />
           <span />
         </div>
-        <p>{message.caption}</p>
+        <p>
+          <FormattedText text={message.caption} />
+        </p>
       </article>
     );
   }
@@ -167,7 +169,9 @@ function MessageRenderer({
       {message.steps.map((step) => (
         <div key={step.step}>
           <span>{step.step}</span>
-          <p>{step.content}</p>
+          <p>
+            <FormattedText text={step.content} />
+          </p>
         </div>
       ))}
     </article>

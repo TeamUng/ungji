@@ -4,6 +4,7 @@ import json
 from unittest.mock import patch
 
 from app.core.enums import MessageType, Touchpoint, UseCase
+from app.schemas.chat import ChatResponse, TextMessage
 
 
 # ─── 헬퍼 ────────────────────────────────────────────────────────────────────
@@ -18,13 +19,14 @@ def _parse_sse(body: str) -> list[dict]:
 
 
 def _post_chat(client, student_id: str, use_case: UseCase, touchpoint: Touchpoint,
-               thread_id: str, content: str = ""):
+               thread_id: str, content: str = "", context: dict | None = None):
     return client.post("/chat", json={
         "thread_id": thread_id,
         "student_id": student_id,
         "use_case": use_case.value,
         "current_touchpoint": touchpoint.value,
         "message": {"type": MessageType.INIT.value, "content": content},
+        **({"context": context} if context is not None else {}),
     })
 
 
@@ -71,6 +73,53 @@ def test_case1_home_screen_thread_id_in_response(client, case1_student, mock_llm
     assert events[0]["thread_id"] == thread_id
 
 
+def test_chat_request_context_is_passed_to_graph(client, case2_student):
+    class FakeGraph:
+        initial_state = None
+
+        async def astream(self, initial_state, config):
+            self.initial_state = initial_state
+            yield {
+                "fake": {
+                    "response": ChatResponse(
+                        thread_id=initial_state["thread_id"],
+                        messages=[TextMessage(content="ok")],
+                    )
+                }
+            }
+
+    fake_graph = FakeGraph()
+    context = {
+        "completed_task_refs": [
+            {
+                "subject": case2_student["today_tasks"][0]["subject"],
+                "unit": case2_student["today_tasks"][0]["unit"],
+            }
+        ],
+        "current_task_remaining_count": 2,
+        "current_problem_id": case2_student["today_tasks"][0]["problem_id"],
+    }
+
+    with (
+        patch("app.api.routes.chat.load_student", return_value=case2_student),
+        patch("app.api.routes.chat.graph", fake_graph),
+    ):
+        response = _post_chat(
+            client,
+            case2_student["student_id"],
+            UseCase.LEARNING,
+            Touchpoint.TP4,
+            thread_id="context-passthrough",
+            context=context,
+        )
+
+    assert response.status_code == 200
+    assert fake_graph.initial_state["request_context"].current_task_remaining_count == 2
+    assert fake_graph.initial_state["request_context"].current_problem_id == (
+        case2_student["today_tasks"][0]["problem_id"]
+    )
+
+
 # ─── 케이스 2: 학습 중 도움 요청 e2e ─────────────────────────────────────────
 
 def test_case2_learning_tp4_returns_sse(client, case2_student, mock_llm):
@@ -91,6 +140,9 @@ def test_case2_learning_tp4_returns_sse(client, case2_student, mock_llm):
             client, case2_student["student_id"],
             UseCase.LEARNING, Touchpoint.TP4,
             thread_id="case2-tp4-first",
+            context={
+                "current_problem_id": case2_student["today_tasks"][0]["problem_id"],
+            },
         )
 
     assert response.status_code == 200

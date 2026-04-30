@@ -6,7 +6,7 @@ import pytest
 
 from app.core.enums import GradeGroup, Segment
 from app.data.loader import StudentRecord
-from app.schemas.chat import ChatState
+from app.schemas.chat import ChatRequestContext, ChatState, TaskRef
 from app.services.nodes.classify import classify, get_grade_group, get_segment
 
 
@@ -86,6 +86,7 @@ def _minimal_state(student_id: str) -> ChatState:
         "segment": Segment.LOW_LAZY,
         "chat_history": [],
         "current_touchpoint": Touchpoint.TP1,
+        "request_context": None,
     }
 
 
@@ -135,3 +136,55 @@ def test_classify_node_no_wrong_answers(high_diligent_student: StudentRecord) ->
         result = classify(state)
 
     assert result["has_wrong_answers"] is False
+
+
+def test_classify_applies_completed_task_refs(case2_student: StudentRecord) -> None:
+    state = _minimal_state(case2_student["student_id"])
+    first_task = case2_student["today_tasks"][0]
+    state["request_context"] = ChatRequestContext(
+        completed_task_refs=[
+            TaskRef(subject=first_task["subject"], unit=first_task["unit"]),
+        ],
+    )
+
+    with patch("app.services.nodes.classify.load_student", return_value=case2_student):
+        result = classify(state)
+
+    assert result["completed_tasks"] == [first_task]
+
+
+def test_classify_applies_current_task_remaining_count(case2_student: StudentRecord) -> None:
+    state = _minimal_state(case2_student["student_id"])
+    state["request_context"] = ChatRequestContext(current_task_remaining_count=2)
+
+    with patch("app.services.nodes.classify.load_student", return_value=case2_student):
+        result = classify(state)
+
+    assert result["current_task_remaining_count"] == 2
+
+
+def test_classify_loads_current_problem_from_context(case2_student: StudentRecord) -> None:
+    state = _minimal_state(case2_student["student_id"])
+    problem_id = case2_student["today_tasks"][0]["problem_id"]
+    state["request_context"] = ChatRequestContext(current_problem_id=problem_id)
+
+    with patch("app.services.nodes.classify.load_student", return_value=case2_student):
+        result = classify(state)
+
+    assert result["current_problem"]["problem_id"] == problem_id
+    assert result["current_task"] == case2_student["today_tasks"][0]
+
+
+def test_classify_applies_all_completed_tasks_for_tp5(case2_student: StudentRecord) -> None:
+    state = _minimal_state(case2_student["student_id"])
+    state["request_context"] = ChatRequestContext(
+        completed_task_refs=[
+            TaskRef(problem_id=task["problem_id"])
+            for task in case2_student["today_tasks"]
+        ],
+    )
+
+    with patch("app.services.nodes.classify.load_student", return_value=case2_student):
+        result = classify(state)
+
+    assert result["completed_tasks"] == case2_student["today_tasks"]

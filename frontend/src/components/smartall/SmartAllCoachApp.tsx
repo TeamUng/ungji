@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { InteractionZone } from "@/components/chatbot/InteractionZone";
 import { InteractionZoneProvider } from "@/components/chatbot/InteractionZoneProvider";
 import type { InteractionZoneId } from "@/components/chatbot/chatbotSuggestions";
@@ -10,16 +10,17 @@ import type {
   PorongBubbleAction,
   PorongOverlayState,
 } from "@/components/porong/porongTypes";
+import { liveChatAdapter } from "@/lib/live-chat";
 import {
   demoCases,
   demoStepLabels,
   demoStudentOptions,
-  getStepMessages,
   makeChatRequest,
   mockChatAdapter,
 } from "@/lib/mock-chat";
 import type {
   ChatAdapter,
+  ChoiceSelection,
   ChatTurn,
   DemoCaseId,
   DemoStepId,
@@ -42,15 +43,15 @@ const orderedSteps: DemoStepId[] = [
   "finish",
 ];
 
-const caseLabels: Record<DemoCaseId, string> = {
-  "lower-korean": "1~2학년 국어",
-  "upper-math": "5~6학년 수학",
-};
-
 const subjectsByCase: Record<DemoCaseId, string[]> = {
   "lower-korean": ["국어", "수학", "문해력", "한자"],
   "upper-math": ["개념별따기", "수학", "과학", "사회"],
 };
+
+const defaultChatAdapter =
+  process.env.NEXT_PUBLIC_UNGJI_CHAT_MODE === "live"
+    ? liveChatAdapter
+    : mockChatAdapter;
 
 function getTextMessageContent(messages: ResponseMessage[]) {
   const textMessage = messages.find((message) => message.type === "text");
@@ -112,33 +113,85 @@ function getPorongState({
 export function SmartAllCoachApp({
   showDemoControls = false,
   initialCaseId = "lower-korean",
-  chatAdapter = mockChatAdapter,
+  chatAdapter = defaultChatAdapter,
 }: SmartAllCoachAppProps) {
   const [caseId, setCaseId] = useState<DemoCaseId>(initialCaseId);
   const [stepId, setStepId] = useState<DemoStepId>("home");
   const [chatOpen, setChatOpen] = useState(false);
   const [chatTurns, setChatTurns] = useState<ChatTurn[]>([]);
+  const [bubbleResponseMessages, setBubbleResponseMessages] = useState<
+    ResponseMessage[] | null
+  >(null);
   const [isStreaming, setIsStreaming] = useState(false);
   const [chatError, setChatError] = useState("");
   const tabletRef = useRef<HTMLDivElement | null>(null);
   const turnIdRef = useRef(0);
   const streamRunRef = useRef(0);
 
-  const bubbleMessages = getStepMessages(caseId, stepId);
+  const demoCase = demoCases[caseId];
+  const shouldRequestBubble =
+    !chatOpen && ["home", "complete", "exit", "finish"].includes(stepId);
+  const bubbleMessages = bubbleResponseMessages ?? [];
   const bubbleText = getTextMessageContent(bubbleMessages);
   const bubbleActions = getBubbleActions(bubbleMessages);
   const isUpper = caseId === "upper-math";
   const shouldShowBubble =
     !chatOpen && ["home", "complete", "exit", "finish"].includes(stepId);
-  const activeTouchpoint = demoCases[caseId].touchpointByStep[stepId];
+  const activeTouchpoint = demoCase.touchpointByStep[stepId];
   const porongState = getPorongState({
     stepId,
     chatOpen,
     isStreaming,
     isUpper,
   });
-  const showTeachBackInput =
-    stepId === "help" && !isStreaming && isLastCoachTeachBackPrompt(chatTurns);
+  useEffect(() => {
+    if (!shouldRequestBubble) {
+      return;
+    }
+
+    const runId = streamRunRef.current + 1;
+    const request = makeChatRequest(caseId, stepId, "", "init");
+
+    streamRunRef.current = runId;
+
+    async function loadBubbleMessages() {
+      const messages: ResponseMessage[] = [];
+
+      try {
+        await Promise.resolve();
+        if (streamRunRef.current !== runId) {
+          return;
+        }
+
+        setBubbleResponseMessages(null);
+        setChatError("");
+        setIsStreaming(true);
+
+        for await (const message of chatAdapter(request, { caseId, stepId })) {
+          if (streamRunRef.current !== runId) {
+            return;
+          }
+
+          messages.push(message);
+          setBubbleResponseMessages([...messages]);
+        }
+      } catch (error) {
+        if (streamRunRef.current === runId) {
+          setChatError(
+            error instanceof Error
+              ? error.message
+              : "코치 응답을 불러오지 못했어요.",
+          );
+        }
+      } finally {
+        if (streamRunRef.current === runId) {
+          setIsStreaming(false);
+        }
+      }
+    }
+
+    void loadBubbleMessages();
+  }, [caseId, stepId, chatAdapter, shouldRequestBubble]);
 
   const makeTurnId = () => {
     turnIdRef.current += 1;
@@ -236,6 +289,7 @@ export function SmartAllCoachApp({
     setStepId("home");
     setChatOpen(false);
     setChatTurns([]);
+    setBubbleResponseMessages(null);
   };
 
   const moveToStep = (nextStepId: DemoStepId) => {
@@ -249,6 +303,7 @@ export function SmartAllCoachApp({
     setStepId(nextStepId);
     setChatOpen(false);
     setChatTurns([]);
+    setBubbleResponseMessages(null);
   };
 
   const openLearning = () => {
@@ -256,72 +311,35 @@ export function SmartAllCoachApp({
     setStepId("learning");
     setChatOpen(false);
     setChatTurns([]);
+    setBubbleResponseMessages(null);
   };
 
   const openHelpPanel = () => {
     startChatPanel("help");
   };
 
-  const handleBubbleChoice = (label: string) => {
-    if (stepId === "home") {
-      openLearning();
-      return;
-    }
-
-    if (stepId === "complete") {
-      if (label.includes("마무리") || label.includes("여기까지")) {
-        moveToStep("finish");
-        return;
-      }
-
-      openLearning();
-      return;
-    }
-
-    if (stepId === "exit") {
-      if (label.includes("도움") || label.includes("힌트")) {
-        startChatPanel("exit", label, "choice");
-        return;
-      }
-
-      openLearning();
-      return;
-    }
-
-    if (stepId === "finish") {
-      if (label.includes("오답 복습")) {
-        startChatPanel("finish", label, "choice");
-        return;
-      }
-
-      moveToStep("home");
-    }
+  const openCoachForCurrentStep = () => {
+    startChatPanel(stepId === "learning" ? "help" : stepId);
   };
 
-  const handleChatChoice = (label: string) => {
+  const handleBubbleChoice = (choice: ChoiceSelection) => {
+    startChatPanel(stepId, choice.label, "choice");
+  };
+
+  const handleChatChoice = (choice: ChoiceSelection) => {
     if (isStreaming) {
-      return;
-    }
-
-    if (label === "문제로 돌아가기" || label === "다시 풀기") {
-      setChatOpen(false);
-      return;
-    }
-
-    if (label === "풀고 완료") {
-      moveToStep("complete");
       return;
     }
 
     void sendToAdapter({
       targetStepId: stepId,
-      content: label,
+      content: choice.label,
       messageType: "choice",
       reset: false,
     });
   };
 
-  const handleTeachBackSubmit = (content: string) => {
+  const handleChatTextSubmit = (content: string) => {
     if (isStreaming || content.trim() === "") {
       return;
     }
@@ -379,21 +397,19 @@ export function SmartAllCoachApp({
           showBubble={shouldShowBubble}
           bubbleText={bubbleText}
           bubbleActions={bubbleActions}
-          onTap={openHelpPanel}
+          onTap={openCoachForCurrentStep}
           onBubbleAction={handleBubbleChoice}
         />
 
         <PorongCoachPanel
           isOpen={chatOpen}
-          title={caseLabels[caseId]}
+          title={`${demoCase.studentName} · ${demoCase.label}`}
           turns={chatTurns}
           isBusy={isStreaming}
           errorMessage={chatError}
-          showTeachBackInput={showTeachBackInput}
           onClose={() => setChatOpen(false)}
           onChoice={handleChatChoice}
-          onTextSubmit={handleTeachBackSubmit}
-          onComplete={() => moveToStep(stepId === "finish" ? "home" : "complete")}
+          onTextSubmit={handleChatTextSubmit}
         />
       </section>
 
@@ -449,6 +465,7 @@ function HomeScreen({
   onStartLearning: () => void;
 }) {
   const isUpper = caseId === "upper-math";
+  const demoCase = demoCases[caseId];
 
   return (
     <div className="home-screen">
@@ -477,7 +494,10 @@ function HomeScreen({
           )}
         </InteractionZone>
 
-        <SmartAllRightRail caseId={caseId} />
+        <SmartAllRightRail
+          caseId={caseId}
+          studentName={demoCase.studentName}
+        />
       </div>
     </div>
   );
@@ -669,12 +689,18 @@ function UpperSubjectCards({
   );
 }
 
-function SmartAllRightRail({ caseId }: { caseId: DemoCaseId }) {
+function SmartAllRightRail({
+  caseId,
+  studentName,
+}: {
+  caseId: DemoCaseId;
+  studentName: string;
+}) {
   const isUpper = caseId === "upper-math";
 
   return (
     <aside className="right-rail" aria-label="추천과 학습 도구">
-      <p className="recommend-title">김웅진님을 위한 추천</p>
+      <p className="recommend-title">{studentName}님을 위한 추천</p>
 
       <InteractionZone
         id="recommended-book"
@@ -989,17 +1015,5 @@ function DemoControls({
         ))}
       </div>
     </section>
-  );
-}
-
-function isLastCoachTeachBackPrompt(turns: ChatTurn[]) {
-  const lastCoachText = [...turns]
-    .reverse()
-    .find((turn) => turn.role === "coach" && turn.message.type === "text");
-
-  return (
-    lastCoachText?.role === "coach" &&
-    lastCoachText.message.type === "text" &&
-    lastCoachText.message.content.includes("네 말로")
   );
 }
