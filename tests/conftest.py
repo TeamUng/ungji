@@ -300,4 +300,16 @@ def mock_llm(monkeypatch) -> FakeLLM:
     fake_module.llm = fake_llm
     fake_module.LLMCallError = RuntimeError
     monkeypatch.setitem(sys.modules, "app.clients.llm", fake_module)
+    if "app.guardrails.strategies.llm_judge" in sys.modules:
+        monkeypatch.setattr(
+            sys.modules["app.guardrails.strategies.llm_judge"],
+            "llm",
+            fake_llm,
+            raising=False,
+        )
+    if "app.guardrails.guardrails_config" in sys.modules:
+        guardrails_config = sys.modules["app.guardrails.guardrails_config"]
+        monkeypatch.setattr(guardrails_config, "_judge", None, raising=False)
+        monkeypatch.setattr(guardrails_config, "_safety_check", None, raising=False)
+        monkeypatch.setattr(guardrails_config, "_response_evaluator", None, raising=False)
     return fake_llm

@@ -3,7 +3,7 @@ from __future__ import annotations
 from langchain_core.messages import HumanMessage
 
 from app.core.enums import GradeGroup, Segment, Touchpoint, UseCase
-from app.schemas.chat import ChoicesMessage, HintCardMessage
+from app.schemas.chat import ChoicesMessage, TextMessage
 from app.services.nodes.helper import helper
 
 
@@ -63,17 +63,13 @@ def test_helper_generates_choices_from_send_causes_tool(
     assert "무엇으로 나눌지" in choices.items[1].label
 
 
-def test_helper_turn2_hint_card_after_dynamic_choice(
+def test_helper_turn2_coaching_after_dynamic_choice(
     make_chat_state, case2_student, mock_llm
 ):
     from app.data.loader import load_problem
 
-    steps = [
-        "(가)에서 소금은 37g, 소금물은 148g이에요.",
-        "소금의 양을 소금물의 양으로 나누면 비율을 구할 수 있어요.",
-        "그래서 37 ÷ 148부터 계산해요.",
-    ]
-    mock_llm.next_tool_calls = [{"name": "send_hint_card", "args": {"steps": steps}}]
+    coaching = "(가)에서 소금과 소금물의 양을 먼저 짝지어 보자."
+    mock_llm.next_tool_calls = [{"name": "send_text", "args": {"content": coaching}}]
 
     problem_data = dict(load_problem("math_ratio_saltwater_001"))
     state = make_chat_state(
@@ -84,11 +80,11 @@ def test_helper_turn2_hint_card_after_dynamic_choice(
         touchpoint=Touchpoint.TP4,
     )
     state["current_problem"] = problem_data
+    state["tp4_turn_count"] = 1
     state["chat_history"] = [HumanMessage(content="confused_what_to_divide")]
 
     result = helper(state)
     messages = result["helper_response"]
 
-    hint_card = next(message for message in messages if isinstance(message, HintCardMessage))
-    assert hint_card.steps[0].content == "(가)에서 소금은 37g, 소금물은 148g이에요."
-    assert "37 ÷ 148" in hint_card.steps[2].content
+    text_message = next(message for message in messages if isinstance(message, TextMessage))
+    assert text_message.content == coaching
