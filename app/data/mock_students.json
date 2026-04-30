@@ -668,16 +668,6 @@
         "ai_predicted_score": 73
       },
       {
-        "subject": "과학",
-        "unit": "생태계와 환경",
-        "problem_ids": ["upper_science_ecosystem_001"],
-        "problem_id": "upper_science_ecosystem_001",
-        "problem_count": 5,
-        "estimated_time": 12,
-        "difficulty": "중",
-        "ai_predicted_score": 84
-      },
-      {
         "subject": "국어",
         "unit": "주장과 근거 파악하기",
         "problem_ids": ["upper_korean_argument_001"],
@@ -686,6 +676,16 @@
         "estimated_time": 12,
         "difficulty": "중",
         "ai_predicted_score": 76
+      },
+      {
+        "subject": "과학",
+        "unit": "생태계와 환경",
+        "problem_ids": ["upper_science_ecosystem_001"],
+        "problem_id": "upper_science_ecosystem_001",
+        "problem_count": 5,
+        "estimated_time": 12,
+        "difficulty": "중",
+        "ai_predicted_score": 84
       },
       {
         "subject": "사회",

@@ -32,10 +32,11 @@ configure_langsmith_tracing()
 
 from langchain_core.messages import HumanMessage
 
-from app.core.enums import GradeGroup, Segment, Touchpoint, UseCase
+from app.core.enums import GradeGroup, MessageType, Segment, Touchpoint, UseCase
 from app.core.logging import get_logger, setup_logging
 from app.data.loader import StudentRecord, load_student
 from app.schemas.chat import ChatResponse, ResponseMessage, Task
+from app.services.decision_policy import classify_message_event
 from app.services.graph import graph
 
 logger = get_logger(__name__)
@@ -283,15 +284,27 @@ def _call_graph(
     use_case: UseCase,
     touchpoint: Touchpoint,
     message_content: str = "",
+    message_type: MessageType = MessageType.TEXT,
+    state_overrides: dict[str, Any] | None = None,
 ) -> ChatResponse | None:
+    message_event = classify_message_event(message_type, message_content)
     state: dict[str, Any] = {
         "thread_id": thread_id,
         "student_id": student_id,
         "use_case": use_case,
         "current_touchpoint": touchpoint,
-        "chat_history": [HumanMessage(content=message_content)] if message_content else [],
+        "current_message_type": message_event.message_type,
+        "current_message_source": message_event.source,
+        "current_message_requires_input_guard": message_event.should_check_input_guard,
+        "chat_history": (
+            [HumanMessage(content=message_event.content)]
+            if message_event.should_append_human_message
+            else []
+        ),
         "response": None,
     }
+    if state_overrides:
+        state.update(state_overrides)
     config = {
         "configurable": {"thread_id": thread_id},
         "run_name": f"scenario:{touchpoint.value}:{student_id}",
@@ -368,6 +381,85 @@ def _task_index(record: StudentRecord, selected_task: Task | dict[str, Any]) -> 
         if task is selected_task or task == selected_task:
             return index
     return 0
+
+
+def _classification_enums(record: StudentRecord) -> tuple[Segment, GradeGroup]:
+    from app.services.nodes.classify import get_grade_group, get_segment
+
+    profile = record["profile"]
+    pattern = record["learning_pattern"]
+    return get_segment(profile, pattern), get_grade_group(profile["grade"])
+
+
+def _wrong_done_today(record: StudentRecord) -> bool:
+    pattern = record["learning_pattern"]
+    has_wrong = pattern["wrong_content_total"] > 0
+    return has_wrong and pattern["wrong_content_done"] >= pattern["wrong_content_total"]
+
+
+def _scenario_completed_tasks(
+    record: StudentRecord,
+    touchpoint: Touchpoint,
+) -> list[Task]:
+    tasks = record["today_tasks"]
+    if touchpoint == Touchpoint.TP2:
+        return list(tasks[:1])
+    if touchpoint == Touchpoint.TP5:
+        return list(tasks)
+    return []
+
+
+def _scenario_state_overrides(
+    record: StudentRecord,
+    touchpoint: Touchpoint,
+    task: Task | dict[str, Any],
+) -> dict[str, Any]:
+    segment, grade_group = _classification_enums(record)
+    today_tasks = record["today_tasks"]
+    completed_tasks = _scenario_completed_tasks(record, touchpoint)
+    remaining = [
+        candidate
+        for candidate in today_tasks
+        if (candidate.get("subject"), candidate.get("unit"))
+        not in {(done.get("subject"), done.get("unit")) for done in completed_tasks}
+    ]
+
+    if touchpoint == Touchpoint.TP2:
+        current_task = remaining[0] if remaining else None
+    elif touchpoint == Touchpoint.TP5:
+        current_task = None
+    else:
+        current_task = task or (today_tasks[0] if today_tasks else None)
+
+    pattern = record["learning_pattern"]
+    return {
+        "student_profile": record["profile"],
+        "learning_history": record["learning_history"],
+        "learning_pattern": pattern,
+        "wrong_answer_pattern": record["wrong_answer_pattern"],
+        "today_tasks": today_tasks,
+        "completed_tasks": completed_tasks,
+        "current_task": current_task,
+        "current_task_remaining_count": 2 if touchpoint == Touchpoint.TP3 else None,
+        "current_problem": None,
+        "tp4_phase": "awaiting_problem",
+        "tp4_turn_count": 0,
+        "has_wrong_answers": pattern["wrong_content_total"] > 0,
+        "wrong_content_done_today": _wrong_done_today(record),
+        "today_score": record["profile"]["recent_avg_score"],
+        "segment": segment,
+        "grade_group": grade_group,
+    }
+
+
+def _scenario_message_type(message_content: str) -> MessageType:
+    if message_content == "__problem_id__":
+        return MessageType.INIT
+    if message_content == "__cause__":
+        return MessageType.CHOICE
+    if message_content:
+        return MessageType.TEXT
+    return MessageType.INIT
 
 
 def _select_scenario_task(record: StudentRecord, touchpoint: Touchpoint) -> Task | dict[str, Any]:
@@ -622,6 +714,22 @@ def _choice_count(row: dict[str, Any]) -> int:
     return len([choice for choice in choices.split(" | ") if choice.strip()])
 
 
+def _expectation_values(value: Any) -> list[str]:
+    if isinstance(value, str):
+        return [value]
+    if isinstance(value, list):
+        return [str(item) for item in value]
+    return []
+
+
+def _message_types(row: dict[str, Any]) -> list[str]:
+    return [
+        message_type.strip()
+        for message_type in str(row.get("message_types", "")).split("|")
+        if message_type.strip()
+    ]
+
+
 def _eval_row(
     *,
     expectation: dict[str, Any],
@@ -702,6 +810,36 @@ def _evaluate_expectation(
             expected=" | ".join(must_not_include),
             actual=" | ".join(found) if found else "",
             passed=not found,
+        ))
+
+    required_message_types = _expectation_values(
+        expectation.get("message_types_include")
+        or expectation.get("required_message_types")
+    )
+    if required_message_types:
+        actual_types = _message_types(row)
+        missing_types = [
+            message_type
+            for message_type in required_message_types
+            if message_type not in actual_types
+        ]
+        eval_rows.append(_eval_row(
+            expectation=expectation,
+            criterion="message_types_include",
+            expected=" | ".join(required_message_types),
+            actual=" | ".join(actual_types),
+            passed=not missing_types,
+        ))
+
+    if "min_choices" in expectation:
+        min_choices = int(expectation["min_choices"])
+        actual_count = _choice_count(row)
+        eval_rows.append(_eval_row(
+            expectation=expectation,
+            criterion="min_choices",
+            expected=min_choices,
+            actual=actual_count,
+            passed=actual_count >= min_choices,
         ))
 
     if "max_choices" in expectation:
@@ -874,6 +1012,12 @@ def main(argv: Sequence[str] | None = None) -> None:
                 actual_content = selected_tp4_cause or _fallback_cause_for_task(task)
             else:
                 actual_content = message_content
+            message_type = _scenario_message_type(message_content)
+            state_overrides = (
+                _scenario_state_overrides(record, touchpoint, task)
+                if touchpoint != Touchpoint.TP4 or turn == 1
+                else None
+            )
 
             transcript_lines.extend(["", f"### {label}", ""])
             if actual_content:
@@ -889,6 +1033,8 @@ def main(argv: Sequence[str] | None = None) -> None:
                     use_case=use_case,
                     touchpoint=touchpoint,
                     message_content=actual_content,
+                    message_type=message_type,
+                    state_overrides=state_overrides,
                 )
                 fields = _extract_response_fields(response)
                 if touchpoint == Touchpoint.TP4 and turn == 1:
@@ -1073,6 +1219,7 @@ def _run_non_tp4_simulated_followup(
             use_case=UseCase.CHAT,
             touchpoint=touchpoint,
             message_content=student_reply,
+            message_type=MessageType.TEXT,
         )
         fields = _extract_response_fields(response)
     except Exception as exc:
@@ -1142,6 +1289,7 @@ def _run_tp4_simulated_followups(
                 use_case=UseCase.LEARNING,
                 touchpoint=Touchpoint.TP4,
                 message_content=student_reply,
+                message_type=MessageType.TEXT,
             )
             fields = _extract_response_fields(response)
             last_response = response

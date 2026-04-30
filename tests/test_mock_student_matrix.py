@@ -20,6 +20,8 @@ from scripts.run_scenarios import (
     _format_response_for_transcript,
     _parse_args,
     _recommended_task_from_response,
+    _scenario_message_type,
+    _scenario_state_overrides,
     _select_scenario_task,
     _simulated_student_reply,
     _task_problem_id,
@@ -131,6 +133,30 @@ def test_focused_upper_case_still_uses_math_context() -> None:
     assert _task_problem_id(task) == "math_ratio_saltwater_001"
 
 
+def test_upper_case_tp2_state_moves_from_math_to_korean() -> None:
+    student = load_student("upper-low-diligent")
+    state = _scenario_state_overrides(student, Touchpoint.TP2, student["today_tasks"][0])
+
+    assert state["completed_tasks"][0]["unit"] == "비율과 비례식"
+    assert state["current_task"]["subject"] == "국어"
+    assert state["current_task"]["unit"] == "주장과 근거 파악하기"
+
+
+def test_tp3_state_has_two_remaining_current_task_problems() -> None:
+    student = load_student("lower-high-lazy")
+    state = _scenario_state_overrides(student, Touchpoint.TP3, student["today_tasks"][0])
+
+    assert state["current_task_remaining_count"] == 2
+
+
+def test_tp5_state_marks_today_tasks_completed() -> None:
+    student = load_student("lower-high-lazy")
+    state = _scenario_state_overrides(student, Touchpoint.TP5, student["today_tasks"][0])
+
+    assert state["completed_tasks"] == student["today_tasks"]
+    assert state["current_task"] is None
+
+
 def test_runner_available_units_includes_all_four_units() -> None:
     student = load_student("upper-low-diligent")
     available_units = _available_units(student)
@@ -219,6 +245,14 @@ def test_runner_simulated_reply_uses_neutral_fallback_without_detected_unit() ->
     assert reply == "좋아요, 추천한 것부터 해볼게요."
 
 
+def test_runner_message_types_match_real_api_semantics() -> None:
+    from app.core.enums import MessageType
+
+    assert _scenario_message_type("__problem_id__") == MessageType.INIT
+    assert _scenario_message_type("__cause__") == MessageType.CHOICE
+    assert _scenario_message_type("조금만 더 해보고 나갈게요.") == MessageType.TEXT
+
+
 def test_runner_tp4_followup_matches_korean_reading_context() -> None:
     student = load_student("lower-high-lazy")
     task = _select_scenario_task(student, Touchpoint.TP4)
@@ -231,7 +265,7 @@ def test_runner_tp4_followup_matches_korean_reading_context() -> None:
 
 
 def test_runner_main_writes_csv_and_transcript(tmp_path, monkeypatch) -> None:
-    def fake_call_graph(*, thread_id, student_id, use_case, touchpoint, message_content=""):
+    def fake_call_graph(*, thread_id, student_id, use_case, touchpoint, message_content="", **kwargs):
         if touchpoint == Touchpoint.TP4 and message_content:
             return ChatResponse(
                 thread_id=thread_id,

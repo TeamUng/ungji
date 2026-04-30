@@ -343,7 +343,11 @@ def _format_recent_history(messages) -> str:
     return "\n".join(lines) if lines else "(이전 대화 없음)"
 
 
-def _parse_helper_response(response, *, required_tool: str | None = None) -> list[ResponseMessage]:
+def _parse_helper_response(
+    response,
+    *,
+    required_tool: str | None = None,
+) -> list[ResponseMessage]:
     messages: list[ResponseMessage] = []
 
     for tool_call in getattr(response, "tool_calls", []):

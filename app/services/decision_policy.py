@@ -143,13 +143,17 @@ def make_motivator_decision(state: ChatState) -> dict:
             "target_task": current_task,
             "candidate_tasks": [current_task] if current_task else [],
             "student_goal": "이탈 이벤트에 공감하되 현재 단원 안의 아주 작은 행동 하나로 이어가게 한다.",
-            "forbidden": ["나가기 방법 안내", "새 학습 제안", "문제 풀이 힌트로 바로 진입"],
+            "forbidden": [
+                "나가기 방법 안내",
+                "새 학습 제안",
+                "문제 풀이 힌트로 바로 진입",
+            ],
         }
 
     if remaining:
         return {
             "intent": "recommend_next_task",
-            "target_task": remaining[0] if len(remaining) == 1 else None,
+            "target_task": remaining[0],
             "candidate_tasks": remaining,
             "student_goal": "남은 오늘의 학습 중 하나를 부담 없게 이어서 시작하게 한다.",
             "forbidden": ["완료된 단원 추천", "새 단원 생성", "나가기 버튼 제안"],

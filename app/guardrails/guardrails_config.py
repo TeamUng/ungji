@@ -35,8 +35,8 @@ def build_pipeline(context: GuardrailContext) -> GuardrailPipeline:
     Return the correct GuardrailPipeline for the given context.
 
     Both touchpoint groups currently use the same pipeline object.
-    The guards read `context.group` at call-time to adjust their behaviour
-    (e.g. topic-relevance leniency), so a single pipeline handles both.
+    The guards read `context.group` at call-time when a guard needs
+    touchpoint-aware behavior, so a single pipeline handles both groups.
 
     If you later need genuinely different guard sets per group, split this
     function into two branches and return different GuardrailPipeline instances.
