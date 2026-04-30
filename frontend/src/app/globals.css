@@ -378,101 +378,11 @@ button {
   background: #8bd4f5;
 }
 
-.number-token {
-  position: absolute;
-  z-index: 3;
-  width: 56px;
-  height: 72px;
-  display: grid;
-  place-items: center;
-  border-radius: 999px;
-  background: #ffffff;
-  color: #111111;
-  font-size: 27px;
-  font-weight: 950;
-  font-family: Georgia, serif;
-}
-
-.token-six {
-  right: 84px;
-  top: 14px;
-  transform: rotate(16deg);
-}
-
-.token-eight {
-  left: 72px;
-  bottom: 118px;
-  transform: rotate(-18deg);
-}
-
-.story-character {
-  position: absolute;
-  right: 36px;
-  bottom: 8px;
-  width: 330px;
-  height: 210px;
-  border-radius: 104px 110px 66px 56px;
-  background: #0aa846;
-  transform: rotate(6deg);
-}
-
-.story-character::before {
-  content: "";
-  position: absolute;
-  left: 34px;
-  top: 78px;
-  width: 178px;
-  height: 76px;
-  border-radius: 24px;
-  background: #ffffff;
-  box-shadow: inset 0 -12px 0 #f48272;
-}
-
-.story-character::after {
-  content: "";
-  position: absolute;
-  right: 44px;
-  bottom: -2px;
-  width: 118px;
-  height: 46px;
-  border-radius: 20px 20px 0 0;
-  background: #ffdb4a;
-}
-
-.face-eye,
 .coach-eye {
   position: absolute;
   display: block;
   border-radius: 50%;
   background: #141414;
-}
-
-.story-character .face-eye {
-  top: 72px;
-  width: 13px;
-  height: 13px;
-}
-
-.story-character .face-eye.left {
-  right: 94px;
-}
-
-.story-character .face-eye.right {
-  right: 48px;
-}
-
-.face-mouth {
-  position: absolute;
-  left: 92px;
-  top: 118px;
-  width: 124px;
-  height: 22px;
-  background:
-    repeating-linear-gradient(
-      90deg,
-      transparent 0 19px,
-      #222 19px 21px
-    );
 }
 
 .primary-study-button {

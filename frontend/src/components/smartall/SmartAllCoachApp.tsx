@@ -1251,13 +1251,6 @@ function TodayHeroCard({
 
       <div className="story-illustration" aria-hidden="true">
         <div className="story-sky" />
-        <span className="number-token token-six">6</span>
-        <span className="number-token token-eight">8</span>
-        <div className="story-character">
-          <span className="face-eye left" />
-          <span className="face-eye right" />
-          <span className="face-mouth" />
-        </div>
       </div>
 
       <button

@@ -160,7 +160,7 @@ export function getStepMessages(
         type: "text",
         content: isUpper
           ? `${studentName}아, 오늘은 수학 비와 비율부터 차근차근 시작해보자. 조금 어려워 보여도 한 단계씩 보면 충분히 할 수 있어.`
-          : `${studentName}아, 오늘은 잘하는 국어부터 시작해보자. 긴글 이해하기, 금세 풀 수 있어.`,
+          : "성준이가 잘하는 국어부터 시작해보자. 문장의 짜임 부분은 성준이라면 정답을 모두 맞힐 수 있을 것 같아!",
       },
       {
         type: "choices",
