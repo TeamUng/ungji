@@ -18,6 +18,8 @@ because an evaluator is unavailable.
 
 from __future__ import annotations
 
+from time import perf_counter
+
 from app.core.logging import get_logger
 from app.guardrails.models import GuardResult, GuardrailContext, Severity
 from app.guardrails.strategies.llm_judge import LLMJudge, LLMJudgeError
@@ -91,6 +93,7 @@ class ResponseEvaluator:
             segment=context.segment or "unknown",
         )
 
+        started = perf_counter()
         try:
             verdict = await self._judge.evaluate(system_prompt, text)
         except LLMJudgeError as exc:
@@ -105,6 +108,15 @@ class ResponseEvaluator:
                 reason=f"LLM judge unavailable - skipped evaluation: {exc}",
                 metadata={"error": str(exc)},
             )
+        logger.info(
+            "response evaluator judge completed",
+            extra={
+                "session_id": context.session_id,
+                "agent_name": context.agent_name,
+                "touchpoint": context.touchpoint,
+                "duration_ms": _elapsed_ms(started),
+            },
+        )
 
         failures: list[str] = []
         reasons: list[str] = []
@@ -141,6 +153,7 @@ class ResponseEvaluator:
             segment=context.segment or "unknown",
         )
 
+        started = perf_counter()
         try:
             verdict = self._judge.evaluate_sync(system_prompt, text)
         except LLMJudgeError as exc:
@@ -155,6 +168,15 @@ class ResponseEvaluator:
                 reason=f"LLM judge unavailable - skipped evaluation: {exc}",
                 metadata={"error": str(exc)},
             )
+        logger.info(
+            "response evaluator judge completed",
+            extra={
+                "session_id": context.session_id,
+                "agent_name": context.agent_name,
+                "touchpoint": context.touchpoint,
+                "duration_ms": _elapsed_ms(started),
+            },
+        )
 
         return self._result_from_verdict(verdict)
 
@@ -182,3 +204,7 @@ class ResponseEvaluator:
             guard_name=self.name,
             severity=Severity.LOG,
         )
+
+
+def _elapsed_ms(started: float) -> int:
+    return round((perf_counter() - started) * 1000)

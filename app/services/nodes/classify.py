@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from time import perf_counter
+
 from app.core import constants
 from app.core.enums import GradeGroup, Segment
 from app.core.logging import get_logger
@@ -38,6 +40,7 @@ def get_segment(profile: StudentProfile, learning_pattern: LearningPattern) -> S
 
 def classify(state: ChatState) -> dict:
     student_id = state["student_id"]
+    started = perf_counter()
 
     logger.info("classify 노드 시작", extra={"student_id": student_id})
 
@@ -53,12 +56,39 @@ def classify(state: ChatState) -> dict:
         learning_pattern["wrong_content_done"] >= learning_pattern["wrong_content_total"]
     )
 
+    context = state.get("request_context")
+    completed_tasks = _resolve_completed_tasks(record["today_tasks"], context)
+    current_task = _resolve_current_task(record["today_tasks"], context)
+    current_problem = _resolve_current_problem(context)
+    if current_problem and current_task is None:
+        current_task = _find_task_for_problem_id(
+            record["today_tasks"],
+            str(current_problem.get("problem_id", "")),
+        )
+    if current_task is None:
+        current_task = record["today_tasks"][0] if record["today_tasks"] else None
+    if context:
+        logger.debug(
+            "chat request context applied in classify",
+            extra={
+                "student_id": student_id,
+                "completed_task_count": len(completed_tasks),
+                "has_current_task": current_task is not None,
+                "current_task_remaining_count": _context_value(
+                    context,
+                    "current_task_remaining_count",
+                ),
+                "has_current_problem": current_problem is not None,
+            },
+        )
+
     logger.info(
         "classify 노드 완료",
         extra={
             "student_id": student_id,
             "segment": segment.value,
             "grade_group": grade_group.value,
+            "duration_ms": _elapsed_ms(started),
         },
     )
 
@@ -199,3 +229,7 @@ def _ref_value(ref: TaskRef | dict, field: str) -> str | None:
     if isinstance(ref, dict):
         return ref.get(field)
     return getattr(ref, field, None)
+
+
+def _elapsed_ms(started: float) -> int:
+    return round((perf_counter() - started) * 1000)

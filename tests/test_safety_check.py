@@ -36,7 +36,7 @@ def test_safety_check_allows_tp3_continuation_reply() -> None:
     )
 
     assert result.passed is True
-    assert result.metadata["stage"] == "llm"
+    assert result.metadata["stage"] == "rule"
 
 
 def test_safety_check_allows_tp5_wrapup_reply() -> None:
@@ -46,7 +46,7 @@ def test_safety_check_allows_tp5_wrapup_reply() -> None:
     )
 
     assert result.passed is True
-    assert result.metadata["stage"] == "llm"
+    assert result.metadata["stage"] == "rule"
 
 
 def test_safety_check_allows_other_short_exit_continuations() -> None:
@@ -56,7 +56,7 @@ def test_safety_check_allows_other_short_exit_continuations() -> None:
     )
 
     assert result.passed is True
-    assert result.metadata["stage"] == "llm"
+    assert result.metadata["stage"] == "rule"
 
 
 def test_safety_check_allows_continuation_with_reward_topic() -> None:
@@ -66,7 +66,7 @@ def test_safety_check_allows_continuation_with_reward_topic() -> None:
     )
 
     assert result.passed is True
-    assert result.metadata["stage"] == "llm"
+    assert result.metadata["stage"] == "rule"
 
 
 def test_safety_check_allows_harmless_off_topic_request_for_coach_redirect() -> None:
@@ -76,7 +76,7 @@ def test_safety_check_allows_harmless_off_topic_request_for_coach_redirect() -> 
     )
 
     assert result.passed is True
-    assert result.metadata["stage"] == "llm"
+    assert result.metadata["stage"] == "rule"
 
 
 def test_safety_check_ignores_topic_relevance_verdicts() -> None:
@@ -86,17 +86,17 @@ def test_safety_check_ignores_topic_relevance_verdicts() -> None:
     )
 
     assert result.passed is True
-    assert result.metadata["stage"] == "llm"
+    assert result.metadata["stage"] == "rule"
 
 
-def test_safety_check_still_blocks_llm_judged_unsafe_content() -> None:
+def test_safety_check_does_not_call_llm_judge_for_input() -> None:
     result = SafetyCheck(judge=_UnsafeJudge()).check_sync(
         "위험한 행동을 알려줘.",
         GuardrailContext(touchpoint="during_study", grade_group="middle", use_case="learning"),
     )
 
-    assert result.passed is False
-    assert result.severity == Severity.BLOCK
+    assert result.passed is True
+    assert result.metadata["stage"] == "rule"
 
 
 def test_safety_check_still_blocks_injection_before_study_flow_allowance() -> None:

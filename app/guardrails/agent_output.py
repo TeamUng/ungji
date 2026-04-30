@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from collections.abc import Callable, Sequence
+from time import perf_counter
 from typing import Any
 
 from langchain_core.messages import HumanMessage
@@ -31,7 +32,19 @@ def guarded_invoke(
     max_repairs: int = 1,
 ) -> Any:
     """Invoke an agent LLM and centrally retry once when output guardrails warn."""
+    started = perf_counter()
     response = runnable.invoke(list(messages))
+    logger.info(
+        "coach llm call completed",
+        extra={
+            "student_id": state["student_id"],
+            "thread_id": state["thread_id"],
+            "agent_name": agent_name,
+            "touchpoint": state["current_touchpoint"].value,
+            "attempt": 0,
+            "duration_ms": _elapsed_ms(started),
+        },
+    )
 
     for attempt in range(max_repairs + 1):
         output_text = render_output(response)
@@ -68,10 +81,22 @@ def guarded_invoke(
                 "reasons": reasons,
             },
         )
+        repair_started = perf_counter()
         response = runnable.invoke([
             *messages,
             HumanMessage(content=_build_repair_message(reasons, output_text)),
         ])
+        logger.info(
+            "coach llm repair call completed",
+            extra={
+                "student_id": state["student_id"],
+                "thread_id": state["thread_id"],
+                "agent_name": agent_name,
+                "touchpoint": state["current_touchpoint"].value,
+                "attempt": attempt + 1,
+                "duration_ms": _elapsed_ms(repair_started),
+            },
+        )
 
     return response
 
@@ -85,7 +110,20 @@ def check_agent_output(
     from app.guardrails import build_pipeline
 
     context = _context_from_state(state, agent_name=agent_name)
-    return build_pipeline(context).check_output_sync(output_text, context)
+    started = perf_counter()
+    result = build_pipeline(context).check_output_sync(output_text, context)
+    logger.info(
+        "agent output guard completed",
+        extra={
+            "student_id": state["student_id"],
+            "thread_id": state["thread_id"],
+            "agent_name": agent_name,
+            "touchpoint": state["current_touchpoint"].value,
+            "passed": result.passed,
+            "duration_ms": _elapsed_ms(started),
+        },
+    )
+    return result
 
 
 def check_agent_input_sync(
@@ -98,7 +136,19 @@ def check_agent_input_sync(
     from app.guardrails import build_pipeline
 
     context = _context_from_state(state, agent_name=agent_name)
+    started = perf_counter()
     result = build_pipeline(context).check_input_sync(input_text, context)
+    logger.info(
+        "agent input guard completed",
+        extra={
+            "student_id": state["student_id"],
+            "thread_id": state["thread_id"],
+            "agent_name": agent_name,
+            "touchpoint": state["current_touchpoint"].value,
+            "passed": result.passed,
+            "duration_ms": _elapsed_ms(started),
+        },
+    )
     if result.passed:
         return None
 
@@ -162,3 +212,7 @@ def _build_repair_message(
         "새 문제, 새 예시, 새 미션, 새 퀴즈, 교과서 페이지, 새 과제를 만들지 마세요.\n\n"
         f"차단된 원문:\n{output_text}"
     )
+
+
+def _elapsed_ms(started: float) -> int:
+    return round((perf_counter() - started) * 1000)

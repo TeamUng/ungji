@@ -80,8 +80,7 @@ export type DemoStepId =
   | "learning"
   | "help"
   | "complete"
-  | "exit"
-  | "finish";
+  | "exit";
 
 export type ChatAdapterContext = {
   caseId: DemoCaseId;

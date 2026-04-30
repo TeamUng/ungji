@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from time import perf_counter
+
 from fastapi import APIRouter, HTTPException
 from fastapi.responses import StreamingResponse
 from langchain_core.messages import HumanMessage
@@ -16,6 +18,7 @@ router = APIRouter()
 
 @router.post("/chat")
 async def chat(request: ChatRequest) -> StreamingResponse:
+    request_started = perf_counter()
     # student_id 존재 여부를 스트리밍 전에 검증한다
     try:
         load_student(request.student_id)
@@ -82,7 +85,26 @@ async def chat(request: ChatRequest) -> StreamingResponse:
                         continue
                     response = node_output.get("response")
                     if response is not None:
+                        logger.info(
+                            "chat sse response yield",
+                            extra={
+                                "student_id": request.student_id,
+                                "thread_id": request.thread_id,
+                                "touchpoint": request.current_touchpoint.value,
+                                "message_count": len(response.messages),
+                                "duration_ms": _elapsed_ms(request_started),
+                            },
+                        )
                         yield f"data: {response.model_dump_json()}\n\n"
+            logger.info(
+                "chat stream completed",
+                extra={
+                    "student_id": request.student_id,
+                    "thread_id": request.thread_id,
+                    "touchpoint": request.current_touchpoint.value,
+                    "duration_ms": _elapsed_ms(request_started),
+                },
+            )
         except Exception:
             logger.exception(
                 "chat 스트리밍 오류",
@@ -91,3 +113,7 @@ async def chat(request: ChatRequest) -> StreamingResponse:
             raise
 
     return StreamingResponse(generate(), media_type="text/event-stream")
+
+
+def _elapsed_ms(started: float) -> int:
+    return round((perf_counter() - started) * 1000)
