@@ -7,6 +7,7 @@ from langchain_core.messages import HumanMessage
 from app.core.logging import get_logger
 from app.data.loader import load_student
 from app.schemas.chat import ChatRequest
+from app.services.decision_policy import classify_message_event
 from app.services.graph import graph
 
 logger = get_logger(__name__)
@@ -21,14 +22,35 @@ async def chat(request: ChatRequest) -> StreamingResponse:
     except KeyError:
         raise HTTPException(status_code=404, detail=f"student not found: {request.student_id}")
 
+    message_event = classify_message_event(
+        request.message.type,
+        request.message.content,
+    )
+    logger.info(
+        "chat request accepted",
+        extra={
+            "student_id": request.student_id,
+            "thread_id": request.thread_id,
+            "use_case": request.use_case.value,
+            "touchpoint": request.current_touchpoint.value,
+            "message_type": message_event.message_type.value,
+            "message_source": message_event.source,
+            "append_human_message": message_event.should_append_human_message,
+            "input_guard_candidate": message_event.should_check_input_guard,
+        },
+    )
+
     initial_state: dict = {
         "thread_id": request.thread_id,
         "student_id": request.student_id,
         "use_case": request.use_case,
         "current_touchpoint": request.current_touchpoint,
+        "current_message_type": message_event.message_type,
+        "current_message_source": message_event.source,
+        "current_message_requires_input_guard": message_event.should_check_input_guard,
         "chat_history": (
-            [HumanMessage(content=request.message.content)]
-            if request.message.content
+            [HumanMessage(content=message_event.content)]
+            if message_event.should_append_human_message
             else []
         ),
         "response": None,
@@ -46,6 +68,8 @@ async def chat(request: ChatRequest) -> StreamingResponse:
             "student_id": request.student_id,
             "use_case": request.use_case.value,
             "touchpoint": request.current_touchpoint.value,
+            "message_type": message_event.message_type.value,
+            "message_source": message_event.source,
         },
     }
 

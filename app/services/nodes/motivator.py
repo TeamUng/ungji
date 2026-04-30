@@ -6,21 +6,17 @@ from app.core.enums import Touchpoint, UseCase
 from app.core.logging import get_logger
 from app.guardrails.agent_output import check_agent_input_sync, guarded_invoke
 from app.schemas.chat import ChatResponse, ChatState, Task
+from app.services.decision_policy import (
+    make_motivator_decision as _make_motivator_decision,
+    remaining_tasks,
+    should_check_latest_input,
+)
 from app.services.nodes.common import make_chat_response, make_text
 from app.services.prompts.agents import MOTIVATOR_ROLE, build_system_prompt
 
 logger = get_logger(__name__)
 
 _HISTORY_WINDOW = 20
-
-
-def _task_key(task: Task | dict) -> tuple[str, str]:
-    return str(task.get("subject", "")), str(task.get("unit", ""))
-
-
-def _remaining_tasks(today_tasks: list[Task] | list[dict], completed_tasks: list[Task] | list[dict]) -> list:
-    completed_keys = {_task_key(task) for task in completed_tasks}
-    return [task for task in today_tasks if _task_key(task) not in completed_keys]
 
 
 def _task_lines(tasks: list[Task] | list[dict]) -> str:
@@ -40,52 +36,6 @@ def _task_lines(tasks: list[Task] | list[dict]) -> str:
             f"{task.get('estimated_time', '')}분{score_info})"
         )
     return "\n".join(lines)
-
-
-def _make_motivator_decision(state: ChatState) -> dict:
-    """Decide the motivator intent before asking the LLM to write student text."""
-    touchpoint = state.get("current_touchpoint", Touchpoint.TP1)
-    today_tasks = state.get("today_tasks", [])
-    completed_tasks = state.get("completed_tasks", [])
-    remaining = _remaining_tasks(today_tasks, completed_tasks)
-    current_task = state.get("current_task")
-
-    if touchpoint == Touchpoint.TP3:
-        return {
-            "intent": "retain_current_task",
-            "target_task": current_task,
-            "candidate_tasks": [current_task] if current_task else [],
-            "student_goal": "이탈 이벤트에 공감하되 현재 단원 안의 아주 작은 행동 하나로 이어가게 한다.",
-            "forbidden": ["나가기 방법 안내", "새 학습 제안", "문제풀이 힌트로 바로 진입"],
-        }
-
-    if remaining:
-        return {
-            "intent": "recommend_next_task",
-            "target_task": remaining[0] if len(remaining) == 1 else None,
-            "candidate_tasks": remaining,
-            "student_goal": "남은 오늘의 학습 중 하나를 부담 낮게 이어서 시작하게 한다.",
-            "forbidden": ["완료한 단원 추천", "새 단원 생성", "나가기 버튼 제안"],
-        }
-
-    has_wrong_answers = state.get("has_wrong_answers", False)
-    wrong_done_today = state.get("wrong_content_done_today", False)
-    if has_wrong_answers and not wrong_done_today:
-        return {
-            "intent": "suggest_review",
-            "target_task": None,
-            "candidate_tasks": [],
-            "student_goal": "남은 오답/복습 콘텐츠를 아주 부담 낮게 이어가게 한다.",
-            "forbidden": ["새 단원 추천", "새 문제 생성", "별도 활동 제안", "나가기 버튼 제안"],
-        }
-
-    return {
-        "intent": "wrap_up_today",
-        "target_task": None,
-        "candidate_tasks": [],
-        "student_goal": "오늘의 학습 완료를 인정하고 따뜻하게 마무리한다.",
-        "forbidden": ["새 단원 추천", "새 문제 생성", "별도 활동 제안", "나가기 버튼 제안"],
-    }
 
 
 def _decision_lines(decision: dict) -> str:
@@ -137,7 +87,7 @@ def motivator(state: ChatState) -> ChatResponse:
     chat_history = state.get("chat_history", [])
     latest_student_input = _latest_student_message(chat_history).strip()
 
-    if latest_student_input:
+    if should_check_latest_input(state, latest_student_input):
         blocked_message = check_agent_input_sync(
             latest_student_input,
             state,
@@ -210,7 +160,7 @@ def _situation_chat(state: ChatState) -> str:
     latest = _latest_student_message(state.get("chat_history", []))
     today_tasks = state["today_tasks"]
     completed_tasks = state["completed_tasks"]
-    remaining = _remaining_tasks(today_tasks, completed_tasks)
+    remaining = remaining_tasks(today_tasks, completed_tasks)
     active_tasks = remaining if completed_tasks else today_tasks
 
     if touchpoint == Touchpoint.TP3:
@@ -277,7 +227,7 @@ def _situation_tp2(state: ChatState) -> str:
     call_name = _student_call_name(str(profile.get("name", "")))
     today_tasks = state["today_tasks"]
     completed_tasks = state["completed_tasks"]
-    remaining = _remaining_tasks(today_tasks, completed_tasks)
+    remaining = remaining_tasks(today_tasks, completed_tasks)
     decision = _make_motivator_decision(state)
 
     if remaining:
@@ -306,7 +256,7 @@ def _situation_tp3(state: ChatState) -> str:
     current_task = state.get("current_task")
     today_tasks = state["today_tasks"]
     completed_tasks = state["completed_tasks"]
-    remaining_count = len(_remaining_tasks(today_tasks, completed_tasks))
+    remaining_count = len(remaining_tasks(today_tasks, completed_tasks))
     decision = _make_motivator_decision(state)
 
     if current_task:
@@ -333,7 +283,7 @@ def _situation_tp5(state: ChatState) -> str:
     call_name = _student_call_name(str(profile.get("name", "")))
     today_tasks = state["today_tasks"]
     completed_tasks = state["completed_tasks"]
-    remaining = _remaining_tasks(today_tasks, completed_tasks)
+    remaining = remaining_tasks(today_tasks, completed_tasks)
     wrong_summary = _build_wrong_answer_summary(state)
     decision = _make_motivator_decision(state)
 

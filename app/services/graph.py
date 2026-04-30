@@ -4,9 +4,9 @@ from langchain_core.messages import AIMessage
 from langgraph.checkpoint.memory import InMemorySaver
 from langgraph.graph import START, StateGraph
 
-from app.core.enums import Touchpoint, UseCase
 from app.core.logging import get_logger
 from app.schemas.chat import ChatResponse, ChatState
+from app.services.decision_policy import entry_route, route_agent
 from app.services.nodes.classify import classify
 from app.services.nodes.common import make_chat_response
 from app.services.nodes.helper import helper
@@ -50,44 +50,14 @@ def _response_to_chat_text(response: ChatResponse) -> str:
     return "\n\n".join(chunk for chunk in chunks if chunk)
 
 
-def _route(state: ChatState) -> str:
-    use_case = state["use_case"]
-    touchpoint = state["current_touchpoint"]
-
-    if use_case == UseCase.LEARNING:
-        if touchpoint != Touchpoint.TP4:
-            raise ValueError(
-                f"use_case=learning only allows tp4. Received: {touchpoint}"
-            )
-        return "helper"
-
-    if use_case == UseCase.CHAT:
-        if touchpoint == Touchpoint.TP4:
-            return "helper"
-        return "motivator"
-
-    if touchpoint == Touchpoint.TP4:
-        raise ValueError("use_case=talk does not allow tp4.")
-    if touchpoint in (Touchpoint.TP1, Touchpoint.TP2, Touchpoint.TP3, Touchpoint.TP5):
-        return "motivator"
-
-    raise ValueError(f"Unsupported touchpoint: {touchpoint}")
-
-
-def _entry_route(state: ChatState) -> str:
-    if state.get("student_profile") is None:
-        return "classify"
-    return _route(state)
-
-
 _builder = StateGraph(ChatState)
 
 _builder.add_node("classify", classify)
 _builder.add_node("motivator", _motivator_node)
 _builder.add_node("helper", _helper_node)
 
-_builder.add_conditional_edges(START, _entry_route)
-_builder.add_conditional_edges("classify", _route)
+_builder.add_conditional_edges(START, entry_route)
+_builder.add_conditional_edges("classify", route_agent)
 
 memory = InMemorySaver()
 graph = _builder.compile(checkpointer=memory)

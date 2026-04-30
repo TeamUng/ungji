@@ -62,6 +62,9 @@ class ChatState(TypedDict):
     segment: Segment
     chat_history: Annotated[list[BaseMessage], add_messages]
     current_touchpoint: Touchpoint
+    current_message_type: MessageType | None
+    current_message_source: str | None
+    current_message_requires_input_guard: bool | None
 
     # Node output
     response: ChatResponse | None

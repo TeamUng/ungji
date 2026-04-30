@@ -13,6 +13,10 @@ from app.services.nodes.common import (
     make_image_card,
     make_text,
 )
+from app.services.decision_policy import (
+    make_helper_decision as _make_helper_decision,
+    should_check_latest_input,
+)
 from app.services.prompts.agents import HELPER_ROLE, build_system_prompt
 
 logger = get_logger(__name__)
@@ -80,7 +84,10 @@ def helper(state: ChatState) -> dict:
             current_problem = {}
         result["current_problem"] = current_problem
 
-    if last_content and not app_controlled_problem_selection:
+    if (
+        should_check_latest_input(state, last_content)
+        and not app_controlled_problem_selection
+    ):
         blocked_message = check_agent_input_sync(
             last_content,
             state,
@@ -121,54 +128,6 @@ def _try_load_problem(problem_id: str) -> dict | None:
         return dict(load_problem(problem_id))
     except (KeyError, ValueError):
         return None
-
-
-def _make_helper_decision(
-    state: ChatState,
-    problem: dict,
-    last_content: str,
-    turn_count: int,
-) -> dict:
-    """Decide the TP4 helper mode before asking the LLM to write student text."""
-    if not problem:
-        return {
-            "intent": "ask_for_problem",
-            "required_tool": "send_text",
-            "student_goal": "코칭을 시작하기 전에 학생이 현재 풀고 있는 문제를 선택하거나 열도록 안내한다.",
-            "target_problem": None,
-            "forbidden": [
-                "문제를 새로 만들기",
-                "확인된 문제 없이 막힌 이유 선택지 제시하기",
-                "정답이나 해설 알려주기",
-            ],
-        }
-
-    if turn_count == 0:
-        return {
-            "intent": "collect_stuck_cause",
-            "required_tool": "send_causes",
-            "max_choices": 3,
-            "student_goal": "힌트를 주기 전에 학생이 어디에서 막혔는지 고를 수 있게 돕는다.",
-            "target_problem": problem,
-            "forbidden": [
-                "정답 알려주기",
-                "전체 풀이 설명하기",
-                "선택지를 3개보다 많이 제시하기",
-            ],
-        }
-
-    return {
-        "intent": "coach_next_step",
-        "required_tool": "send_text",
-        "student_goal": "학생의 최근 말에 이어서 아주 작은 다음 단계나 질문 하나를 제시한다.",
-        "target_problem": problem,
-        "latest_student_message": last_content,
-        "forbidden": [
-            "정답 알려주기",
-            "전체 풀이 설명하기",
-            "새 문제 만들기",
-        ],
-    }
 
 
 def _helper_decision_lines(decision: dict) -> str:
