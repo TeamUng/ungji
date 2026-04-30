@@ -88,6 +88,33 @@ def check_agent_output(
     return build_pipeline(context).check_output_sync(output_text, context)
 
 
+def check_agent_input_sync(
+    input_text: str,
+    state: ChatState,
+    *,
+    agent_name: str,
+) -> str | None:
+    """Return a blocked message when the latest student input is unsafe."""
+    from app.guardrails import build_pipeline
+
+    context = _context_from_state(state, agent_name=agent_name)
+    result = build_pipeline(context).check_input_sync(input_text, context)
+    if result.passed:
+        return None
+
+    logger.info(
+        "Agent input blocked by guardrail",
+        extra={
+            "student_id": state["student_id"],
+            "thread_id": state["thread_id"],
+            "agent_name": agent_name,
+            "touchpoint": state["current_touchpoint"].value,
+            "reasons": [guard.reason for guard in result.guard_results if guard.reason],
+        },
+    )
+    return result.blocked_message
+
+
 def _context_from_state(
     state: ChatState,
     *,

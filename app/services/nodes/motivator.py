@@ -4,7 +4,7 @@ from langchain_core.messages import HumanMessage, SystemMessage
 
 from app.core.enums import Touchpoint, UseCase
 from app.core.logging import get_logger
-from app.guardrails.agent_output import guarded_invoke
+from app.guardrails.agent_output import check_agent_input_sync, guarded_invoke
 from app.schemas.chat import ChatResponse, ChatState, Task
 from app.services.nodes.common import make_chat_response, make_text
 from app.services.prompts.agents import MOTIVATOR_ROLE, build_system_prompt
@@ -135,6 +135,24 @@ def motivator(state: ChatState) -> ChatResponse:
     segment = state["segment"]
     touchpoint = state["current_touchpoint"]
     chat_history = state.get("chat_history", [])
+    latest_student_input = _latest_student_message(chat_history).strip()
+
+    if latest_student_input:
+        blocked_message = check_agent_input_sync(
+            latest_student_input,
+            state,
+            agent_name="motivator",
+        )
+        if blocked_message:
+            logger.info(
+                "motivator input guard returned blocked response",
+                extra={
+                    "student_id": state["student_id"],
+                    "thread_id": state["thread_id"],
+                    "touchpoint": touchpoint.value if touchpoint else "chat",
+                },
+            )
+            return make_chat_response(state["thread_id"], [make_text(blocked_message)])
 
     system_prompt = build_system_prompt(grade_group, segment, MOTIVATOR_ROLE)
     situation = _get_situation(state)

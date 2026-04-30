@@ -149,3 +149,70 @@ class SafetyCheck:
             passed=True, guard_name=self.name, severity=Severity.LOG,
             metadata={"stage": "llm"},
         )
+
+    def check_sync(self, text: str, context: GuardrailContext) -> GuardResult:
+        """Synchronous variant for LangGraph sync nodes."""
+        # Stage 1: rule-based
+        found, token = rb.has_profanity(text)
+        if found:
+            logger.info("SafetyCheck BLOCK (profanity) session=%s", context.session_id)
+            return GuardResult(
+                passed=False, guard_name=self.name, severity=Severity.BLOCK,
+                reason=f"Profanity: {token!r}", metadata={"stage": "rule", "match": token},
+            )
+
+        found, snippet = rb.has_prompt_injection(text)
+        if found:
+            logger.info("SafetyCheck BLOCK (injection) session=%s", context.session_id)
+            return GuardResult(
+                passed=False, guard_name=self.name, severity=Severity.BLOCK,
+                reason=f"Injection pattern: {snippet!r}", metadata={"stage": "rule", "match": snippet},
+            )
+
+        verdict = rb.quick_topic_verdict(text)
+        if verdict == "off_topic":
+            logger.info("SafetyCheck BLOCK (off_topic) session=%s", context.session_id)
+            return GuardResult(
+                passed=False, guard_name=self.name, severity=Severity.BLOCK,
+                reason="Clearly off-topic (rule heuristic)", metadata={"stage": "rule"},
+            )
+
+        if verdict == "on_topic":
+            return GuardResult(
+                passed=True, guard_name=self.name, severity=Severity.LOG,
+                metadata={"stage": "rule", "shortcut": "greeting"},
+            )
+
+        # Stage 2: LLM
+        system_prompt = (
+            _LIGHTHEARTED_SYSTEM if context.group == "lighthearted" else _STUDY_FOCUSED_SYSTEM
+        )
+        try:
+            llm_verdict = self._judge.evaluate_sync(system_prompt, text)
+        except LLMJudgeError as exc:
+            logger.warning("SafetyCheck LLM failed (fail-open) session=%s error=%s", context.session_id, exc)
+            return GuardResult(
+                passed=True, guard_name=self.name, severity=Severity.WARN,
+                reason="LLM judge unavailable ??fail-open", metadata={"stage": "llm", "error": str(exc)},
+            )
+
+        failures, reasons = [], []
+        for dim in ("content_safety", "prompt_injection", "topic_relevance"):
+            d = llm_verdict.get(dim, {})
+            if not d.get("passed", True):
+                failures.append(dim)
+                if d.get("reason"):
+                    reasons.append(f"{dim}: {d['reason']}")
+
+        if failures:
+            logger.info("SafetyCheck BLOCK (llm) session=%s dims=%s", context.session_id, failures)
+            return GuardResult(
+                passed=False, guard_name=self.name, severity=Severity.BLOCK,
+                reason="; ".join(reasons) or str(failures),
+                metadata={"stage": "llm", "failed_dimensions": failures},
+            )
+
+        return GuardResult(
+            passed=True, guard_name=self.name, severity=Severity.LOG,
+            metadata={"stage": "llm"},
+        )

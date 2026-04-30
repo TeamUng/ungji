@@ -3,8 +3,8 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 import app.guardrails
-from app.guardrails.agent_output import guarded_invoke
-from app.guardrails.models import GuardResult, OutputCheckResult, Severity
+from app.guardrails.agent_output import check_agent_input_sync, guarded_invoke
+from app.guardrails.models import GuardResult, InputCheckResult, OutputCheckResult, Severity
 from app.core.enums import GradeGroup, Segment, Touchpoint
 
 
@@ -47,6 +47,18 @@ class FakePipeline:
         return OutputCheckResult(passed=True, guard_results=[])
 
 
+class FakeInputPipeline:
+    def __init__(self, result: InputCheckResult):
+        self.result = result
+        self.contexts = []
+        self.checked_texts = []
+
+    def check_input_sync(self, text, context):
+        self.contexts.append(context)
+        self.checked_texts.append(text)
+        return self.result
+
+
 def test_guarded_invoke_regenerates_with_guardrail_reasons(monkeypatch, make_chat_state, case1_student):
     pipeline = FakePipeline()
     monkeypatch.setattr(app.guardrails, "build_pipeline", lambda context: pipeline)
@@ -74,3 +86,33 @@ def test_guarded_invoke_regenerates_with_guardrail_reasons(monkeypatch, make_cha
     assert pipeline.checked_texts == ["bad meta response", "clean child response"]
     assert pipeline.contexts[0].agent_name == "motivator"
     assert pipeline.contexts[0].touchpoint == "home_screen"
+
+
+def test_check_agent_input_sync_returns_blocked_message(monkeypatch, make_chat_state, case1_student):
+    pipeline = FakeInputPipeline(
+        InputCheckResult(
+            passed=False,
+            blocked_message="blocked",
+            guard_results=[
+                GuardResult(
+                    passed=False,
+                    guard_name="safety_check",
+                    severity=Severity.BLOCK,
+                    reason="unsafe",
+                )
+            ],
+        )
+    )
+    monkeypatch.setattr(app.guardrails, "build_pipeline", lambda context: pipeline)
+    state = make_chat_state(
+        case1_student,
+        segment=Segment.LOW_LAZY,
+        grade_group=GradeGroup.LOWER,
+        touchpoint=Touchpoint.TP1,
+    )
+
+    blocked = check_agent_input_sync("unsafe", state, agent_name="motivator")
+
+    assert blocked == "blocked"
+    assert pipeline.checked_texts == ["unsafe"]
+    assert pipeline.contexts[0].agent_name == "motivator"

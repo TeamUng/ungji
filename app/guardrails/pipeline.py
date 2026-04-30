@@ -69,6 +69,28 @@ class GuardrailPipeline:
                 )
         return InputCheckResult(passed=True, guard_results=results)
 
+    def check_input_sync(self, text: str, context: GuardrailContext) -> InputCheckResult:
+        """Synchronous input check for sync LangGraph nodes."""
+        results = []
+        for guard in self._input_guards:
+            if hasattr(guard, "check_sync"):
+                result = guard.check_sync(text, context)
+            else:
+                raise TypeError(f"Guard {guard.name} does not support sync input checks")
+            results.append(result)
+            if not result.passed and result.severity == Severity.BLOCK:
+                blocked_msg = _BLOCKED_MESSAGES.get(context.grade_group, _BLOCKED_MESSAGES["middle"])
+                logger.info(
+                    "Input BLOCKED guard=%s session=%s reason=%s",
+                    guard.name, context.session_id, result.reason,
+                )
+                return InputCheckResult(
+                    passed=False,
+                    guard_results=results,
+                    blocked_message=blocked_msg,
+                )
+        return InputCheckResult(passed=True, guard_results=results)
+
     async def check_output(self, text: str, context: GuardrailContext) -> OutputCheckResult:
         """Run all output guards. Callers decide whether to repair or deliver."""
         results = []

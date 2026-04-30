@@ -5,7 +5,7 @@ from langchain_core.tools import tool
 
 from app.core.logging import get_logger
 from app.data.loader import load_problem
-from app.guardrails.agent_output import guarded_invoke
+from app.guardrails.agent_output import check_agent_input_sync, guarded_invoke
 from app.schemas.chat import ChatState, ResponseMessage
 from app.services.nodes.common import (
     make_choices,
@@ -68,16 +68,38 @@ def helper(state: ChatState) -> dict:
         },
     )
 
-    result: dict = {
-        "tp4_phase": TP4_PHASE_COACHING,
-        "tp4_turn_count": turn_count + 1,
-    }
+    app_controlled_problem_selection = False
+    result: dict = {}
 
-    if current_problem is None:
-        current_problem = _try_load_problem(last_content) or {}
+    if not current_problem:
+        loaded_problem = _try_load_problem(last_content)
+        if loaded_problem:
+            current_problem = loaded_problem
+            app_controlled_problem_selection = True
+        else:
+            current_problem = {}
         result["current_problem"] = current_problem
 
-    result["helper_response"] = _coach_tp4(state, current_problem, llm)
+    if last_content and not app_controlled_problem_selection:
+        blocked_message = check_agent_input_sync(
+            last_content,
+            state,
+            agent_name="helper",
+        )
+        if blocked_message:
+            logger.info(
+                "helper input guard returned blocked response",
+                extra={
+                    "student_id": state["student_id"],
+                    "thread_id": state["thread_id"],
+                    "tp4_turn_count": turn_count,
+                },
+            )
+            return {"helper_response": [make_text(blocked_message)]}
+
+    result["tp4_phase"] = TP4_PHASE_COACHING
+    result["tp4_turn_count"] = turn_count + 1
+    result["helper_response"] = _coach_tp4(state, current_problem, last_content, turn_count, llm)
 
     logger.info(
         "helper node completed",
@@ -101,13 +123,97 @@ def _try_load_problem(problem_id: str) -> dict | None:
         return None
 
 
-def _coach_tp4(state: ChatState, problem: dict, llm) -> list[ResponseMessage]:
+def _make_helper_decision(
+    state: ChatState,
+    problem: dict,
+    last_content: str,
+    turn_count: int,
+) -> dict:
+    """Decide the TP4 helper mode before asking the LLM to write student text."""
+    if not problem:
+        return {
+            "intent": "ask_for_problem",
+            "required_tool": "send_text",
+            "student_goal": "코칭을 시작하기 전에 학생이 현재 풀고 있는 문제를 선택하거나 열도록 안내한다.",
+            "target_problem": None,
+            "forbidden": [
+                "문제를 새로 만들기",
+                "확인된 문제 없이 막힌 이유 선택지 제시하기",
+                "정답이나 해설 알려주기",
+            ],
+        }
+
+    if turn_count == 0:
+        return {
+            "intent": "collect_stuck_cause",
+            "required_tool": "send_causes",
+            "max_choices": 3,
+            "student_goal": "힌트를 주기 전에 학생이 어디에서 막혔는지 고를 수 있게 돕는다.",
+            "target_problem": problem,
+            "forbidden": [
+                "정답 알려주기",
+                "전체 풀이 설명하기",
+                "선택지를 3개보다 많이 제시하기",
+            ],
+        }
+
+    return {
+        "intent": "coach_next_step",
+        "required_tool": "send_text",
+        "student_goal": "학생의 최근 말에 이어서 아주 작은 다음 단계나 질문 하나를 제시한다.",
+        "target_problem": problem,
+        "latest_student_message": last_content,
+        "forbidden": [
+            "정답 알려주기",
+            "전체 풀이 설명하기",
+            "새 문제 만들기",
+        ],
+    }
+
+
+def _helper_decision_lines(decision: dict) -> str:
+    target_problem = decision.get("target_problem")
+    target_line = _problem_decision_summary(target_problem)
+    forbidden = ", ".join(decision.get("forbidden", [])) or "none"
+    max_choices = decision.get("max_choices")
+    max_choices_line = f"- max_choices: {max_choices}\n" if max_choices else ""
+
+    return (
+        "시스템이 먼저 확정한 helper decision:\n"
+        f"- intent: {decision['intent']}\n"
+        f"- required_tool: {decision['required_tool']}\n"
+        f"{max_choices_line}"
+        f"- student_goal: {decision['student_goal']}\n"
+        f"- target_problem: {target_line}\n"
+        f"- forbidden: {forbidden}\n\n"
+        "위 decision의 범위를 벗어나지 말고, 아이에게 그대로 보일 최종 응답만 작성해줘. "
+        "intent, required_tool, target_problem, student_goal, forbidden 같은 내부 필드명은 절대 말하지 마."
+    )
+
+
+def _problem_decision_summary(problem: dict | None) -> str:
+    if not problem:
+        return "none"
+    return (
+        f"{problem.get('problem_id', 'unknown')} | "
+        f"{problem.get('subject', 'unknown')} | "
+        f"{problem.get('unit', 'unknown')}"
+    )
+
+
+def _coach_tp4(
+    state: ChatState,
+    problem: dict,
+    last_content: str,
+    turn_count: int,
+    llm,
+) -> list[ResponseMessage]:
     """Let the LLM run TP4 as an ongoing coaching conversation."""
     profile = state["student_profile"]
     segment = state["segment"]
     grade_group = state["grade_group"]
     history = _format_recent_history(state.get("chat_history", []))
-    turn_count = int(state.get("tp4_turn_count") or 0)
+    decision = _make_helper_decision(state, problem, last_content, turn_count)
 
     system_prompt = build_system_prompt(grade_group, segment, HELPER_ROLE)
     if problem:
@@ -117,17 +223,6 @@ def _coach_tp4(state: ChatState, problem: dict, llm) -> list[ResponseMessage]:
             f"해설: {problem.get('explanation', '')}"
         )
 
-    if turn_count == 0:
-        phase_request = (
-            "나는 아직 어디서 막혔는지 말하지 않았어. "
-            "문제 ID만 눌렀어. 내가 막힌 이유를 고를 수 있게 도와줘."
-        )
-    else:
-        phase_request = (
-            "내가 방금 말한 막힌 지점에서 이어서 도와줘. "
-            "다음에 뭘 보면 좋을지 하나만 물어봐줘."
-        )
-
     call_name = _student_call_name(str(profile.get("name", "")))
     user_message = (
         f"안녕, 나는 {profile['name']}이고 {profile['grade']}학년이야.\n"
@@ -135,7 +230,7 @@ def _coach_tp4(state: ChatState, problem: dict, llm) -> list[ResponseMessage]:
         "지금 이 문제를 보다가 막혀서 도움을 받고 싶어.\n\n"
         f"{_problem_context(problem, state)}\n\n"
         f"최근 대화:\n{history}\n\n"
-        f"{phase_request}"
+        f"{_helper_decision_lines(decision)}"
     )
 
     bound_llm = llm.bind_tools([
@@ -148,15 +243,14 @@ def _coach_tp4(state: ChatState, problem: dict, llm) -> list[ResponseMessage]:
         SystemMessage(content=system_prompt),
         HumanMessage(content=user_message),
     ]
-    response = guarded_invoke(
+    response = _invoke_helper_with_decision(
         bound_llm,
         messages,
         state,
-        agent_name="helper",
-        render_output=_render_helper_output_for_guard,
+        decision,
     )
 
-    return _parse_helper_response(response)
+    return _parse_helper_response(response, required_tool=decision["required_tool"])
 
 
 def _student_call_name(name: str) -> str:
@@ -181,6 +275,79 @@ def _render_helper_output_for_guard(response) -> str:
         parts.append(f"tool:{name} args:{args}")
 
     return "\n".join(parts)
+
+
+def _invoke_helper_with_decision(
+    bound_llm,
+    messages: list,
+    state: ChatState,
+    decision: dict,
+):
+    required_tool = decision.get("required_tool")
+    response = guarded_invoke(
+        bound_llm,
+        messages,
+        state,
+        agent_name="helper",
+        render_output=_render_helper_output_for_guard,
+    )
+    if _required_tool_used(response, required_tool):
+        return response
+
+    logger.warning(
+        "helper used wrong response tool; requesting repair",
+        extra={
+            "student_id": state["student_id"],
+            "thread_id": state["thread_id"],
+            "required_tool": required_tool,
+            "actual_tools": _tool_names(response),
+        },
+    )
+    repaired_response = guarded_invoke(
+        bound_llm,
+        [
+            *messages,
+            HumanMessage(content=_build_tool_repair_message(decision)),
+        ],
+        state,
+        agent_name="helper",
+        render_output=_render_helper_output_for_guard,
+    )
+    if not _required_tool_used(repaired_response, required_tool):
+        logger.warning(
+            "helper response tool still invalid after repair",
+            extra={
+                "student_id": state["student_id"],
+                "thread_id": state["thread_id"],
+                "required_tool": required_tool,
+                "actual_tools": _tool_names(repaired_response),
+            },
+        )
+    return repaired_response
+
+
+def _required_tool_used(response, required_tool: str | None) -> bool:
+    if not required_tool:
+        return True
+    return required_tool in _tool_names(response)
+
+
+def _tool_names(response) -> list[str]:
+    names: list[str] = []
+    for tool_call in getattr(response, "tool_calls", []):
+        name = tool_call.get("name") if isinstance(tool_call, dict) else getattr(tool_call, "name", None)
+        if name:
+            names.append(str(name))
+    return names
+
+
+def _build_tool_repair_message(decision: dict) -> str:
+    required_tool = decision.get("required_tool", "send_text")
+    return (
+        "방금 helper 응답이 필요한 응답 방식과 달랐어. "
+        f"다시 응답하되 반드시 `{required_tool}` tool만 사용해. "
+        "다른 tool은 사용하지 말고, 내부 decision 필드명은 아이에게 노출하지 마."
+    )
 
 
 def _problem_context(problem: dict | None, state: ChatState) -> str:
@@ -217,12 +384,14 @@ def _format_recent_history(messages) -> str:
     return "\n".join(lines) if lines else "(이전 대화 없음)"
 
 
-def _parse_helper_response(response) -> list[ResponseMessage]:
+def _parse_helper_response(response, *, required_tool: str | None = None) -> list[ResponseMessage]:
     messages: list[ResponseMessage] = []
 
     for tool_call in getattr(response, "tool_calls", []):
         name = tool_call["name"]
         args = tool_call["args"]
+        if required_tool and name != required_tool:
+            continue
 
         if name == "send_causes":
             raw_items = args.get("items", [])

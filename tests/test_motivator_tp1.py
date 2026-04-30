@@ -116,3 +116,49 @@ def test_response_does_not_expose_segment_name(case1_student, make_chat_state, m
     content = response.messages[0].content
     assert "LOW_LAZY" not in content
     assert Segment.LOW_LAZY.value not in content
+
+
+def test_blocked_user_input_skips_motivator_llm(
+    case1_student, make_chat_state, mock_llm, monkeypatch
+):
+    import app.services.nodes.motivator as motivator_module
+
+    monkeypatch.setattr(
+        motivator_module,
+        "check_agent_input_sync",
+        lambda input_text, state, *, agent_name: "blocked input",
+    )
+    state = make_chat_state(
+        case1_student,
+        segment=Segment.LOW_LAZY,
+        grade_group=GradeGroup.LOWER,
+        use_case=UseCase.CHAT,
+        touchpoint=Touchpoint.TP1,
+    )
+    state["chat_history"] = [HumanMessage(content="unsafe text")]
+
+    response = motivator(state)
+
+    assert response.messages[0].content == "blocked input"
+    assert mock_llm.calls == []
+
+
+def test_empty_tp1_entry_skips_input_guard_and_calls_llm(
+    case1_student, make_chat_state, mock_llm, monkeypatch
+):
+    import app.services.nodes.motivator as motivator_module
+
+    def fail_if_called(*args, **kwargs):
+        raise AssertionError("input guard should not run without student input")
+
+    monkeypatch.setattr(motivator_module, "check_agent_input_sync", fail_if_called)
+    state = make_chat_state(
+        case1_student,
+        segment=Segment.LOW_LAZY,
+        grade_group=GradeGroup.LOWER,
+        touchpoint=Touchpoint.TP1,
+    )
+
+    motivator(state)
+
+    assert mock_llm.calls
