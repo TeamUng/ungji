@@ -18,6 +18,8 @@ import {
   getLowerSecondKoreanHelpChoiceMessages,
   getLowerSecondKoreanHelpInitMessages,
   getStepMessages,
+  getUpperMathHelpChoiceMessages,
+  getUpperMathHelpInitMessages,
   makeChatRequest,
   mockChatAdapter,
 } from "@/lib/mock-chat";
@@ -67,6 +69,7 @@ type DemoFlowStageId =
   | "lower_second_wrong"
   | "lower_second_corrected"
   | "lower_final"
+  | "upper_math_corrected"
   | "upper_math_complete"
   | "upper_today_done"
   | "upper_review";
@@ -129,6 +132,14 @@ function getFlowContext(
     };
   }
 
+  if (stageId === "upper_math_corrected") {
+    return {
+      flow_event: "answer_submitted",
+      answer_result: "correct",
+      today_tasks_completed: false,
+    };
+  }
+
   if (stageId === "upper_today_done") {
     return {
       flow_event: "today_completed",
@@ -178,11 +189,24 @@ function getFallbackChatMessages(
   activeTaskIndex = 0,
 ): ResponseMessage[] {
   const isUpper = caseId === "upper-math";
+  const isUpperMathHelp = isUpper && activeTaskIndex === 0;
   const isLowerSecondKoreanHelp =
     caseId === "lower-korean" && activeTaskIndex === 1;
 
   if (targetStepId !== "help") {
     return getStepMessages(caseId, targetStepId);
+  }
+
+  if (isUpperMathHelp) {
+    if (messageType === "choice") {
+      const upperMathMessages = getUpperMathHelpChoiceMessages(content);
+
+      if (upperMathMessages) {
+        return upperMathMessages;
+      }
+    } else {
+      return getUpperMathHelpInitMessages();
+    }
   }
 
   if (isLowerSecondKoreanHelp) {
@@ -355,25 +379,15 @@ function getDefaultBubbleActions(
   }
 
   if (stepId === "complete") {
-    const continueAction: PorongBubbleAction = {
-      id: "continue_next_task",
-      label: isUpper ? "국어 하러가기" : "심화 국어 도전하기",
-      action: "navigate",
-      targetStep: "learning",
-      targetTaskIndex: 1,
-    };
-
-    return isUpper
-      ? [
-          continueAction,
-          {
-            id: "end_today",
-            label: "오늘은 여기까지",
-            action: "navigate",
-            targetStep: "home",
-          },
-        ]
-      : [continueAction];
+    return [
+      {
+        id: "continue_next_task",
+        label: isUpper ? "국어 하러가기" : "심화 국어 도전하기",
+        action: "navigate",
+        targetStep: "learning",
+        targetTaskIndex: 1,
+      },
+    ];
   }
 
   if (stepId === "exit") {
@@ -522,6 +536,9 @@ export function SmartAllCoachApp({
   const lowerSecondResolutionTimerRef = useRef<ReturnType<
     typeof setTimeout
   > | null>(null);
+  const upperMathCompletionTimerRef = useRef<ReturnType<
+    typeof setTimeout
+  > | null>(null);
   const resolvedChatAdapter =
     demoMode === "script" ? mockChatAdapter : chatAdapter ?? defaultChatAdapter;
 
@@ -649,9 +666,19 @@ export function SmartAllCoachApp({
     }
   }, []);
 
+  const clearUpperMathCompletionTimer = useCallback(() => {
+    if (upperMathCompletionTimerRef.current) {
+      clearTimeout(upperMathCompletionTimerRef.current);
+      upperMathCompletionTimerRef.current = null;
+    }
+  }, []);
+
   useEffect(() => {
-    return clearLowerSecondResolutionTimer;
-  }, [clearLowerSecondResolutionTimer]);
+    return () => {
+      clearLowerSecondResolutionTimer();
+      clearUpperMathCompletionTimer();
+    };
+  }, [clearLowerSecondResolutionTimer, clearUpperMathCompletionTimer]);
 
   const sendToAdapter = async ({
     targetStepId,
@@ -752,6 +779,7 @@ export function SmartAllCoachApp({
 
   const setCase = useCallback((nextCaseId: DemoCaseId) => {
     clearLowerSecondResolutionTimer();
+    clearUpperMathCompletionTimer();
     stopCurrentStream();
     setDemoRunSeq((current) => current + 1);
     setCaseId(nextCaseId);
@@ -763,7 +791,11 @@ export function SmartAllCoachApp({
     setBubbleResponseMessages(null);
     setLowerSecondSelectedChoiceId(null);
     setLowerSecondCoachReady(false);
-  }, [clearLowerSecondResolutionTimer, stopCurrentStream]);
+  }, [
+    clearLowerSecondResolutionTimer,
+    clearUpperMathCompletionTimer,
+    stopCurrentStream,
+  ]);
 
   useEffect(() => {
     const handleDemoShortcut = (event: KeyboardEvent) => {
@@ -819,6 +851,7 @@ export function SmartAllCoachApp({
 
   const openTask = (taskIndex: number) => {
     clearLowerSecondResolutionTimer();
+    clearUpperMathCompletionTimer();
     stopCurrentStream();
     setActiveTaskIndex(taskIndex);
     setStepId("learning");
@@ -1036,8 +1069,18 @@ export function SmartAllCoachApp({
     }
 
     if (activeTaskIndex === 0) {
-      setFlowStageId("upper_math_complete");
-      setStepId("complete");
+      if (flowStageId === "upper_math_corrected") {
+        return;
+      }
+
+      clearUpperMathCompletionTimer();
+      setFlowStageId("upper_math_corrected");
+      setStepId("learning");
+      upperMathCompletionTimerRef.current = setTimeout(() => {
+        upperMathCompletionTimerRef.current = null;
+        setFlowStageId("upper_math_complete");
+        setStepId("complete");
+      }, 3000);
       return;
     }
 
@@ -1503,6 +1546,8 @@ function LearningScreen({
         ? "incorrect"
         : flowStageId === "lower_second_corrected"
           ? "corrected"
+          : flowStageId === "upper_math_corrected"
+            ? "correct"
           : null;
   const primaryActionLabel = "완료";
 
@@ -1537,7 +1582,7 @@ function LearningScreen({
           {isUpper && subject === "국어" ? (
             <UpperKoreanProblem onAnswerSubmit={() => onAnswerSubmit("correct")} />
           ) : isUpper ? (
-            <UpperMathProblem />
+            <UpperMathProblem answerResult={answerResult} />
           ) : (
             <LowerKoreanProblem
               taskIndex={activeTaskIndex}
@@ -1677,7 +1722,11 @@ function LowerKoreanProblem({
   );
 }
 
-function UpperMathProblem() {
+function UpperMathProblem({
+  answerResult,
+}: {
+  answerResult: AnswerResult;
+}) {
   return (
     <InteractionZone
       id="problem-board"
@@ -1686,6 +1735,9 @@ function UpperMathProblem() {
       className="problem-zone"
     >
       <article className="problem-card math-problem">
+        {answerResult === "correct" && (
+          <span className="answer-result-mark circle" aria-hidden="true" />
+        )}
         <span className="problem-count">문제 3</span>
         <h1>소금물의 양에 대한 소금의 양의 비율을 소수로 쓰세요.</h1>
         <p>
@@ -1764,12 +1816,15 @@ function CompletionScreen({
   const isReview = flowStageId === "upper_review";
   const isTodayDone = flowStageId === "upper_today_done";
   const isLowerAllDone = flowStageId === "lower_final";
+  const isUpperMathDone = flowStageId === "upper_math_complete";
   const description = isReview
     ? "오늘 틀렸던 문제만 가볍게 다시 볼 수 있어요."
     : isTodayDone
       ? "수학과 국어를 끝까지 해낸 뒤, 짧은 복습으로 마무리할 수 있어요."
       : isLowerAllDone
         ? "오늘의 학습 4개를 전부 완료했어요~"
+      : isUpperMathDone
+        ? "오늘의 학습 4개 중 1개를 완료했어요~"
       : isUpper
         ? "AI 코치가 다음 학습을 짧게 이어갈 수 있게 추천해 줄 거예요."
         : "오늘의 학습 4개 중 1개를 완료했어요~";
@@ -1798,6 +1853,8 @@ function CompletionScreen({
                 ? "오늘의 학습을 모두 마쳤어요"
                 : isLowerAllDone
                   ? "모든 학습을 완료했어요!"
+                : isUpperMathDone
+                  ? "수학을 완료했어요"
                 : isUpper
                 ? "비와 비율을 끝냈어요"
                 : "국어를 완료했어요"}

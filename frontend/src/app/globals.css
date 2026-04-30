@@ -216,6 +216,12 @@ button {
     linear-gradient(135deg, #fff4a6 0%, #ffeb7d 46%, #fff6b9 100%);
 }
 
+.theme-upper .home-screen {
+  background:
+    radial-gradient(circle at 18% 18%, rgba(255, 255, 255, 0.68), transparent 24%),
+    linear-gradient(135deg, #f6fbff 0%, #dbeeff 100%);
+}
+
 .home-screen,
 .completion-screen {
   overflow: auto;
@@ -1520,7 +1526,7 @@ button {
   position: absolute;
   right: 12px;
   bottom: 122px;
-  width: min(310px, 70vw);
+  width: min(340px, 72vw);
   display: grid;
   gap: 10px;
   padding: 16px;
@@ -1557,9 +1563,9 @@ button {
 .porong-speech-bubble p {
   margin: 0;
   color: #20242c;
-  font-size: 17px;
-  font-weight: 950;
-  line-height: 1.45;
+  font-size: 16px;
+  font-weight: 900;
+  line-height: 1.52;
 }
 
 .porong-speech-bubble strong,

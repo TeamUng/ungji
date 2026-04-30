@@ -159,7 +159,7 @@ export function getStepMessages(
       {
         type: "text",
         content: isUpper
-          ? `${studentName}아, 오늘은 수학 비와 비율부터 차근차근 시작해보자. 조금 어려워 보여도 한 단계씩 보면 충분히 할 수 있어.`
+          ? `${studentName} 학생 환영해요~ 수학에서 자주 틀렸던 비와 비율 챕터부터 같이 해볼까요? 제가 옆에서 쉽게 알려드릴게요!`
           : "성준이가 잘하는 국어부터 시작해보자. 문장의 짜임 부분은 성준이라면 정답을 모두 맞힐 수 있을 것 같아!",
       },
       {
@@ -179,25 +179,17 @@ export function getStepMessages(
       {
         type: "text",
         content: isUpper
-          ? `${studentName}아, 어려운 수학을 끝까지 해낸 게 정말 좋아. 다음은 국어 정보와 표현 판단하기로 이어가 보자.`
+          ? "잘했어요! 어려웠던 비와 비율 문제를 끝까지 풀었네요. 다음은 아연 학생이 잘하는 국어를 해볼까요? 아마 다 맞을 수 있을 거에요!"
           : "너무 잘했어. 성준이라면 더 어려운 문제도 잘 할 것 같아. 같이 상위권 문제에 도전해보자",
       },
       {
         type: "choices",
-        items: isUpper
-          ? [
-              {
-                id: "continue_next_task",
-                label: "국어로 이동하기",
-              },
-              { id: "end_today", label: "오늘은 여기까지" },
-            ]
-          : [
-              {
-                id: "continue_next_task",
-                label: "심화 국어 도전하기",
-              },
-            ],
+        items: [
+          {
+            id: "continue_next_task",
+            label: isUpper ? "국어 하러가기" : "심화 국어 도전하기",
+          },
+        ],
       },
     ];
   }
@@ -258,6 +250,10 @@ function getMockConversationMessages(
   if (stepId === "help" && request.message.type === "init") {
     const isUpper = contextCaseFromRequest(request) === "upper-math";
 
+    if (isUpperMathHelpRequest(request)) {
+      return getUpperMathHelpInitMessages();
+    }
+
     if (isLowerSecondKoreanHelpRequest(request)) {
       return getLowerSecondKoreanHelpInitMessages();
     }
@@ -287,6 +283,16 @@ function getMockConversationMessages(
   }
 
   if (stepId === "help" && request.message.type === "choice") {
+    if (isUpperMathHelpRequest(request)) {
+      const upperMathMessages = getUpperMathHelpChoiceMessages(
+        request.message.content,
+      );
+
+      if (upperMathMessages) {
+        return upperMathMessages;
+      }
+    }
+
     if (isLowerSecondKoreanHelpRequest(request)) {
       const lowerSecondMessages = getLowerSecondKoreanHelpChoiceMessages(
         request.message.content,
@@ -329,6 +335,120 @@ function getMockConversationMessages(
   }
 
   return getStepMessages(contextCaseFromRequest(request), stepId);
+}
+
+export function getUpperMathHelpInitMessages(): ResponseMessage[] {
+  return [
+    {
+      type: "text",
+      content: "어느 부분이 어렵게 느껴지시나요?",
+    },
+    {
+      type: "choices",
+      items: [
+        { id: "hard_understand_problem", label: "문제가 이해가 잘 안 돼요" },
+        { id: "hard_solve_method", label: "어떻게 풀어야 할지 모르겠어요" },
+        { id: "hard_calculation", label: "계산이 어려워요" },
+      ],
+    },
+  ];
+}
+
+export function getUpperMathHelpChoiceMessages(
+  content: string,
+): ResponseMessage[] | null {
+  if (isUpperMathOpeningChoice(content)) {
+    return [
+      {
+        type: "text",
+        content:
+          "괜찮아요, 같이 천천히 살펴볼까요?\n\n구하려는 것은\n\"소금이 전체 소금물에서 얼마나 차지하는지\"에요!\n\n(가)\n소금 37g / 소금물 148g\n\n어떤 계산이 알맞을까요?",
+      },
+      {
+        type: "choices",
+        items: [
+          { id: "ga_add", label: "37 + 148" },
+          { id: "ga_subtract", label: "148 - 37" },
+          { id: "ga_divide", label: "37 ÷ 148" },
+        ],
+      },
+    ];
+  }
+
+  if (isUpperMathFirstFormulaChoice(content)) {
+    return [
+      {
+        type: "text",
+        content:
+          "좋은 접근입니다\n\n37 ÷ 148\n\n여기서 148은 37의 몇 배인지 생각해볼까요?",
+      },
+      {
+        type: "choices",
+        items: [
+          { id: "times_2", label: "2배" },
+          { id: "times_3", label: "3배" },
+          { id: "times_4", label: "4배" },
+        ],
+      },
+    ];
+  }
+
+  if (isUpperMathMultipleChoice(content)) {
+    return [
+      {
+        type: "text",
+        content:
+          "이번에는 (나)도 같은 방법으로 생각해볼까요?\n\n소금 76g / 소금물 380g\n\n어떤 식이 적절할까요?",
+      },
+      {
+        type: "choices",
+        items: [
+          { id: "na_divide", label: "76 ÷ 380" },
+          { id: "na_reverse_divide", label: "380 ÷ 76" },
+          { id: "na_add", label: "76 + 380" },
+        ],
+      },
+    ];
+  }
+
+  if (isUpperMathSecondFormulaChoice(content)) {
+    return [
+      {
+        type: "text",
+        content:
+          "좋아요. 같은 방법으로 소금이 전체 소금물에서 차지하는 비율을 구하면 돼요.",
+      },
+    ];
+  }
+
+  return null;
+}
+
+function isUpperMathHelpRequest(request: ChatRequest) {
+  return (
+    contextCaseFromRequest(request) === "upper-math" &&
+    request.context?.current_problem_id === "math_ratio_saltwater_001"
+  );
+}
+
+function isUpperMathOpeningChoice(content: string) {
+  return [
+    "문제가 이해가 잘 안 돼요",
+    "어떻게 풀어야 할지 모르겠어요",
+    "계산이 어려워요",
+  ].includes(content);
+}
+
+function isUpperMathFirstFormulaChoice(content: string) {
+  return ["37 + 148", "148 - 37", "37 ÷ 148"].includes(content);
+}
+
+function isUpperMathMultipleChoice(content: string) {
+  return ["2배", "3배", "4배"].includes(content);
+}
+
+function isUpperMathSecondFormulaChoice(content: string) {
+  return ["76 ÷ 380", "380 ÷ 76", "76 + 380"].includes(content);
 }
 
 export function getLowerSecondKoreanHelpInitMessages(): ResponseMessage[] {
