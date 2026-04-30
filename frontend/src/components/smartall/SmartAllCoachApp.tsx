@@ -34,13 +34,11 @@ type SmartAllCoachAppProps = {
   chatAdapter?: ChatAdapter;
 };
 
-const orderedSteps: DemoStepId[] = [
+const orderedSteps: (keyof typeof demoStepLabels)[] = [
   "home",
   "learning",
   "help",
   "complete",
-  "exit",
-  "finish",
 ];
 
 const subjectsByCase: Record<DemoCaseId, string[]> = {
@@ -78,12 +76,10 @@ function getPorongState({
   stepId,
   chatOpen,
   isStreaming,
-  isUpper,
 }: {
   stepId: DemoStepId;
   chatOpen: boolean;
   isStreaming: boolean;
-  isUpper: boolean;
 }): PorongOverlayState {
   if (isStreaming) {
     return "thinking";
@@ -103,10 +99,6 @@ function getPorongState({
 
   if (stepId === "exit") {
     return "comfort";
-  }
-
-  if (stepId === "finish") {
-    return isUpper ? "comfort" : "cheer";
   }
 
   return "idle";
@@ -132,7 +124,7 @@ export function SmartAllCoachApp({
 
   const demoCase = demoCases[caseId];
   const shouldRequestBubble =
-    !chatOpen && ["home", "complete", "exit", "finish"].includes(stepId);
+    !chatOpen && ["home", "complete", "exit"].includes(stepId);
   const bubbleMessages = bubbleResponseMessages ?? [];
   const bubbleText = getTextMessageContent(bubbleMessages);
   const visibleBubbleText =
@@ -140,13 +132,12 @@ export function SmartAllCoachApp({
   const bubbleActions = getBubbleActions(bubbleMessages);
   const isUpper = caseId === "upper-math";
   const shouldShowBubble =
-    !chatOpen && ["home", "complete", "exit", "finish"].includes(stepId);
+    !chatOpen && ["home", "complete", "exit"].includes(stepId);
   const activeTouchpoint = demoCase.touchpointByStep[stepId];
   const porongState = getPorongState({
     stepId,
     chatOpen,
     isStreaming,
-    isUpper,
   });
   useEffect(() => {
     if (!shouldRequestBubble) {
@@ -384,11 +375,9 @@ export function SmartAllCoachApp({
           />
         )}
 
-        {(stepId === "complete" || stepId === "finish") && (
+        {stepId === "complete" && (
           <CompletionScreen
             caseId={caseId}
-            isFinal={stepId === "finish"}
-            onFinish={() => moveToStep("finish")}
             onRestart={() => moveToStep("home")}
           />
         )}
@@ -912,13 +901,9 @@ function UpperMathProblem() {
 
 function CompletionScreen({
   caseId,
-  isFinal,
-  onFinish,
   onRestart,
 }: {
   caseId: DemoCaseId;
-  isFinal: boolean;
-  onFinish: () => void;
   onRestart: () => void;
 }) {
   const isUpper = caseId === "upper-math";
@@ -928,7 +913,7 @@ function CompletionScreen({
       <WeekStrip isUpper={isUpper} />
       <InteractionZone
         id="completion-card"
-        label={isFinal ? "오늘 학습 마무리" : "단위 학습 완료"}
+        label="단위 학습 완료"
         type="content"
         className="completion-card"
         role="region"
@@ -937,19 +922,9 @@ function CompletionScreen({
         <div className="complete-medal" aria-hidden="true">
           ✓
         </div>
-        <span>{isFinal ? "오늘의 학습 마무리" : "단위 학습 완료"}</span>
-        <h1>
-          {isFinal
-            ? "오늘 학습을 잘 마쳤어요"
-            : isUpper
-              ? "비율 문제를 끝냈어요"
-              : "국어 활동을 끝냈어요"}
-        </h1>
-        <p>
-          {isFinal
-            ? "오답이 남아 있으면 코치가 짧게 복습을 도와줄 거예요."
-            : "AI 코치가 다음 학습을 짧게 이어갈 수 있게 추천해 줄 거예요."}
-        </p>
+        <span>단위 학습 완료</span>
+        <h1>{isUpper ? "비율 문제를 끝냈어요" : "국어 활동을 끝냈어요"}</h1>
+        <p>AI 코치가 다음 학습을 짧게 이어갈 수 있게 추천해 줄 거예요.</p>
 
         <div className="completion-stats">
           <div>
@@ -969,9 +944,6 @@ function CompletionScreen({
         <div className="completion-actions">
           <button type="button" className="secondary-action" onClick={onRestart}>
             홈으로
-          </button>
-          <button type="button" className="primary-action" onClick={onFinish}>
-            오늘 마무리
           </button>
         </div>
       </InteractionZone>

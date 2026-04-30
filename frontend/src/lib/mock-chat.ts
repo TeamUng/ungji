@@ -19,13 +19,11 @@ type DemoCase = {
   tasks: TaskRef[];
 };
 
-export const demoStepLabels: Record<DemoStepId, string> = {
+export const demoStepLabels: Record<Exclude<DemoStepId, "exit">, string> = {
   home: "홈 추천",
   learning: "학습",
   help: "도움",
   complete: "완료",
-  exit: "이탈",
-  finish: "마무리",
 };
 
 export const demoCases: Record<DemoCaseId, DemoCase> = {
@@ -39,7 +37,6 @@ export const demoCases: Record<DemoCaseId, DemoCase> = {
       help: "tp4",
       complete: "tp2",
       exit: "tp3",
-      finish: "tp5",
     },
     tasks: [
       {
@@ -74,7 +71,6 @@ export const demoCases: Record<DemoCaseId, DemoCase> = {
       help: "tp4",
       complete: "tp2",
       exit: "tp3",
-      finish: "tp5",
     },
     tasks: [
       {
@@ -169,7 +165,7 @@ export function getStepMessages(
         type: "choices",
         items: [
           { id: "continue_next_task", label: "다음 학습 하기" },
-          { id: "finish_today", label: "오늘은 여기까지" },
+          { id: "end_today", label: "오늘은 여기까지" },
         ],
       },
     ];
@@ -179,31 +175,13 @@ export function getStepMessages(
     return [
       {
         type: "text",
-        content: "벌써 나가고 싶구나. 그럼 딱 한 문제만 더 마무리해볼까?",
+        content: "벌써 나가고 싶구나. 그럼 딱 한 문제만 더 풀어볼까?",
       },
       {
         type: "choices",
         items: [
           { id: "continue_current_problem", label: "한 문제만 더 풀기" },
           { id: "ask_hint", label: "힌트 받고 풀기" },
-        ],
-      },
-    ];
-  }
-
-  if (stepId === "finish") {
-    return [
-      {
-        type: "text",
-        content: isUpper
-          ? "오늘 학습을 잘 마쳤어요. 남은 오답이 있으면 짧게 복습하고 끝낼 수 있어요."
-          : "오늘도 끝까지 해냈어. 뽀롱~ 정말 잘했어!",
-      },
-      {
-        type: "choices",
-        items: [
-          { id: "review_wrong_answers", label: "오답 복습하기" },
-          { id: "back_home", label: "홈으로" },
         ],
       },
     ];
@@ -272,15 +250,6 @@ function getMockConversationMessages(
     ];
   }
 
-  if (stepId === "finish") {
-    return [
-      {
-        type: "text",
-        content: "좋아. 오답은 아주 짧게만 확인하고 오늘 학습을 마무리하자.",
-      },
-    ];
-  }
-
   return getStepMessages(contextCaseFromRequest(request), stepId);
 }
 
@@ -309,12 +278,6 @@ function contextForStep(
     return {
       current_task_ref: firstTask,
       current_problem_id: firstTask.problem_id,
-    };
-  }
-
-  if (stepId === "finish") {
-    return {
-      completed_task_refs: demoCase.tasks,
     };
   }
 
