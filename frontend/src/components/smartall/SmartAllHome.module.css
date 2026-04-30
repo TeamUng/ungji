@@ -1071,7 +1071,7 @@
   line-height: 1.42;
 }
 
-:global(.interaction-zone) {
+.smartallStage :global(.interaction-zone) {
   position: relative;
   transition:
     transform 160ms ease,
@@ -1079,7 +1079,7 @@
     outline-color 160ms ease;
 }
 
-:global(.interaction-zone[data-active="true"]) {
+.smartallStage :global(.interaction-zone[data-active="true"]) {
   z-index: 20;
   outline: 4px solid rgba(250, 156, 0, 0.72);
   outline-offset: 4px;
@@ -1174,7 +1174,7 @@
 @media (prefers-reduced-motion: reduce) {
   .chatbotDragRoot,
   .chatbotBubble,
-  :global(.interaction-zone) {
+  .smartallStage :global(.interaction-zone) {
     transition: none !important;
   }
 }
