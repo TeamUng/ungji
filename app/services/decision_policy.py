@@ -151,10 +151,11 @@ def make_motivator_decision(state: ChatState) -> dict:
         }
 
     if remaining:
+        target_task = _prioritize_current_task(remaining, current_task)
         return {
             "intent": "recommend_next_task",
-            "target_task": remaining[0],
-            "candidate_tasks": remaining,
+            "target_task": target_task,
+            "candidate_tasks": _move_task_to_front(remaining, target_task),
             "student_goal": "남은 오늘의 학습 중 하나를 부담 없게 이어서 시작하게 한다.",
             "forbidden": ["완료된 단원 추천", "새 단원 생성", "나가기 버튼 제안"],
         }
@@ -237,3 +238,19 @@ def _touchpoint(value: Touchpoint | str) -> Touchpoint:
     if isinstance(value, Touchpoint):
         return value
     return Touchpoint(value)
+
+
+def _prioritize_current_task(
+    remaining: list[Task] | list[dict],
+    current_task: Task | dict | None,
+):
+    if current_task and any(task_key(task) == task_key(current_task) for task in remaining):
+        return current_task
+    return remaining[0]
+
+
+def _move_task_to_front(tasks: list[Task] | list[dict], target_task):
+    if not target_task:
+        return tasks
+    target_key = task_key(target_task)
+    return [target_task] + [task for task in tasks if task_key(task) != target_key]

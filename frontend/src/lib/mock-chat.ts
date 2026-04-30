@@ -119,6 +119,7 @@ export function makeChatRequest(
   stepId: DemoStepId,
   content = "",
   messageType?: IncomingMessageType,
+  options: { activeTaskIndex?: number } = {},
 ): ChatRequest {
   const demoCase = demoCases[caseId];
 
@@ -131,7 +132,7 @@ export function makeChatRequest(
       type: messageType ?? (content ? "text" : "init"),
       content,
     },
-    context: contextForStep(demoCase, stepId),
+    context: contextForStep(demoCase, stepId, options.activeTaskIndex),
   };
 }
 
@@ -287,28 +288,31 @@ function getMockConversationMessages(
 function contextForStep(
   demoCase: DemoCase,
   stepId: DemoStepId,
+  activeTaskIndex = 0,
 ): ChatRequestContext | undefined {
   const firstTask = demoCase.tasks[0];
+  const activeTask = demoCase.tasks[activeTaskIndex] ?? firstTask;
+  const nextTask = demoCase.tasks[1] ?? firstTask;
 
   if (stepId === "complete") {
     return {
       completed_task_refs: [firstTask],
-      current_task_ref: demoCase.tasks[1],
+      current_task_ref: nextTask,
     };
   }
 
   if (stepId === "exit") {
     return {
-      current_task_ref: firstTask,
+      current_task_ref: activeTask,
       current_task_remaining_count: 2,
-      current_problem_id: firstTask.problem_id,
+      current_problem_id: activeTask.problem_id,
     };
   }
 
   if (stepId === "help") {
     return {
-      current_task_ref: firstTask,
-      current_problem_id: firstTask.problem_id,
+      current_task_ref: activeTask,
+      current_problem_id: activeTask.problem_id,
     };
   }
 
