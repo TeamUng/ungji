@@ -48,6 +48,7 @@ async def chat(request: ChatRequest) -> StreamingResponse:
         "current_message_type": message_event.message_type,
         "current_message_source": message_event.source,
         "current_message_requires_input_guard": message_event.should_check_input_guard,
+        "request_context": request.context,
         "chat_history": (
             [HumanMessage(content=message_event.content)]
             if message_event.should_append_human_message

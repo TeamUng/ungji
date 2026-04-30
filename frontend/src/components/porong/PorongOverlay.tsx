@@ -28,7 +28,7 @@ type PorongOverlayProps = {
   bubbleActions?: PorongBubbleAction[];
   enableInteractionZones?: boolean;
   onTap?: () => void;
-  onBubbleAction?: (label: string) => void;
+  onBubbleAction?: (action: PorongBubbleAction) => void;
   onDragEnd?: (position: PorongPoint) => void;
 };
 

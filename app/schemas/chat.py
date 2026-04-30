@@ -66,6 +66,7 @@ class ChatState(TypedDict):
     current_message_type: MessageType | None
     current_message_source: str | None
     current_message_requires_input_guard: bool | None
+    request_context: ChatRequestContext | None
 
     # Node output
     response: ChatResponse | None
@@ -76,12 +77,26 @@ class IncomingMessage(BaseModel):
     content: str = ""
 
 
+class TaskRef(BaseModel):
+    subject: str | None = None
+    unit: str | None = None
+    problem_id: str | None = None
+
+
+class ChatRequestContext(BaseModel):
+    completed_task_refs: list[TaskRef] = Field(default_factory=list)
+    current_task_ref: TaskRef | None = None
+    current_task_remaining_count: int | None = None
+    current_problem_id: str | None = None
+
+
 class ChatRequest(BaseModel):
     thread_id: str
     student_id: str
     use_case: UseCase
     current_touchpoint: Touchpoint
     message: IncomingMessage
+    context: ChatRequestContext | None = None
 
 
 class TextMessage(BaseModel):

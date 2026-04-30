@@ -1667,6 +1667,13 @@ button {
   line-height: 1.42;
 }
 
+.porong-speech-bubble strong,
+.chat-text strong,
+.chat-image-card strong,
+.hint-card strong {
+  font-weight: 950;
+}
+
 .porong-bubble-actions {
   display: grid;
   gap: 8px;
@@ -2032,7 +2039,6 @@ button {
 
 .chat-panel footer {
   display: grid;
-  grid-template-columns: 1fr 1fr;
   gap: 10px;
   padding: 14px;
   border-top: 1px solid var(--line);
@@ -2043,17 +2049,13 @@ button {
   padding: 0 12px;
 }
 
-.chat-panel footer.teachback-footer {
-  grid-template-columns: 1fr;
-}
-
-.teachback-form {
+.chat-reply-form {
   display: grid;
   grid-template-columns: 1fr minmax(78px, 96px);
   gap: 10px;
 }
 
-.teachback-form input {
+.chat-reply-form input {
   min-width: 0;
   height: 52px;
   padding: 0 14px;
@@ -2280,7 +2282,8 @@ button {
 
   .answer-grid,
   .completion-stats,
-  .chat-panel footer {
+  .chat-panel footer,
+  .chat-reply-form {
     grid-template-columns: 1fr;
   }
 

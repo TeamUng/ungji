@@ -103,6 +103,8 @@ def case2_student() -> StudentRecord:
             {
                 "subject": Subject.MATH.value,
                 "unit": "비율과 비례식",
+                "problem_ids": ["math_ratio_saltwater_001"],
+                "problem_id": "math_ratio_saltwater_001",
                 "problem_count": 4,
                 "estimated_time": 12,
                 "difficulty": Difficulty.MEDIUM.value,
@@ -244,6 +246,7 @@ def make_chat_state() -> Callable[..., ChatState]:
             "current_message_type": None,
             "current_message_source": None,
             "current_message_requires_input_guard": None,
+            "request_context": None,
         }
 
     return _make_chat_state

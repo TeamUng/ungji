@@ -9,12 +9,26 @@ export type IncomingMessage = {
   content: string;
 };
 
+export type TaskRef = {
+  subject?: string;
+  unit?: string;
+  problem_id?: string;
+};
+
+export type ChatRequestContext = {
+  completed_task_refs?: TaskRef[];
+  current_task_ref?: TaskRef;
+  current_task_remaining_count?: number;
+  current_problem_id?: string;
+};
+
 export type ChatRequest = {
   thread_id: string;
   student_id: string;
   use_case: UseCase;
   current_touchpoint: Touchpoint;
   message: IncomingMessage;
+  context?: ChatRequestContext;
 };
 
 export type TextMessage = {
@@ -96,3 +110,8 @@ export type ChatTurn =
       role: "student";
       content: string;
     };
+
+export type ChoiceSelection = {
+  id: string;
+  label: string;
+};
