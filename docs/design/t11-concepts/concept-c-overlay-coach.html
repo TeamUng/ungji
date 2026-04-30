@@ -1,0 +1,306 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>시안 C. 통합 AI 코치 레이어</title>
+    <link rel="stylesheet" href="./assets/t11-concepts.css" />
+  </head>
+  <body>
+    <main class="concept-page">
+      <div class="tablet concept-c" data-concept-root>
+        <header class="top-nav" aria-label="학습 홈 상단 메뉴">
+          <div class="brand-mark">
+            <span class="brand-dot"></span>
+            <span class="smartall-logo" aria-label="웅진씽크빅 스마트올">
+              <span class="logo-sub">웅진씽크빅</span>
+              <span class="logo-main">smart<span class="logo-all">All</span></span>
+            </span>
+          </div>
+          <nav class="top-tabs" aria-label="주요 메뉴">
+            <span class="active">오늘의 학습</span>
+            <span>AI맞춤</span>
+            <span>단원평가센터</span>
+            <span>쉬는시간</span>
+          </nav>
+          <div class="top-tools" aria-label="보조 메뉴">
+            <button class="round-tool" type="button">전체</button>
+            <button class="round-tool" type="button">찾기</button>
+          </div>
+        </header>
+
+        <section class="week-strip" aria-label="학습 날짜">
+          <div class="date-pill">
+            <span class="calendar-icon">달</span>
+            <span>오늘의 학습</span>
+          </div>
+          <div class="day-row" aria-label="요일별 학습">
+            <div class="day done">월</div>
+            <div class="day done">화</div>
+            <div class="day today"><small>오늘</small>수</div>
+            <div class="day">목</div>
+            <div class="day">금</div>
+            <div class="day">토</div>
+            <div class="day">일</div>
+          </div>
+          <div class="range-toggle" aria-label="기간 선택">
+            <button class="active" type="button">오늘</button>
+            <button type="button">이번 주</button>
+          </div>
+        </section>
+
+        <section class="state-panel is-active" data-state-panel="tp1" aria-label="TP1 홈 추천">
+          <div class="flow-shell is-integrated">
+            <div class="home-main">
+              <aside class="subject-rail" aria-label="과목 순서">
+                <button class="subject-step is-active" type="button"><span class="subject-number">1</span>수학</button>
+                <button class="subject-step" type="button"><span class="subject-number">2</span>국어</button>
+                <button class="subject-step" type="button"><span class="subject-number">3</span>문해력</button>
+                <button class="subject-step" type="button"><span class="subject-number">4</span>한자</button>
+              </aside>
+
+              <section class="task-grid" aria-label="오늘의 학습 카드">
+                <article class="home-card accent-blue">
+                  <span class="pill-note">추천</span>
+                  <h2>수학</h2>
+                  <p>비율 개념을 먼저 정리해요.</p>
+                  <span class="mini-math-visual" aria-hidden="true"></span>
+                </article>
+                <article class="home-card">
+                  <h2>국어</h2>
+                  <p>짧은 글을 읽고 마음을 골라요.</p>
+                  <div class="scene-card" aria-hidden="true"></div>
+                </article>
+                <article class="home-card">
+                  <h2>과학</h2>
+                  <p>관찰한 결과를 한 문장으로 정리해요.</p>
+                </article>
+                <article class="home-card">
+                  <h2>사회</h2>
+                  <p>옛날 놀이와 오늘 놀이를 비교해요.</p>
+                </article>
+              </section>
+
+              <aside class="smart-home-aside" aria-label="오른쪽 추천 영역">
+                <div class="recommend-card">
+                  <p class="recommend-title">김웅진님을 위한 추천</p>
+                  <div class="book-cover"><span>이번 주 독서</span></div>
+                </div>
+                <div class="challenge-card">
+                  <strong>올도전</strong>
+                  <p class="mini-copy">오늘 학습 1개 완료하면 별을 받아요.</p>
+                </div>
+                <div class="quick-menu">
+                  <button type="button">출석</button>
+                  <button type="button">기록</button>
+                  <button type="button">노트</button>
+                </div>
+              </aside>
+            </div>
+
+            <div class="coach-layer" aria-label="TP1 플로팅 코치">
+              <div class="coach-floating-bubble">
+                <strong>AI 코치</strong>
+                <p>오늘은 수학부터 시작해볼까요? 어렵다면 국어 한 문제로 가볍게 시작해도 좋아요.</p>
+                <div class="flow-choice-list">
+                  <button class="flow-choice primary" type="button">오늘 할 것 골라줘</button>
+                  <button class="flow-choice" type="button">쉬운 문제부터 시작</button>
+                </div>
+              </div>
+              <button class="coach-avatar" type="button" aria-label="AI 코치 열기">
+                <span class="coach-face" aria-hidden="true">
+                  <span class="coach-eye left"></span>
+                  <span class="coach-eye right"></span>
+                </span>
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <section class="state-panel" data-state-panel="learning" aria-label="학습 화면 기본 상태">
+          <div class="flow-shell is-integrated">
+            <div class="problem-screen">
+              <article class="problem-card" aria-label="학습 화면">
+                <div class="problem-header">
+                  <h2>오늘의 문제</h2>
+                  <span class="progress-pill">코치 닫힘</span>
+                </div>
+                <div class="problem-copy">
+                  <p>학습 콘텐츠가 화면의 중심입니다.</p>
+                  <p>AI 코치는 오른쪽 아래 얼굴만 보여주고, 학습을 방해하지 않습니다.</p>
+                  <p>도움이 필요하면 학생이 직접 캐릭터를 누릅니다.</p>
+                </div>
+                <div class="answer-grid two">
+                  <button class="answer-choice" type="button">계속 풀기</button>
+                  <button class="answer-choice" type="button">잠깐 쉬기</button>
+                </div>
+              </article>
+
+              <aside class="side-task" aria-label="진행 상태">
+                <h3>레이어 규칙</h3>
+                <ul class="progress-list">
+                  <li><span>홈 추천</span><strong>말풍선</strong></li>
+                  <li><span>학습 중</span><strong>얼굴만</strong></li>
+                  <li><span>도움 요청</span><strong>채팅창</strong></li>
+                </ul>
+              </aside>
+            </div>
+            <button class="coach-avatar coach-idle" type="button" aria-label="AI 코치 도움 열기">
+              <span class="coach-face" aria-hidden="true">
+                <span class="coach-eye left"></span>
+                <span class="coach-eye right"></span>
+              </span>
+            </button>
+          </div>
+        </section>
+
+        <section class="state-panel" data-state-panel="tp4" aria-label="TP4 오른쪽 채팅창">
+          <div class="flow-shell is-integrated">
+            <div class="problem-screen with-chat">
+              <article class="problem-card" aria-label="학습 화면과 오른쪽 채팅창">
+                <div class="problem-header">
+                  <h2>오늘의 문제</h2>
+                  <span class="progress-pill">코치 열림</span>
+                </div>
+                <div class="problem-copy">
+                  <p>문제 화면은 그대로 유지됩니다.</p>
+                  <p>오른쪽에만 AI 채팅창이 열려 막힘 원인을 고릅니다.</p>
+                  <p>정답을 바로 알려주지 않고, 한 단계씩 확인합니다.</p>
+                </div>
+                <div class="hint-card">
+                  <h4>표시되는 도움</h4>
+                  <ol class="hint-steps">
+                    <li><span>1</span>막힌 이유 선택</li>
+                    <li><span>2</span>힌트 카드 확인</li>
+                    <li><span>3</span>다시 풀기</li>
+                  </ol>
+                </div>
+              </article>
+
+              <aside class="chat-panel" aria-label="오른쪽 AI 채팅창">
+                <div class="chat-header">
+                  <h2>AI 코치</h2>
+                  <span class="progress-pill">TP4</span>
+                </div>
+                <div class="chat-scroll">
+                  <div class="chat-message">
+                    <strong>AI 코치</strong>
+                    <p>어디가 막혔는지 골라줘. 그 부분만 같이 볼게.</p>
+                  </div>
+                  <div class="flow-choice-list">
+                    <button class="flow-choice" type="button">문제가 이해 안 돼</button>
+                    <button class="flow-choice selected" type="button">식을 세우기 어려워</button>
+                    <button class="flow-choice" type="button">계산을 확인하고 싶어</button>
+                  </div>
+                  <div class="chat-message">
+                    <strong>AI 코치</strong>
+                    <p>좋아. 먼저 비교하는 두 대상을 찾아보자.</p>
+                  </div>
+                </div>
+                <button class="coach-action" type="button">문제로 돌아가기</button>
+              </aside>
+            </div>
+          </div>
+        </section>
+
+        <section class="state-panel" data-state-panel="tp3" aria-label="TP3 이탈 시도">
+          <div class="flow-shell is-integrated">
+            <div class="problem-screen">
+              <article class="problem-card" aria-label="학습 중 이탈 시도">
+                <div class="problem-header">
+                  <h2>학습 중</h2>
+                  <span class="progress-pill">나가기 시도</span>
+                </div>
+                <div class="problem-copy">
+                  <p>학생이 문제를 끝내기 전에 나가려고 합니다.</p>
+                  <p>처음에는 큰 채팅창을 열지 않고, 작은 말풍선으로 부담을 낮춥니다.</p>
+                  <p>학생이 원하면 자세한 도움 채팅창으로 이어집니다.</p>
+                </div>
+                <div class="answer-grid two">
+                  <button class="answer-choice" type="button">나가기</button>
+                  <button class="answer-choice" type="button">계속 풀기</button>
+                </div>
+              </article>
+
+              <aside class="side-task" aria-label="이탈 방지 원칙">
+                <h3>TP3 원칙</h3>
+                <p>붙잡되 혼내지 않습니다. “한 문제만”처럼 작은 목표를 제안합니다.</p>
+              </aside>
+            </div>
+
+            <div class="exit-banner" aria-label="이탈 시도 말풍선">
+              <p>이 문제만 같이 끝내고 갈까요? 어려우면 제가 한 단계만 도와줄게요.</p>
+              <div class="flow-choice-list">
+                <button class="flow-choice primary" type="button">한 단계만 도움받기</button>
+                <button class="flow-choice" type="button">오늘은 여기까지</button>
+              </div>
+            </div>
+            <button class="coach-avatar coach-idle" type="button" aria-label="AI 코치">
+              <span class="coach-face" aria-hidden="true">
+                <span class="coach-eye left"></span>
+                <span class="coach-eye right"></span>
+              </span>
+            </button>
+          </div>
+        </section>
+
+        <section class="state-panel" data-state-panel="tp5" aria-label="TP5 오늘 학습 종료">
+          <div class="flow-shell is-integrated">
+            <div class="problem-screen">
+              <article class="problem-card" aria-label="오늘 학습 종료">
+                <div class="problem-header">
+                  <h2>오늘의 학습 마무리</h2>
+                  <span class="progress-pill">종료</span>
+                </div>
+                <div class="problem-copy">
+                  <p>오늘 학습 2개를 끝냈어요.</p>
+                  <p>틀린 문제 3개 중 1개가 아직 남아 있어요.</p>
+                  <p>복습 안내가 길어질 때는 오른쪽 채팅창으로 이어질 수 있습니다.</p>
+                </div>
+                <div class="summary-card">
+                  <h4>오늘의 코칭 요약</h4>
+                  <p>수학은 비교 순서를 확인했고, 국어는 그림을 보고 마음을 찾았어요.</p>
+                </div>
+              </article>
+
+              <aside class="side-task" aria-label="종료 상태">
+                <h3>마무리 선택</h3>
+                <ul class="progress-list">
+                  <li><span>오늘 학습</span><strong>2개 완료</strong></li>
+                  <li><span>오답 복습</span><strong>1개 남음</strong></li>
+                </ul>
+              </aside>
+            </div>
+
+            <div class="coach-layer" aria-label="TP5 종료 플로팅 코치">
+              <div class="coach-floating-bubble">
+                <strong>AI 코치</strong>
+                <p>틀린 문제 1개가 남았어요. 3분만 복습하고 끝낼까요?</p>
+                <div class="flow-choice-list">
+                  <button class="flow-choice primary" type="button">오답 복습하기</button>
+                  <button class="flow-choice" type="button">오늘은 끝내기</button>
+                </div>
+              </div>
+              <button class="coach-avatar" type="button" aria-label="AI 코치 열기">
+                <span class="coach-face" aria-hidden="true">
+                  <span class="coach-eye left"></span>
+                  <span class="coach-eye right"></span>
+                </span>
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <div class="state-switcher" data-state-switcher aria-label="시안 상태 전환">
+          <button class="is-active" type="button" data-state-target="tp1">TP1 홈</button>
+          <button type="button" data-state-target="learning">학습 기본</button>
+          <button type="button" data-state-target="tp4">TP4 도움</button>
+          <button type="button" data-state-target="tp3">TP3 이탈</button>
+          <button type="button" data-state-target="tp5">TP5 종료</button>
+        </div>
+      </div>
+    </main>
+
+    <script src="./assets/t11-concepts.js"></script>
+  </body>
+</html>
