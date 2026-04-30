@@ -28,6 +28,9 @@ export type PorongSnapPoint =
 export type PorongBubbleAction = {
   id: string;
   label: string;
+  action?: "navigate" | "open_chat";
+  targetStep?: "home" | "learning" | "help" | "complete" | "exit" | "finish";
+  targetTaskIndex?: number;
 };
 
 export type PorongPoint = {

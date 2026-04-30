@@ -26,6 +26,7 @@ import type {
   DemoStepId,
   IncomingMessageType,
   ResponseMessage,
+  TaskRef,
 } from "@/types/chat";
 
 type SmartAllCoachAppProps = {
@@ -59,17 +60,170 @@ function getTextMessageContent(messages: ResponseMessage[]) {
   return textMessage?.type === "text" ? textMessage.content : undefined;
 }
 
-function getBubbleActions(messages: ResponseMessage[]): PorongBubbleAction[] {
+function getBubbleActions(
+  messages: ResponseMessage[],
+  stepId: DemoStepId,
+  caseId: DemoCaseId,
+): PorongBubbleAction[] {
   const choicesMessage = messages.find((message) => message.type === "choices");
 
-  if (choicesMessage?.type !== "choices") {
-    return [];
+  if (choicesMessage?.type === "choices") {
+    return choicesMessage.items.map((item) =>
+      resolveBubbleAction(item, stepId, caseId),
+    );
   }
 
-  return choicesMessage.items.map((item) => ({
-    id: item.id,
-    label: item.label,
-  }));
+  return getDefaultBubbleActions(stepId, caseId);
+}
+
+function resolveBubbleAction(
+  item: ChoiceSelection,
+  stepId: DemoStepId,
+  caseId: DemoCaseId,
+): PorongBubbleAction {
+  const label = item.label;
+  const isUpper = caseId === "upper-math";
+
+  if (item.id === "start_learning" || label.includes("학습시작")) {
+    return {
+      ...item,
+      action: "navigate",
+      targetStep: "learning",
+      targetTaskIndex: 0,
+    };
+  }
+
+  if (item.id === "continue_next_task" || label.includes("다음")) {
+    return {
+      ...item,
+      action: "navigate",
+      targetStep: "learning",
+      targetTaskIndex: 1,
+    };
+  }
+
+  if (item.id === "continue_current_problem" || label.includes("한 문제")) {
+    return {
+      ...item,
+      action: "navigate",
+      targetStep: "learning",
+      targetTaskIndex: isUpper ? 1 : 0,
+    };
+  }
+
+  if (item.id === "ask_hint" || label.includes("힌트")) {
+    return {
+      ...item,
+      action: "open_chat",
+      targetStep: "help",
+      targetTaskIndex: isUpper ? 1 : 0,
+    };
+  }
+
+  if (item.id === "review_wrong_answers" || label.includes("오답")) {
+    return {
+      ...item,
+      action: "open_chat",
+      targetStep: "finish",
+    };
+  }
+
+  if (item.id === "finish_today" || label.includes("여기까지")) {
+    return {
+      ...item,
+      action: "navigate",
+      targetStep: "finish",
+    };
+  }
+
+  if (item.id === "back_home" || label.includes("홈")) {
+    return {
+      ...item,
+      action: "navigate",
+      targetStep: "home",
+    };
+  }
+
+  return {
+    ...item,
+    action: stepId === "finish" ? "open_chat" : "navigate",
+    targetStep: stepId === "finish" ? "finish" : "learning",
+  };
+}
+
+function getDefaultBubbleActions(
+  stepId: DemoStepId,
+  caseId: DemoCaseId,
+): PorongBubbleAction[] {
+  const isUpper = caseId === "upper-math";
+
+  if (stepId === "home") {
+    return [
+      {
+        id: "start_learning",
+        label: isUpper ? "수학 풀러가기" : "국어 시작하기",
+        action: "navigate",
+        targetStep: "learning",
+        targetTaskIndex: 0,
+      },
+    ];
+  }
+
+  if (stepId === "complete") {
+    return [
+      {
+        id: "continue_next_task",
+        label: isUpper ? "국어 하러가기" : "다음 학습 하기",
+        action: "navigate",
+        targetStep: "learning",
+        targetTaskIndex: 1,
+      },
+      {
+        id: "finish_today",
+        label: "오늘 마무리하기",
+        action: "navigate",
+        targetStep: "finish",
+      },
+    ];
+  }
+
+  if (stepId === "exit") {
+    return [
+      {
+        id: "continue_current_problem",
+        label: "여기까지만 하기",
+        action: "navigate",
+        targetStep: "learning",
+        targetTaskIndex: isUpper ? 1 : 0,
+      },
+      {
+        id: "ask_hint",
+        label: "힌트 받고 풀기",
+        action: "open_chat",
+        targetStep: "help",
+        targetTaskIndex: isUpper ? 1 : 0,
+      },
+    ];
+  }
+
+  if (stepId === "finish") {
+    return [
+      {
+        id: "review_wrong_answers",
+        label: "오답 복습하기",
+        action: "open_chat",
+        targetStep: "finish",
+      },
+      {
+        id: "back_home",
+        label: "홈으로 가기",
+        action: "navigate",
+        targetStep: "home",
+      },
+    ];
+  }
+
+  return [];
 }
 
 function getPorongState({
@@ -117,6 +271,7 @@ export function SmartAllCoachApp({
 }: SmartAllCoachAppProps) {
   const [caseId, setCaseId] = useState<DemoCaseId>(initialCaseId);
   const [stepId, setStepId] = useState<DemoStepId>("home");
+  const [activeTaskIndex, setActiveTaskIndex] = useState(0);
   const [chatOpen, setChatOpen] = useState(false);
   const [chatTurns, setChatTurns] = useState<ChatTurn[]>([]);
   const [bubbleResponseMessages, setBubbleResponseMessages] = useState<
@@ -133,8 +288,9 @@ export function SmartAllCoachApp({
     !chatOpen && ["home", "complete", "exit", "finish"].includes(stepId);
   const bubbleMessages = bubbleResponseMessages ?? [];
   const bubbleText = getTextMessageContent(bubbleMessages);
-  const bubbleActions = getBubbleActions(bubbleMessages);
+  const bubbleActions = getBubbleActions(bubbleMessages, stepId, caseId);
   const isUpper = caseId === "upper-math";
+  const activeTask = demoCase.tasks[activeTaskIndex] ?? demoCase.tasks[0];
   const shouldShowBubble =
     !chatOpen && ["home", "complete", "exit", "finish"].includes(stepId);
   const activeTouchpoint = demoCase.touchpointByStep[stepId];
@@ -150,7 +306,9 @@ export function SmartAllCoachApp({
     }
 
     const runId = streamRunRef.current + 1;
-    const request = makeChatRequest(caseId, stepId, "", "init");
+    const request = makeChatRequest(caseId, stepId, "", "init", {
+      activeTaskIndex,
+    });
 
     streamRunRef.current = runId;
 
@@ -191,7 +349,7 @@ export function SmartAllCoachApp({
     }
 
     void loadBubbleMessages();
-  }, [caseId, stepId, chatAdapter, shouldRequestBubble]);
+  }, [activeTaskIndex, caseId, stepId, chatAdapter, shouldRequestBubble]);
 
   const makeTurnId = () => {
     turnIdRef.current += 1;
@@ -221,14 +379,18 @@ export function SmartAllCoachApp({
     content = "",
     messageType,
     reset,
+    requestTaskIndex,
   }: {
     targetStepId: DemoStepId;
     content?: string;
     messageType?: IncomingMessageType;
     reset: boolean;
+    requestTaskIndex?: number;
   }) => {
     const runId = streamRunRef.current + 1;
-    const request = makeChatRequest(caseId, targetStepId, content, messageType);
+    const request = makeChatRequest(caseId, targetStepId, content, messageType, {
+      activeTaskIndex: requestTaskIndex ?? activeTaskIndex,
+    });
 
     streamRunRef.current = runId;
     setChatError("");
@@ -271,6 +433,7 @@ export function SmartAllCoachApp({
     targetStepId: DemoStepId,
     content = "",
     messageType?: IncomingMessageType,
+    requestTaskIndex?: number,
   ) => {
     setStepId(targetStepId);
     setChatOpen(true);
@@ -280,12 +443,14 @@ export function SmartAllCoachApp({
       content,
       messageType: messageType ?? (content ? "choice" : "init"),
       reset: true,
+      requestTaskIndex,
     });
   };
 
   const setCase = (nextCaseId: DemoCaseId) => {
     stopCurrentStream();
     setCaseId(nextCaseId);
+    setActiveTaskIndex(0);
     setStepId("home");
     setChatOpen(false);
     setChatTurns([]);
@@ -300,6 +465,10 @@ export function SmartAllCoachApp({
       return;
     }
 
+    if (nextStepId === "exit" && caseId === "upper-math") {
+      setActiveTaskIndex(1);
+    }
+
     setStepId(nextStepId);
     setChatOpen(false);
     setChatTurns([]);
@@ -308,6 +477,7 @@ export function SmartAllCoachApp({
 
   const openLearning = () => {
     stopCurrentStream();
+    setActiveTaskIndex(0);
     setStepId("learning");
     setChatOpen(false);
     setChatTurns([]);
@@ -322,8 +492,31 @@ export function SmartAllCoachApp({
     startChatPanel(stepId === "learning" ? "help" : stepId);
   };
 
-  const handleBubbleChoice = (choice: ChoiceSelection) => {
-    startChatPanel(stepId, choice.label, "choice");
+  const applyTargetTask = (action: PorongBubbleAction) => {
+    if (typeof action.targetTaskIndex === "number") {
+      setActiveTaskIndex(action.targetTaskIndex);
+    }
+  };
+
+  const navigateFromBubble = (action: PorongBubbleAction) => {
+    applyTargetTask(action);
+    moveToStep(action.targetStep ?? "learning");
+  };
+
+  const handleBubbleChoice = (action: PorongBubbleAction) => {
+    applyTargetTask(action);
+
+    if (action.action === "open_chat") {
+      startChatPanel(
+        action.targetStep ?? stepId,
+        action.label,
+        "choice",
+        action.targetTaskIndex,
+      );
+      return;
+    }
+
+    navigateFromBubble(action);
   };
 
   const handleChatChoice = (choice: ChoiceSelection) => {
@@ -372,6 +565,7 @@ export function SmartAllCoachApp({
         {(stepId === "learning" || stepId === "help" || stepId === "exit") && (
           <LearningScreen
             caseId={caseId}
+            activeTask={activeTask}
             isHelpOpen={chatOpen}
             isExitMoment={stepId === "exit"}
             onOpenHelp={openHelpPanel}
@@ -766,6 +960,7 @@ function SmartAllRightRail({
 
 function LearningScreen({
   caseId,
+  activeTask,
   isHelpOpen,
   isExitMoment,
   onOpenHelp,
@@ -773,6 +968,7 @@ function LearningScreen({
   onExit,
 }: {
   caseId: DemoCaseId;
+  activeTask?: TaskRef;
   isHelpOpen: boolean;
   isExitMoment: boolean;
   onOpenHelp: () => void;
@@ -780,6 +976,16 @@ function LearningScreen({
   onExit: () => void;
 }) {
   const isUpper = caseId === "upper-math";
+  const subject = activeTask?.subject ?? (isUpper ? "수학" : "국어");
+  const unit = activeTask?.unit ?? (isUpper ? "비율과 비례식" : "짧은 글 읽기");
+  const lessonTitle =
+    subject === "국어"
+      ? isUpper
+        ? "주장과 근거 파악하기"
+        : "주인공 마음 고르기"
+      : isUpper
+        ? "2단원 준비학습"
+        : "한 자리 수 더하기";
 
   return (
     <div className={`learning-screen ${isHelpOpen ? "with-panel" : ""}`}>
@@ -795,15 +1001,21 @@ function LearningScreen({
             </button>
           </InteractionZone>
           <div>
-            <span>{isUpper ? "수학 · 비율과 비례식" : "국어 · 짧은 글 읽기"}</span>
-            <strong>{isUpper ? "2단원 준비학습" : "주인공 마음 고르기"}</strong>
+            <span>{subject} · {unit}</span>
+            <strong>{lessonTitle}</strong>
           </div>
           <button type="button" onClick={onOpenHelp}>
             AI 도움
           </button>
         </div>
 
-        {isUpper ? <UpperMathProblem /> : <LowerKoreanProblem />}
+        {isUpper && subject === "국어" ? (
+          <UpperKoreanProblem />
+        ) : isUpper ? (
+          <UpperMathProblem />
+        ) : (
+          <LowerKoreanProblem />
+        )}
 
         {isExitMoment && (
           <div className="exit-toast">
@@ -881,25 +1093,58 @@ function UpperMathProblem() {
     >
       <article className="problem-card math-problem">
         <span className="problem-count">문제 3</span>
-        <h1>비례식을 세워 빈칸에 알맞은 수를 구하세요.</h1>
+        <h1>소금물의 양에 대한 소금의 양의 비율을 소수로 쓰세요.</h1>
         <p>
-          주스 원액 2컵에 물 5컵을 섞습니다. 같은 맛으로 원액 6컵을 만들려면 물은
-          몇 컵이 필요할까요?
+          (가) 비커에는 소금 37g을 녹여 소금물 148g을 만들었고, (나) 비커에는
+          소금 76g을 녹여 소금물 380g을 만들었습니다.
         </p>
         <div className="ratio-board" aria-label="비율 문제 풀이 영역">
           <div>
-            <span>원액</span>
-            <strong>2</strong>
-            <strong>6</strong>
+            <span>소금</span>
+            <strong>37g</strong>
+            <strong>76g</strong>
           </div>
           <div>
-            <span>물</span>
-            <strong>5</strong>
-            <strong>?</strong>
+            <span>소금물</span>
+            <strong>148g</strong>
+            <strong>380g</strong>
           </div>
         </div>
         <div className="equation-line">
-          2 : 5 = 6 : <input aria-label="정답 입력" placeholder="?" />
+          (가) <input aria-label="가 비커 정답 입력" placeholder="?" />
+          <span> </span>
+          (나) <input aria-label="나 비커 정답 입력" placeholder="?" />
+        </div>
+      </article>
+    </InteractionZone>
+  );
+}
+
+function UpperKoreanProblem() {
+  return (
+    <InteractionZone
+      id="problem-board"
+      label="현재 문제"
+      type="content"
+      className="problem-zone"
+    >
+      <article className="problem-card korean-problem">
+        <span className="problem-count">문제 1</span>
+        <h1>다음 문장에서 주장을 찾으세요.</h1>
+        <p>
+          학교 주변 교통안전을 위해 등굣길 차량 통행을 줄여야 합니다. 아이들이
+          길을 건널 때 사고 위험이 크기 때문입니다.
+        </p>
+        <div className="answer-grid">
+          {[
+            "등굣길 차량 통행을 줄여야 합니다.",
+            "아이들이 길을 건널 때 사고 위험이 큽니다.",
+            "학교 주변에는 차가 많습니다.",
+          ].map((answer) => (
+            <button key={answer} type="button">
+              {answer}
+            </button>
+          ))}
         </div>
       </article>
     </InteractionZone>

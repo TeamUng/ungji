@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from copy import deepcopy
+
 import pytest
 
 from app.core.enums import GradeGroup, MessageType, Segment, Touchpoint, UseCase
@@ -105,6 +107,37 @@ def test_motivator_policy_suggests_review_when_tasks_done(
     decision = make_motivator_decision(state)
 
     assert decision["intent"] == "suggest_review"
+
+
+def test_motivator_policy_prioritizes_current_remaining_task(
+    make_chat_state, case2_student
+):
+    student = deepcopy(case2_student)
+    first_task = student["today_tasks"][0]
+    next_task = {
+        **first_task,
+        "subject": "국어",
+        "unit": "주장과 근거 파악하기",
+        "problem_ids": ["upper_korean_argument_001"],
+        "problem_id": "upper_korean_argument_001",
+        "ai_predicted_score": 76,
+    }
+    student["today_tasks"] = [first_task, next_task]
+    state = make_chat_state(
+        student,
+        segment=Segment.LOW_DILIGENT,
+        grade_group=GradeGroup.UPPER,
+        use_case=UseCase.TALK,
+        touchpoint=Touchpoint.TP2,
+        completed_tasks=[first_task],
+        current_task=next_task,
+    )
+
+    decision = make_motivator_decision(state)
+
+    assert decision["intent"] == "recommend_next_task"
+    assert decision["target_task"] == next_task
+    assert decision["candidate_tasks"][0] == next_task
 
 
 def test_helper_policy_first_known_problem_collects_cause(make_chat_state, case1_student):
