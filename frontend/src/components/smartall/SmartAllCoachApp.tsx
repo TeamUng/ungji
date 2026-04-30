@@ -15,6 +15,8 @@ import {
   demoCases,
   demoStepLabels,
   demoStudentOptions,
+  getLowerSecondKoreanHelpChoiceMessages,
+  getLowerSecondKoreanHelpInitMessages,
   getStepMessages,
   makeChatRequest,
   mockChatAdapter,
@@ -63,12 +65,13 @@ type DemoFlowStageId =
   | "lower_first_correct"
   | "lower_second_exit"
   | "lower_second_wrong"
+  | "lower_second_corrected"
   | "lower_final"
   | "upper_math_complete"
   | "upper_today_done"
   | "upper_review";
 
-type AnswerResult = "correct" | "incorrect" | null;
+type AnswerResult = "correct" | "incorrect" | "corrected" | null;
 
 function getFlowContext(
   caseId: DemoCaseId,
@@ -98,6 +101,14 @@ function getFlowContext(
     return {
       flow_event: "porong_help_opened",
       answer_result: "incorrect",
+      today_tasks_completed: false,
+    };
+  }
+
+  if (stageId === "lower_second_corrected") {
+    return {
+      flow_event: "answer_submitted",
+      answer_result: "correct",
       today_tasks_completed: false,
     };
   }
@@ -147,11 +158,11 @@ function getFallbackBubbleMessages(
       {
         type: "text",
         content:
-          "성준아, 오늘 어려운 것까지 끝까지 한 게 멋졌어. 잘 마쳤으니 편히 쉬어. 안녕, 뽀롱~",
+          "성준아 오늘 학습 끝까지 완료한 걸 축하해! 약속한대로 별 10개를 줄게! 내일 또 보자",
       },
       {
         type: "choices",
-        items: [{ id: "finish_today", label: "마치기" }],
+        items: [{ id: "finish_today", label: "완료하기" }],
       },
     ];
   }
@@ -163,11 +174,27 @@ function getFallbackChatMessages(
   caseId: DemoCaseId,
   targetStepId: DemoStepId,
   messageType?: IncomingMessageType,
+  content = "",
+  activeTaskIndex = 0,
 ): ResponseMessage[] {
   const isUpper = caseId === "upper-math";
+  const isLowerSecondKoreanHelp =
+    caseId === "lower-korean" && activeTaskIndex === 1;
 
   if (targetStepId !== "help") {
     return getStepMessages(caseId, targetStepId);
+  }
+
+  if (isLowerSecondKoreanHelp) {
+    if (messageType === "choice") {
+      const lowerSecondMessages = getLowerSecondKoreanHelpChoiceMessages(content);
+
+      if (lowerSecondMessages) {
+        return lowerSecondMessages;
+      }
+    } else {
+      return getLowerSecondKoreanHelpInitMessages();
+    }
   }
 
   if (messageType === "choice") {
@@ -328,21 +355,25 @@ function getDefaultBubbleActions(
   }
 
   if (stepId === "complete") {
-    return [
-      {
-        id: "continue_next_task",
-        label: isUpper ? "국어 하러가기" : "다음 학습 하기",
-        action: "navigate",
-        targetStep: "learning",
-        targetTaskIndex: 1,
-      },
-      {
-        id: "end_today",
-        label: "오늘은 여기까지",
-        action: "navigate",
-        targetStep: "home",
-      },
-    ];
+    const continueAction: PorongBubbleAction = {
+      id: "continue_next_task",
+      label: isUpper ? "국어 하러가기" : "심화 국어 도전하기",
+      action: "navigate",
+      targetStep: "learning",
+      targetTaskIndex: 1,
+    };
+
+    return isUpper
+      ? [
+          continueAction,
+          {
+            id: "end_today",
+            label: "오늘은 여기까지",
+            action: "navigate",
+            targetStep: "home",
+          },
+        ]
+      : [continueAction];
   }
 
   if (stepId === "exit") {
@@ -368,7 +399,7 @@ function getDefaultBubbleActions(
     return [
       {
         id: isUpper ? "review_wrong_answers" : "finish_today",
-        label: isUpper ? "복습하러 가기" : "마치기",
+        label: isUpper ? "복습하러 가기" : "완료하기",
         action: "navigate",
         targetStep: "home",
       },
@@ -480,11 +511,17 @@ export function SmartAllCoachApp({
   const [isStreaming, setIsStreaming] = useState(false);
   const [chatError, setChatError] = useState("");
   const [demoRunSeq, setDemoRunSeq] = useState(0);
+  const [lowerSecondSelectedChoiceId, setLowerSecondSelectedChoiceId] =
+    useState<string | null>(null);
+  const [lowerSecondCoachReady, setLowerSecondCoachReady] = useState(false);
   const reactRunId = useId();
   const demoRunId = `${reactRunId}-${demoRunSeq}`.replace(/[^a-zA-Z0-9_-]/g, "");
   const tabletRef = useRef<HTMLDivElement | null>(null);
   const turnIdRef = useRef(0);
   const streamRunRef = useRef(0);
+  const lowerSecondResolutionTimerRef = useRef<ReturnType<
+    typeof setTimeout
+  > | null>(null);
   const resolvedChatAdapter =
     demoMode === "script" ? mockChatAdapter : chatAdapter ?? defaultChatAdapter;
 
@@ -496,8 +533,8 @@ export function SmartAllCoachApp({
   );
   const shouldRequestBubble =
     !chatOpen &&
+    bubbleResponseMessages === null &&
     ["home", "complete", "exit", "wrapup"].includes(stepId) &&
-    flowStageId !== "lower_final" &&
     flowStageId !== "upper_review";
   const bubbleMessages =
     bubbleResponseMessages ?? (isStreaming ? [] : fallbackBubbleMessages);
@@ -522,7 +559,7 @@ export function SmartAllCoachApp({
       flowStageId !== "upper_review") ||
       shouldShowLearningHintBubble);
   const activeTouchpoint =
-    flowStageId === "lower_final" || flowStageId === "upper_review"
+    flowStageId === "upper_review"
       ? undefined
       : demoCase.touchpointByStep[stepId];
   const porongState = getPorongState({
@@ -605,6 +642,17 @@ export function SmartAllCoachApp({
     setChatError("");
   }, []);
 
+  const clearLowerSecondResolutionTimer = useCallback(() => {
+    if (lowerSecondResolutionTimerRef.current) {
+      clearTimeout(lowerSecondResolutionTimerRef.current);
+      lowerSecondResolutionTimerRef.current = null;
+    }
+  }, []);
+
+  useEffect(() => {
+    return clearLowerSecondResolutionTimer;
+  }, [clearLowerSecondResolutionTimer]);
+
   const sendToAdapter = async ({
     targetStepId,
     content = "",
@@ -658,6 +706,8 @@ export function SmartAllCoachApp({
           caseId,
           targetStepId,
           messageType,
+          content,
+          requestTaskIndex ?? activeTaskIndex,
         );
         if (fallbackMessages.length > 0) {
           setChatTurns((current) => [
@@ -701,6 +751,7 @@ export function SmartAllCoachApp({
   };
 
   const setCase = useCallback((nextCaseId: DemoCaseId) => {
+    clearLowerSecondResolutionTimer();
     stopCurrentStream();
     setDemoRunSeq((current) => current + 1);
     setCaseId(nextCaseId);
@@ -710,7 +761,9 @@ export function SmartAllCoachApp({
     setChatOpen(false);
     setChatTurns([]);
     setBubbleResponseMessages(null);
-  }, [stopCurrentStream]);
+    setLowerSecondSelectedChoiceId(null);
+    setLowerSecondCoachReady(false);
+  }, [clearLowerSecondResolutionTimer, stopCurrentStream]);
 
   useEffect(() => {
     const handleDemoShortcut = (event: KeyboardEvent) => {
@@ -765,6 +818,7 @@ export function SmartAllCoachApp({
   }, [caseId, demoMode, setCase, showDemoControls]);
 
   const openTask = (taskIndex: number) => {
+    clearLowerSecondResolutionTimer();
     stopCurrentStream();
     setActiveTaskIndex(taskIndex);
     setStepId("learning");
@@ -772,6 +826,8 @@ export function SmartAllCoachApp({
     setChatOpen(false);
     setChatTurns([]);
     setBubbleResponseMessages(null);
+    setLowerSecondSelectedChoiceId(null);
+    setLowerSecondCoachReady(false);
   };
 
   const moveToStep = (nextStepId: DemoStepId) => {
@@ -827,6 +883,19 @@ export function SmartAllCoachApp({
     startChatPanel(stepId, "", "init", activeTaskIndex, getFlowContext(caseId, flowStageId));
   };
 
+  const showCompletionExitRewardPrompt = () => {
+    stopCurrentStream();
+    setChatOpen(false);
+    setChatTurns([]);
+    setBubbleResponseMessages([
+      {
+        type: "text",
+        content:
+          "오늘의 학습을 완료하면 보상으로 별 10개를 받을 수 있어! 나와 함께 끝까지 해보자",
+      },
+    ]);
+  };
+
   const applyTargetTask = (action: PorongBubbleAction) => {
     if (typeof action.targetTaskIndex === "number") {
       setActiveTaskIndex(action.targetTaskIndex);
@@ -845,11 +914,20 @@ export function SmartAllCoachApp({
     }
 
     if (action.id === "finish_today") {
-      setFlowStageId("home");
+      setFlowStageId("lower_final");
       setStepId("home");
       setActiveTaskIndex(0);
       setChatOpen(false);
-      setBubbleResponseMessages(null);
+      setBubbleResponseMessages([
+        {
+          type: "text",
+          content: "모든 학습을 끝냈구나 멋지다. 내일 또 봐~",
+        },
+        {
+          type: "choices",
+          items: [],
+        },
+      ]);
       return;
     }
 
@@ -881,6 +959,14 @@ export function SmartAllCoachApp({
   const handleChatChoice = (choice: ChoiceSelection) => {
     if (isStreaming) {
       return;
+    }
+
+    if (
+      caseId === "lower-korean" &&
+      activeTaskIndex === 1 &&
+      choice.id === "sea_good_points"
+    ) {
+      setLowerSecondCoachReady(true);
     }
 
     void sendToAdapter({
@@ -917,7 +1003,28 @@ export function SmartAllCoachApp({
         return;
       }
 
+      if (flowStageId === "lower_second_corrected") {
+        return;
+      }
+
       if (flowStageId === "lower_second_wrong") {
+        if (
+          lowerSecondCoachReady &&
+          lowerSecondSelectedChoiceId === "4"
+        ) {
+          clearLowerSecondResolutionTimer();
+          setChatOpen(false);
+          setChatTurns([]);
+          setFlowStageId("lower_second_corrected");
+          setStepId("learning");
+          lowerSecondResolutionTimerRef.current = setTimeout(() => {
+            lowerSecondResolutionTimerRef.current = null;
+            setFlowStageId("lower_final");
+            setStepId("wrapup");
+          }, 3000);
+          return;
+        }
+
         setFlowStageId("lower_final");
         setStepId("wrapup");
         return;
@@ -938,7 +1045,10 @@ export function SmartAllCoachApp({
     setStepId("wrapup");
   };
 
-  const handleAnswerSubmit = (result: Exclude<AnswerResult, null>) => {
+  const handleAnswerSubmit = (
+    result: Exclude<AnswerResult, null>,
+    choiceId?: string,
+  ) => {
     if (caseId === "lower-korean") {
       if (activeTaskIndex === 0) {
         stopCurrentStream();
@@ -948,6 +1058,14 @@ export function SmartAllCoachApp({
         setChatTurns([]);
         setBubbleResponseMessages(null);
         return;
+      }
+
+      if (flowStageId === "lower_second_corrected") {
+        return;
+      }
+
+      if (choiceId) {
+        setLowerSecondSelectedChoiceId(choiceId);
       }
 
       if (result === "correct") {
@@ -1001,7 +1119,7 @@ export function SmartAllCoachApp({
             caseId={caseId}
             activeTaskIndex={activeTaskIndex}
             flowStageId={flowStageId}
-            onRestart={() => moveToStep("home")}
+            onExit={showCompletionExitRewardPrompt}
           />
         )}
 
@@ -1112,6 +1230,7 @@ function HomeScreen({
           ) : (
             <TodayHeroCard
               caseId={caseId}
+              flowStageId={flowStageId}
               onStartLearning={onStartLearning}
             />
           )}
@@ -1240,12 +1359,15 @@ function getSubjectZoneId(subject: string): InteractionZoneId {
 
 function TodayHeroCard({
   caseId,
+  flowStageId,
   onStartLearning,
 }: {
   caseId: DemoCaseId;
+  flowStageId: DemoFlowStageId;
   onStartLearning: () => void;
 }) {
   const isUpper = caseId === "upper-math";
+  const isLowerAllDone = caseId === "lower-korean" && flowStageId === "lower_final";
   const hero = isUpper
     ? {
         subject: "수학",
@@ -1275,11 +1397,12 @@ function TodayHeroCard({
 
       <button
         type="button"
-        className="primary-study-button"
-        onClick={onStartLearning}
+        className={`primary-study-button ${isLowerAllDone ? "is-complete" : ""}`}
+        aria-disabled={isLowerAllDone}
+        onClick={isLowerAllDone ? undefined : onStartLearning}
       >
-          <span aria-hidden="true">▶</span>
-        학습시작
+        <span aria-hidden="true">{isLowerAllDone ? "✓" : "▶"}</span>
+        {isLowerAllDone ? "학습 성공!" : "학습시작"}
       </button>
     </article>
   );
@@ -1364,7 +1487,10 @@ function LearningScreen({
   isExitMoment: boolean;
   onComplete: () => void;
   onExit: () => void;
-  onAnswerSubmit: (result: Exclude<AnswerResult, null>) => void;
+  onAnswerSubmit: (
+    result: Exclude<AnswerResult, null>,
+    choiceId?: string,
+  ) => void;
 }) {
   const isUpper = caseId === "upper-math";
   const subject = activeTask?.subject ?? (isUpper ? "수학" : "국어");
@@ -1375,7 +1501,9 @@ function LearningScreen({
       ? "correct"
       : flowStageId === "lower_second_wrong"
         ? "incorrect"
-        : null;
+        : flowStageId === "lower_second_corrected"
+          ? "corrected"
+          : null;
   const primaryActionLabel = "완료";
 
   return (
@@ -1453,7 +1581,10 @@ function LowerKoreanProblem({
 }: {
   taskIndex: number;
   answerResult: AnswerResult;
-  onAnswerSubmit: (result: Exclude<AnswerResult, null>) => void;
+  onAnswerSubmit: (
+    result: Exclude<AnswerResult, null>,
+    choiceId?: string,
+  ) => void;
 }) {
   const isFirstTask = taskIndex === 0;
   const [selectedChoice, setSelectedChoice] = useState<{
@@ -1473,13 +1604,22 @@ function LowerKoreanProblem({
         { id: "3", label: "바다에서 물고기를 잡을 수 있습니다.", result: "incorrect" as const },
         { id: "4", label: "바다는 태풍 때 해일을 일으킬 수 있습니다.", result: "incorrect" as const },
       ];
-  const isAnsweredCorrectly = isFirstTask && answerResult === "correct";
+  const answerMarkVariant =
+    isFirstTask && answerResult === "correct"
+      ? "circle"
+      : !isFirstTask && answerResult === "incorrect"
+        ? "slash"
+        : !isFirstTask && answerResult === "corrected"
+          ? "circle"
+          : null;
+  const feedbackClassName =
+    answerResult === "incorrect" ? "incorrect" : "correct";
   const selectedChoiceId =
     selectedChoice?.taskIndex === taskIndex ? selectedChoice.id : null;
 
   const handleChoiceClick = (choice: (typeof choices)[number]) => {
     setSelectedChoice({ id: choice.id, taskIndex });
-    onAnswerSubmit(isFirstTask ? "correct" : choice.result);
+    onAnswerSubmit(isFirstTask ? "correct" : choice.result, choice.id);
   };
 
   return (
@@ -1490,8 +1630,11 @@ function LowerKoreanProblem({
       className="problem-zone"
     >
       <article className={`problem-card korean-problem ${isFirstTask ? "basic-korean-problem" : "advanced-korean-problem"}`}>
-        {isAnsweredCorrectly && (
-          <span className="answer-result-mark" aria-hidden="true" />
+        {answerMarkVariant && (
+          <span
+            className={`answer-result-mark ${answerMarkVariant}`}
+            aria-hidden="true"
+          />
         )}
         <span className="problem-count">{isFirstTask ? "국어 1" : "국어 2"}</span>
         <h1>
@@ -1523,10 +1666,10 @@ function LowerKoreanProblem({
           ))}
         </div>
         {answerResult && !isFirstTask && (
-          <div className={`answer-feedback ${answerResult}`}>
-            {answerResult === "correct"
-              ? "정답이에요! 글에서 필요한 것을 잘 찾았어요."
-              : "오답이에요. 뽀롱쌤을 눌러 어디가 헷갈렸는지 같이 볼 수 있어요."}
+          <div className={`answer-feedback ${feedbackClassName}`}>
+            {answerResult === "incorrect"
+              ? "아쉽게 틀렸네요. 코치쌤을 눌러 물어볼까요?"
+              : "정답이에요!"}
           </div>
         )}
       </article>
@@ -1610,48 +1753,56 @@ function CompletionScreen({
   caseId,
   activeTaskIndex,
   flowStageId,
-  onRestart,
+  onExit,
 }: {
   caseId: DemoCaseId;
   activeTaskIndex: number;
   flowStageId: DemoFlowStageId;
-  onRestart: () => void;
+  onExit: () => void;
 }) {
   const isUpper = caseId === "upper-math";
   const isReview = flowStageId === "upper_review";
   const isTodayDone = flowStageId === "upper_today_done";
+  const isLowerAllDone = flowStageId === "lower_final";
+  const description = isReview
+    ? "오늘 틀렸던 문제만 가볍게 다시 볼 수 있어요."
+    : isTodayDone
+      ? "수학과 국어를 끝까지 해낸 뒤, 짧은 복습으로 마무리할 수 있어요."
+      : isLowerAllDone
+        ? "오늘의 학습 4개를 전부 완료했어요~"
+      : isUpper
+        ? "AI 코치가 다음 학습을 짧게 이어갈 수 있게 추천해 줄 거예요."
+        : "오늘의 학습 4개 중 1개를 완료했어요~";
 
   return (
     <div className="completion-screen">
       <div className="completion-layout">
         <InteractionZone
           id="completion-card"
-          label="단위 학습 완료"
+          label="학습 완료"
           type="content"
           className="completion-card"
           role="region"
           ariaLabel="학습 완료 화면"
         >
+          <button type="button" className="completion-exit-button" onClick={onExit}>
+            나가기
+          </button>
           <div className="complete-medal" aria-hidden="true">
             ✓
           </div>
-          <span>단위 학습 완료</span>
           <h1>
             {isReview
               ? "오답 복습으로 이동했어요"
               : isTodayDone
                 ? "오늘의 학습을 모두 마쳤어요"
+                : isLowerAllDone
+                  ? "모든 학습을 완료했어요!"
                 : isUpper
                 ? "비와 비율을 끝냈어요"
-                : "국어 활동을 끝냈어요"}
+                : "국어를 완료했어요"}
           </h1>
-          <p>
-            {isReview
-              ? "오늘 틀렸던 문제만 가볍게 다시 볼 수 있어요."
-              : isTodayDone
-                ? "수학과 국어를 끝까지 해낸 뒤, 짧은 복습으로 마무리할 수 있어요."
-              : "AI 코치가 다음 학습을 짧게 이어갈 수 있게 추천해 줄 거예요."}
-          </p>
+          {description && <p>{description}</p>}
 
           <div className="completion-stats">
             <div>
@@ -1668,11 +1819,6 @@ function CompletionScreen({
             </div>
           </div>
 
-          <div className="completion-actions">
-            <button type="button" className="secondary-action" onClick={onRestart}>
-              홈으로
-            </button>
-          </div>
         </InteractionZone>
         <SmartAllRightRail
           caseId={caseId}

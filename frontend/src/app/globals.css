@@ -416,6 +416,10 @@ button {
   font-size: 20px;
 }
 
+.primary-study-button.is-complete {
+  cursor: default;
+}
+
 .upper-card-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -867,6 +871,12 @@ button {
   margin-top: 4px;
 }
 
+.advanced-korean-problem .answer-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  margin-top: 4px;
+}
+
 .answer-grid button {
   min-height: 72px;
   padding: 10px 12px;
@@ -892,6 +902,14 @@ button {
   line-height: 1.35;
 }
 
+.advanced-korean-problem .answer-grid button {
+  min-height: 92px;
+  padding: 16px 18px;
+  border-radius: 22px;
+  font-size: clamp(15px, 2dvh, 20px);
+  line-height: 1.35;
+}
+
 .answer-grid button.is-selected {
   background: #ffdc92;
   color: #211609;
@@ -908,23 +926,38 @@ button {
   z-index: 4;
   width: 164px;
   height: 132px;
-  border: 12px solid #f05246;
-  border-radius: 50%;
   opacity: 0.9;
   pointer-events: none;
-  transform: rotate(-9deg);
   animation: answerMarkIn 220ms ease-out;
+}
+
+.answer-result-mark.circle {
+  border: 12px solid #f05246;
+  border-radius: 50%;
+  transform: rotate(-9deg);
+}
+
+.answer-result-mark.slash::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 182px;
+  height: 16px;
+  border-radius: 999px;
+  background: #f05246;
+  transform: translate(-50%, -50%) rotate(-34deg);
 }
 
 @keyframes answerMarkIn {
   from {
     opacity: 0;
-    transform: scale(0.82) rotate(-9deg);
+    transform: scale(0.82);
   }
 
   to {
     opacity: 0.9;
-    transform: scale(1) rotate(-9deg);
+    transform: scale(1);
   }
 }
 
@@ -1004,22 +1037,15 @@ button {
   text-align: center;
 }
 
-.lesson-actions,
-.completion-actions {
+.lesson-actions {
   display: flex;
   justify-content: flex-end;
   gap: 12px;
 }
 
-.secondary-action,
 .primary-action {
   min-width: 150px;
   padding: 0 22px;
-}
-
-.secondary-action {
-  background: #edf3fb;
-  color: #2d4d70;
 }
 
 .primary-action {
@@ -1049,6 +1075,7 @@ button {
 }
 
 .completion-card {
+  position: relative;
   width: 100%;
   min-width: 0;
   display: grid;
@@ -1061,26 +1088,34 @@ button {
   text-align: center;
 }
 
+.completion-exit-button {
+  position: absolute;
+  top: 24px;
+  left: 24px;
+  min-height: 48px;
+  padding: 0 20px;
+  border: 0;
+  border-radius: 999px;
+  background: #edf3fb;
+  color: #284461;
+  font-weight: 950;
+}
+
 .completion-layout {
   height: auto;
   padding: 30px var(--screen-x) 34px;
 }
 
 .complete-medal {
-  width: 86px;
-  height: 86px;
+  width: 52px;
+  height: 52px;
+  margin-top: 16px;
   display: grid;
   place-items: center;
   border-radius: 50%;
   background: linear-gradient(135deg, #ffb12a, #ff7c00);
   color: #ffffff;
-  font-size: 46px;
-  font-weight: 950;
-}
-
-.completion-card > span {
-  color: var(--deep-blue);
-  font-size: 16px;
+  font-size: 28px;
   font-weight: 950;
 }
 

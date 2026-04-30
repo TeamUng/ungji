@@ -180,17 +180,24 @@ export function getStepMessages(
         type: "text",
         content: isUpper
           ? `${studentName}아, 어려운 수학을 끝까지 해낸 게 정말 좋아. 다음은 국어 정보와 표현 판단하기로 이어가 보자.`
-          : "정답! 글의 흐름 잘 잡았어. 어려운 거 한 문제만 더 도전해볼까? 중심 문장과 뒷받침 문장 찾기야.",
+          : "너무 잘했어. 성준이라면 더 어려운 문제도 잘 할 것 같아. 같이 상위권 문제에 도전해보자",
       },
       {
         type: "choices",
-        items: [
-          {
-            id: "continue_next_task",
-            label: isUpper ? "국어로 이동하기" : "한 문제 더 도전",
-          },
-          { id: "end_today", label: "오늘은 여기까지" },
-        ],
+        items: isUpper
+          ? [
+              {
+                id: "continue_next_task",
+                label: "국어로 이동하기",
+              },
+              { id: "end_today", label: "오늘은 여기까지" },
+            ]
+          : [
+              {
+                id: "continue_next_task",
+                label: "심화 국어 도전하기",
+              },
+            ],
       },
     ];
   }
@@ -217,13 +224,13 @@ export function getStepMessages(
         type: "text",
         content: isUpper
           ? `${studentName}아, 오늘 정말 잘 해냈어. 오늘 틀린 문제들 같이 복습하러 가자.`
-          : `${studentName}아, 오늘 어려운 것까지 끝까지 한 게 멋졌어. 잘 마쳤으니 편히 쉬어. 안녕, 뽀롱~`,
+          : `${studentName}아 오늘 학습 끝까지 완료한 걸 축하해! 약속한대로 별 10개를 줄게! 내일 또 보자`,
       },
       {
         type: "choices",
         items: isUpper
           ? [{ id: "review_wrong_answers", label: "복습하러 가기" }]
-          : [{ id: "finish_today", label: "마치기" }],
+          : [{ id: "finish_today", label: "완료하기" }],
       },
     ];
   }
@@ -250,6 +257,11 @@ function getMockConversationMessages(
 ): ResponseMessage[] {
   if (stepId === "help" && request.message.type === "init") {
     const isUpper = contextCaseFromRequest(request) === "upper-math";
+
+    if (isLowerSecondKoreanHelpRequest(request)) {
+      return getLowerSecondKoreanHelpInitMessages();
+    }
+
     return [
       {
         type: "text",
@@ -275,6 +287,16 @@ function getMockConversationMessages(
   }
 
   if (stepId === "help" && request.message.type === "choice") {
+    if (isLowerSecondKoreanHelpRequest(request)) {
+      const lowerSecondMessages = getLowerSecondKoreanHelpChoiceMessages(
+        request.message.content,
+      );
+
+      if (lowerSecondMessages) {
+        return lowerSecondMessages;
+      }
+    }
+
     return [
       {
         type: "text",
@@ -307,6 +329,64 @@ function getMockConversationMessages(
   }
 
   return getStepMessages(contextCaseFromRequest(request), stepId);
+}
+
+export function getLowerSecondKoreanHelpInitMessages(): ResponseMessage[] {
+  return [
+    {
+      type: "text",
+      content: "어려웠구나. 어디가 헷갈렸는지 골라볼래?",
+    },
+    {
+      type: "choices",
+      items: [
+        { id: "unknown_main_sentence", label: "중심 문장이 뭔지 모르겠어" },
+        { id: "unknown_support_sentence", label: "뒷받침 문장이 뭔지 모르겠어" },
+        { id: "unknown_tidal_wave", label: "해일이 뭔지 모르겠어" },
+      ],
+    },
+  ];
+}
+
+export function getLowerSecondKoreanHelpChoiceMessages(
+  content: string,
+): ResponseMessage[] | null {
+  if (content === "중심 문장이 뭔지 모르겠어") {
+    return [
+      {
+        type: "text",
+        content:
+          "중심 문장은 바다가 우리에게 도움이 되는 것이야\n\n그럼 뒷받침 문장에는 뭐가 있어야 할까?",
+      },
+      {
+        type: "choices",
+        items: [
+          { id: "sea_good_points", label: "바다의 좋은 점" },
+          { id: "sea_danger_points", label: "바다의 위험한 점" },
+          { id: "sea_mountain_difference", label: "바다와 산의 차이점" },
+        ],
+      },
+    ];
+  }
+
+  if (content === "바다의 좋은 점") {
+    return [
+      {
+        type: "text",
+        content:
+          "맞아~\n그럼 바다의 좋은 점이 없는 문장을 선택지 중에서 골라볼까?",
+      },
+    ];
+  }
+
+  return null;
+}
+
+function isLowerSecondKoreanHelpRequest(request: ChatRequest) {
+  return (
+    contextCaseFromRequest(request) === "lower-korean" &&
+    request.context?.current_problem_id === "lower_korean_paragraph_002"
+  );
 }
 
 function contextForStep(
