@@ -19,10 +19,9 @@ type DemoCase = {
   tasks: TaskRef[];
 };
 
-export const demoStepLabels: Record<Exclude<DemoStepId, "exit">, string> = {
+export const demoStepLabels: Record<Exclude<DemoStepId, "exit" | "help">, string> = {
   home: "홈 추천",
   learning: "학습",
-  help: "도움",
   complete: "완료",
 };
 

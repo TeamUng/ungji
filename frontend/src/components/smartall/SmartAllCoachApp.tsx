@@ -38,7 +38,6 @@ type SmartAllCoachAppProps = {
 const orderedSteps: (keyof typeof demoStepLabels)[] = [
   "home",
   "learning",
-  "help",
   "complete",
 ];
 
@@ -120,19 +119,15 @@ function resolveBubbleAction(
     };
   }
 
-  if (item.id === "review_wrong_answers" || label.includes("오답")) {
-    return {
-      ...item,
-      action: "open_chat",
-      targetStep: "finish",
-    };
-  }
-
-  if (item.id === "finish_today" || label.includes("여기까지")) {
+  if (
+    item.id === "finish_today" ||
+    item.id === "end_today" ||
+    label.includes("여기까지")
+  ) {
     return {
       ...item,
       action: "navigate",
-      targetStep: "finish",
+      targetStep: "home",
     };
   }
 
@@ -146,8 +141,8 @@ function resolveBubbleAction(
 
   return {
     ...item,
-    action: stepId === "finish" ? "open_chat" : "navigate",
-    targetStep: stepId === "finish" ? "finish" : "learning",
+    action: "navigate",
+    targetStep: "learning",
   };
 }
 
@@ -179,10 +174,10 @@ function getDefaultBubbleActions(
         targetTaskIndex: 1,
       },
       {
-        id: "finish_today",
-        label: "오늘 마무리하기",
+        id: "end_today",
+        label: "오늘은 여기까지",
         action: "navigate",
-        targetStep: "finish",
+        targetStep: "home",
       },
     ];
   }
@@ -202,23 +197,6 @@ function getDefaultBubbleActions(
         action: "open_chat",
         targetStep: "help",
         targetTaskIndex: isUpper ? 1 : 0,
-      },
-    ];
-  }
-
-  if (stepId === "finish") {
-    return [
-      {
-        id: "review_wrong_answers",
-        label: "오답 복습하기",
-        action: "open_chat",
-        targetStep: "finish",
-      },
-      {
-        id: "back_home",
-        label: "홈으로 가기",
-        action: "navigate",
-        targetStep: "home",
       },
     ];
   }
@@ -284,7 +262,7 @@ export function SmartAllCoachApp({
   const bubbleText = getTextMessageContent(bubbleMessages);
   const visibleBubbleText =
     bubbleText ?? (isStreaming && shouldRequestBubble ? THINKING_BUBBLE_TEXT : undefined);
-  const bubbleActions = getBubbleActions(bubbleMessages);
+  const bubbleActions = getBubbleActions(bubbleMessages, stepId, caseId);
   const isUpper = caseId === "upper-math";
   const activeTask = demoCase.tasks[activeTaskIndex] ?? demoCase.tasks[0];
   const shouldShowBubble =

@@ -381,7 +381,18 @@ def _parse_helper_response(
                 messages.append(make_image_card("https://placeholder.invalid/img", caption))
 
     if not messages:
-        content = getattr(response, "content", "") or "좋아, 한 단계만 같이 생각해보자."
-        messages.append(make_text(content))
+        if required_tool == "send_causes":
+            messages.append(make_choices(_default_cause_choices()))
+        else:
+            content = getattr(response, "content", "") or "좋아, 한 단계만 같이 생각해보자."
+            messages.append(make_text(content))
 
     return messages
+
+
+def _default_cause_choices() -> list[tuple[str, str]]:
+    return [
+        ("dont_understand_question", "문제가 무슨 말인지 모르겠어요"),
+        ("dont_know_start", "어디서 시작할지 모르겠어요"),
+        ("confused_steps", "풀이 순서가 헷갈려요"),
+    ]

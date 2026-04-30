@@ -104,6 +104,29 @@ class TestHelperProblemStart:
         ids = [item.id for item in choices.items]
         assert ids == ["no_concept", "hard_calc", "confused_question"]
 
+    def test_required_cause_collection_falls_back_to_generic_choices(
+        self, make_chat_state, case1_student, mock_llm
+    ):
+        mock_llm.next_tool_calls = []
+        mock_llm.response_content = ""
+        state = _make_tp4_state(
+            make_chat_state, case1_student, Segment.LOW_LAZY, GradeGroup.LOWER
+        )
+        state["current_problem"] = _DUMMY_PROBLEM
+
+        result = helper(state)
+
+        choices = next(
+            message
+            for message in result["helper_response"]
+            if isinstance(message, ChoicesMessage)
+        )
+        assert [item.id for item in choices.items] == [
+            "dont_understand_question",
+            "dont_know_start",
+            "confused_steps",
+        ]
+
     def test_known_problem_id_is_loaded(self, make_chat_state, case2_student, mock_llm, monkeypatch):
         def fail_if_called(*args, **kwargs):
             raise AssertionError("known problem ids should skip free-form input guard")
@@ -236,6 +259,7 @@ class TestHelperCoachingConversation:
             GradeGroup.LOWER,
         )
         state["current_problem"] = _DUMMY_PROBLEM
+        state["tp4_turn_count"] = 1
         state["chat_history"] = [HumanMessage(content="아직 모르겠어요")]
 
         result = helper(state)
