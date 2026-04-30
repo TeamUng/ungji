@@ -115,3 +115,18 @@ def test_load_problem_raises_key_error_when_problem_does_not_exist(
 
     with pytest.raises(KeyError, match="missing-problem"):
         loader.load_problem("missing-problem")
+
+
+def test_demo_lower_korean_paragraph_problems_are_registered():
+    first_problem = loader.load_problem("lower_korean_paragraph_001")
+    second_problem = loader.load_problem("lower_korean_paragraph_002")
+
+    assert first_problem["unit"] == "문단의 짜임 - 긴글 이해하기"
+    assert first_problem["source_image_path"] == "reference/g2-korean-example-question-01.png"
+    assert first_problem["answer"] == "2"
+    assert "종이컵" in first_problem["question"]
+
+    assert second_problem["unit"] == "문단의 짜임 - 중심 문장과 뒷받침 문장 찾기"
+    assert second_problem["source_image_path"] == "reference/g2-korean-example-question-02.png"
+    assert second_problem["answer"] == "4"
+    assert "해일" in second_problem["question"]
