@@ -1,7 +1,11 @@
 from __future__ import annotations
 
 from app.core.enums import GradeGroup, Segment, Touchpoint
-from app.services.nodes.motivator import _build_wrong_answer_summary, motivator
+from app.services.nodes.motivator import (
+    _build_wrong_answer_summary,
+    _make_motivator_decision,
+    motivator,
+)
 
 
 def test_no_wrong_answers_summary(case1_student, make_chat_state):
@@ -89,10 +93,31 @@ def test_tp5_does_not_prompt_invented_review_exercises(case2_student, make_chat_
     prompt_text = "\n".join(message.content for message in mock_llm.calls[0]["messages"])
     banned_examples = ["7-3", "피자", "사과 3개"]
 
-    assert "Book Club" in prompt_text
+    assert "오답/복습 콘텐츠" in prompt_text
+    assert "intent: suggest_review" in prompt_text
+    assert "Book Club" not in prompt_text
+    assert "별도 활동" in prompt_text
+    assert "나가기 버튼" in prompt_text
+    assert "제안하지 말고" in prompt_text
     assert "새 문제" in prompt_text
     assert "예시" in prompt_text
     assert "교과서 페이지" in prompt_text
     assert "퀴즈" in prompt_text
     for phrase in banned_examples:
         assert phrase not in prompt_text
+
+
+def test_tp5_decision_wraps_up_when_no_wrong_answers(case1_student, make_chat_state):
+    state = make_chat_state(
+        case1_student,
+        segment=Segment.LOW_LAZY,
+        grade_group=GradeGroup.LOWER,
+        touchpoint=Touchpoint.TP5,
+        completed_tasks=[case1_student["today_tasks"][0]],
+    )
+    state = {**state, "has_wrong_answers": False, "wrong_content_done_today": False}
+
+    decision = _make_motivator_decision(state)
+
+    assert decision["intent"] == "wrap_up_today"
+    assert decision["target_task"] is None

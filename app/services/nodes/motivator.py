@@ -12,7 +12,6 @@ from app.services.prompts.agents import MOTIVATOR_ROLE, build_system_prompt
 logger = get_logger(__name__)
 
 _HISTORY_WINDOW = 20
-_BOOK_CLUB_LABEL = "Book Club"
 
 
 def _task_key(task: Task | dict) -> tuple[str, str]:
@@ -41,6 +40,72 @@ def _task_lines(tasks: list[Task] | list[dict]) -> str:
             f"{task.get('estimated_time', '')}분{score_info})"
         )
     return "\n".join(lines)
+
+
+def _make_motivator_decision(state: ChatState) -> dict:
+    """Decide the motivator intent before asking the LLM to write student text."""
+    touchpoint = state.get("current_touchpoint", Touchpoint.TP1)
+    today_tasks = state.get("today_tasks", [])
+    completed_tasks = state.get("completed_tasks", [])
+    remaining = _remaining_tasks(today_tasks, completed_tasks)
+    current_task = state.get("current_task")
+
+    if touchpoint == Touchpoint.TP3:
+        return {
+            "intent": "retain_current_task",
+            "target_task": current_task,
+            "candidate_tasks": [current_task] if current_task else [],
+            "student_goal": "이탈 이벤트에 공감하되 현재 단원 안의 아주 작은 행동 하나로 이어가게 한다.",
+            "forbidden": ["나가기 방법 안내", "새 학습 제안", "문제풀이 힌트로 바로 진입"],
+        }
+
+    if remaining:
+        return {
+            "intent": "recommend_next_task",
+            "target_task": remaining[0] if len(remaining) == 1 else None,
+            "candidate_tasks": remaining,
+            "student_goal": "남은 오늘의 학습 중 하나를 부담 낮게 이어서 시작하게 한다.",
+            "forbidden": ["완료한 단원 추천", "새 단원 생성", "나가기 버튼 제안"],
+        }
+
+    has_wrong_answers = state.get("has_wrong_answers", False)
+    wrong_done_today = state.get("wrong_content_done_today", False)
+    if has_wrong_answers and not wrong_done_today:
+        return {
+            "intent": "suggest_review",
+            "target_task": None,
+            "candidate_tasks": [],
+            "student_goal": "남은 오답/복습 콘텐츠를 아주 부담 낮게 이어가게 한다.",
+            "forbidden": ["새 단원 추천", "새 문제 생성", "별도 활동 제안", "나가기 버튼 제안"],
+        }
+
+    return {
+        "intent": "wrap_up_today",
+        "target_task": None,
+        "candidate_tasks": [],
+        "student_goal": "오늘의 학습 완료를 인정하고 따뜻하게 마무리한다.",
+        "forbidden": ["새 단원 추천", "새 문제 생성", "별도 활동 제안", "나가기 버튼 제안"],
+    }
+
+
+def _decision_lines(decision: dict) -> str:
+    target_task = decision.get("target_task")
+    candidate_tasks = [task for task in decision.get("candidate_tasks", []) if task]
+    target_line = _task_lines([target_task]) if target_task else "없어."
+    candidate_line = _task_lines(candidate_tasks)
+    forbidden = ", ".join(decision.get("forbidden", [])) or "없어."
+
+    return (
+        "시스템이 먼저 확정한 motivator decision:\n"
+        f"- intent: {decision['intent']}\n"
+        f"- student_goal: {decision['student_goal']}\n"
+        f"- target_task:\n{target_line}\n"
+        f"- candidate_tasks:\n{candidate_line}\n"
+        f"- forbidden: {forbidden}\n\n"
+        "위 decision의 범위를 벗어나지 말고, 아이에게 그대로 보일 최종 문장만 작성해줘. "
+        "forbidden에 적힌 행동은 제안하지 말고, "
+        "intent, target_task, candidate_tasks, forbidden 같은 내부 필드명은 절대 말하지 마."
+    )
 
 
 def _latest_student_message(chat_history) -> str:
@@ -131,12 +196,14 @@ def _situation_chat(state: ChatState) -> str:
     active_tasks = remaining if completed_tasks else today_tasks
 
     if touchpoint == Touchpoint.TP3:
+        decision = _make_motivator_decision(state)
         current_task = state.get("current_task")
         task_line = _task_lines([current_task] if current_task else [])
         return (
             f"나는 {profile['name']}이고 {profile['grade']}학년이야. 나를 부를 때는 '{call_name}'라고 불러줘. "
             f"방금 이렇게 말했어: \"{latest}\"\n"
             f"지금 화면의 현재 단원:\n{task_line}\n\n"
+            f"{_decision_lines(decision)}\n\n"
             "내 말에 이어서 바로 대답해줘. "
             "내가 조금 더 해보겠다고 했으니 현재 화면 안에서 할 수 있는 아주 작은 행동 하나만 말해줘."
         )
@@ -145,7 +212,7 @@ def _situation_chat(state: ChatState) -> str:
         return (
             f"나는 {profile['name']}이고 {profile['grade']}학년이야. 나를 부를 때는 '{call_name}'라고 불러줘. "
             f"방금 이렇게 말했어: \"{latest}\"\n\n"
-            "오늘은 끝내겠다는 뜻이야. 따뜻하게 마무리해줘."
+            "오늘은 끝내겠다는 뜻이야. 나가기 버튼이나 새 학습을 제안하지 말고 따뜻하게 마무리해줘."
         )
 
     return (
@@ -162,6 +229,7 @@ def _situation_tp1(state: ChatState) -> str:
     call_name = _student_call_name(str(profile.get("name", "")))
     today_tasks = state["today_tasks"]
     pattern = state["learning_pattern"]
+    decision = _make_motivator_decision(state)
 
     habits = [
         label
@@ -181,6 +249,7 @@ def _situation_tp1(state: ChatState) -> str:
         f"{habit_line}"
         "오늘 홈 화면에는 4개 단원이 보여:\n"
         f"{_task_lines(today_tasks)}\n\n"
+        f"{_decision_lines(decision)}\n\n"
         "이 중에서 지금 바로 시작할 추천 단원 하나만 알려줘."
     )
 
@@ -191,6 +260,7 @@ def _situation_tp2(state: ChatState) -> str:
     today_tasks = state["today_tasks"]
     completed_tasks = state["completed_tasks"]
     remaining = _remaining_tasks(today_tasks, completed_tasks)
+    decision = _make_motivator_decision(state)
 
     if remaining:
         return (
@@ -199,6 +269,7 @@ def _situation_tp2(state: ChatState) -> str:
             f"{_task_lines(completed_tasks)}\n\n"
             f"아직 남은 단원은 {len(remaining)}개야:\n"
             f"{_task_lines(remaining)}\n\n"
+            f"{_decision_lines(decision)}\n\n"
             "다음에 무엇을 하면 좋을지 남은 단원 중 하나만 추천해줘."
         )
 
@@ -206,7 +277,8 @@ def _situation_tp2(state: ChatState) -> str:
         f"안녕, 나는 {profile['name']}이고 {profile['grade']}학년이야. 나를 부를 때는 '{call_name}'라고 불러줘. "
         f"오늘 할 단원 {len(today_tasks)}개를 모두 끝냈어.\n"
         f"완료한 단원:\n{_task_lines(completed_tasks)}\n\n"
-        f"남은 단원이 없어서 {_BOOK_CLUB_LABEL}을 써볼까 생각 중이야."
+        f"오답 상황: {_build_wrong_answer_summary(state)}\n\n"
+        f"{_decision_lines(decision)}"
     )
 
 
@@ -217,6 +289,7 @@ def _situation_tp3(state: ChatState) -> str:
     today_tasks = state["today_tasks"]
     completed_tasks = state["completed_tasks"]
     remaining_count = len(_remaining_tasks(today_tasks, completed_tasks))
+    decision = _make_motivator_decision(state)
 
     if current_task:
         task_info = (
@@ -231,7 +304,8 @@ def _situation_tp3(state: ChatState) -> str:
     return (
         f"나는 {profile['name']}이고 {profile['grade']}학년이야. 나를 부를 때는 '{call_name}'라고 불러줘. {task_info}\n"
         f"아직 남은 단원 수는 {remaining_count}개야.\n\n"
-        "지금 나가고 싶어졌어. 강요하지 말고 공감해줘. "
+        f"{_decision_lines(decision)}\n\n"
+        "나가기 버튼을 눌러서 이탈하려는 상황이야. 나가기 방법을 안내하지 말고, 강요하지 말고 공감해줘. "
         "그래도 계속할 수 있게 현재 단원 안에서 할 수 있는 아주 작은 행동 하나만 말해줘."
     )
 
@@ -243,14 +317,15 @@ def _situation_tp5(state: ChatState) -> str:
     completed_tasks = state["completed_tasks"]
     remaining = _remaining_tasks(today_tasks, completed_tasks)
     wrong_summary = _build_wrong_answer_summary(state)
+    decision = _make_motivator_decision(state)
 
     if remaining:
         next_request = (
-            "홈 화면으로 돌아온 상태라면 남은 단원 중 추천 단원 하나만 알려줘. "
-            "내가 오늘은 끝내겠다고 말하면 따뜻하게 마무리해줘."
+            "아직 오늘의 학습 단원이 남아 있어. 나가기 버튼이나 새 학습을 제안하지 말고 "
+            "남은 단원 중 하나만 부담 낮게 이어서 하도록 권해줘."
         )
     else:
-        next_request = f"남은 단원이 없어서 {_BOOK_CLUB_LABEL}을 써볼까 생각 중이야."
+        next_request = "남은 단원이 없으므로 decision에 따라 오답/복습 유도 또는 마무리만 해줘."
 
     return (
         f"나는 {profile['name']}이고 {profile['grade']}학년이야. 나를 부를 때는 '{call_name}'라고 불러줘. 오늘 학습을 마치려 해.\n"
@@ -259,6 +334,7 @@ def _situation_tp5(state: ChatState) -> str:
         f"남은 단원:\n{_task_lines(remaining)}\n"
         f"오답 상황: {wrong_summary}\n"
         f"오늘 평균 점수: {state['today_score']}점\n\n"
+        f"{_decision_lines(decision)}\n\n"
         f"{next_request}"
     )
 
