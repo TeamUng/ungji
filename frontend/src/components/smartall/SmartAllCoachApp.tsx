@@ -48,6 +48,8 @@ const subjectsByCase: Record<DemoCaseId, string[]> = {
   "upper-math": ["개념별따기", "수학", "과학", "사회"],
 };
 
+const THINKING_BUBBLE_TEXT = "뽀롱~ 생각 중이야...";
+
 const defaultChatAdapter =
   process.env.NEXT_PUBLIC_UNGJI_CHAT_MODE === "live"
     ? liveChatAdapter
@@ -133,6 +135,8 @@ export function SmartAllCoachApp({
     !chatOpen && ["home", "complete", "exit", "finish"].includes(stepId);
   const bubbleMessages = bubbleResponseMessages ?? [];
   const bubbleText = getTextMessageContent(bubbleMessages);
+  const visibleBubbleText =
+    bubbleText ?? (isStreaming && shouldRequestBubble ? THINKING_BUBBLE_TEXT : undefined);
   const bubbleActions = getBubbleActions(bubbleMessages);
   const isUpper = caseId === "upper-math";
   const shouldShowBubble =
@@ -395,7 +399,7 @@ export function SmartAllCoachApp({
           state={porongState}
           chatOpen={chatOpen}
           showBubble={shouldShowBubble}
-          bubbleText={bubbleText}
+          bubbleText={visibleBubbleText}
           bubbleActions={bubbleActions}
           onTap={openCoachForCurrentStep}
           onBubbleAction={handleBubbleChoice}

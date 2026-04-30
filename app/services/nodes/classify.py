@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from time import perf_counter
+
 from app.core import constants
 from app.core.enums import GradeGroup, Segment
 from app.core.logging import get_logger
@@ -38,6 +40,7 @@ def get_segment(profile: StudentProfile, learning_pattern: LearningPattern) -> S
 
 def classify(state: ChatState) -> dict:
     student_id = state["student_id"]
+    started = perf_counter()
 
     logger.info("classify 노드 시작", extra={"student_id": student_id})
 
@@ -51,15 +54,6 @@ def classify(state: ChatState) -> dict:
     has_wrong = learning_pattern["wrong_content_total"] > 0
     wrong_done_today = has_wrong and (
         learning_pattern["wrong_content_done"] >= learning_pattern["wrong_content_total"]
-    )
-
-    logger.info(
-        "classify 노드 완료",
-        extra={
-            "student_id": student_id,
-            "segment": segment.value,
-            "grade_group": grade_group.value,
-        },
     )
 
     context = state.get("request_context")
@@ -87,6 +81,16 @@ def classify(state: ChatState) -> dict:
                 "has_current_problem": current_problem is not None,
             },
         )
+
+    logger.info(
+        "classify 노드 완료",
+        extra={
+            "student_id": student_id,
+            "segment": segment.value,
+            "grade_group": grade_group.value,
+            "duration_ms": _elapsed_ms(started),
+        },
+    )
 
     return {
         "student_profile": profile,
@@ -199,3 +203,7 @@ def _ref_value(ref: TaskRef | dict, field: str) -> str | None:
     if isinstance(ref, dict):
         return ref.get(field)
     return getattr(ref, field, None)
+
+
+def _elapsed_ms(started: float) -> int:
+    return round((perf_counter() - started) * 1000)
