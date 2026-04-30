@@ -25,6 +25,14 @@ class FakeChatOpenAI:
         self.__class__.instances.append(self)
 
 
+class FakeChatUpstage:
+    instances = []
+
+    def __init__(self, **kwargs):
+        self.kwargs = kwargs
+        self.__class__.instances.append(self)
+
+
 def _setup_fake_openai(monkeypatch):
     fake_module = types.ModuleType("langchain_openai")
     fake_module.ChatOpenAI = FakeChatOpenAI
@@ -32,14 +40,19 @@ def _setup_fake_openai(monkeypatch):
     monkeypatch.setitem(sys.modules, "langchain_openai", fake_module)
 
 
-def test_llm_client_initializes_motivator_helper_and_judge_alias_with_settings(monkeypatch):
+def _setup_fake_upstage(monkeypatch):
+    fake_module = types.ModuleType("langchain_upstage")
+    fake_module.ChatUpstage = FakeChatUpstage
+    FakeChatUpstage.instances = []
+    monkeypatch.setitem(sys.modules, "langchain_upstage", fake_module)
+
+
+def test_llm_client_initializes_visible_model_routing_and_judge_alias(monkeypatch):
     _setup_fake_openai(monkeypatch)
+    _setup_fake_upstage(monkeypatch)
     monkeypatch.setattr(settings, "OPENROUTER_API_KEY", "test-or-key")
     monkeypatch.setattr(settings, "OPENROUTER_BASE_URL", "https://example.test/api/v1")
-    monkeypatch.setattr(settings, "MOTIVATOR_MODEL", "openai/gpt-test-motivator")
-    monkeypatch.setattr(settings, "HELPER_MODEL", "google/gemini-test-helper")
-    monkeypatch.setattr(settings, "LLM_TEMPERATURE", 0.5)
-    monkeypatch.setattr(settings, "LLM_TIMEOUT_SECONDS", 42)
+    monkeypatch.setattr(settings, "UPSTAGE_API_KEY", "test-upstage-key")
     monkeypatch.setattr(settings, "LANGSMITH_API_KEY", "")
     monkeypatch.setattr(settings, "UNGJI_DISABLE_LANGSMITH_TRACING", False)
     monkeypatch.delenv("LANGCHAIN_API_KEY", raising=False)
@@ -49,28 +62,91 @@ def test_llm_client_initializes_motivator_helper_and_judge_alias_with_settings(m
 
     llm_module = importlib.import_module("app.clients.llm")
 
-    assert len(FakeChatOpenAI.instances) == 2
-    assert llm_module.motivator_llm is FakeChatOpenAI.instances[0]
-    assert llm_module.helper_llm is FakeChatOpenAI.instances[1]
-    assert llm_module.llm is llm_module.helper_llm
+    assert len(FakeChatOpenAI.instances) == 3
+    assert len(FakeChatUpstage.instances) == 1
+    assert llm_module.motivator_llm.primary is FakeChatOpenAI.instances[0]
+    assert llm_module.helper_llm.primary is FakeChatOpenAI.instances[1]
+    assert llm_module.judge_llm.primary is FakeChatOpenAI.instances[2]
+    assert llm_module.motivator_llm.fallback is FakeChatUpstage.instances[0]
+    assert llm_module.helper_llm.fallback is FakeChatUpstage.instances[0]
+    assert llm_module.judge_llm.fallback is FakeChatUpstage.instances[0]
+    assert llm_module.llm is llm_module.judge_llm
 
-    motivator_kwargs = llm_module.motivator_llm.kwargs
+    motivator_kwargs = llm_module.motivator_llm.primary.kwargs
+    assert llm_module.MOTIVATOR_MODEL == "google/gemini-2.5-flash"
+    assert llm_module.HELPER_MODEL == "openai/gpt-5.4-mini"
+    assert llm_module.JUDGE_MODEL == "openai/gpt-5.4-mini"
+    assert llm_module.COMMON_FALLBACK_MODEL == "solar-pro2"
     assert motivator_kwargs["api_key"] == "test-or-key"
     assert motivator_kwargs["base_url"] == "https://example.test/api/v1"
-    assert motivator_kwargs["model"] == "openai/gpt-test-motivator"
-    assert motivator_kwargs["temperature"] == 0.5
-    assert motivator_kwargs["timeout"] == 42
+    assert motivator_kwargs["model"] == "google/gemini-2.5-flash"
+    assert motivator_kwargs["temperature"] == 0.7
+    assert motivator_kwargs["timeout"] == 60
     assert motivator_kwargs["max_retries"] == 1
     assert "HTTP-Referer" in motivator_kwargs["default_headers"]
 
-    helper_kwargs = llm_module.helper_llm.kwargs
-    assert helper_kwargs["model"] == "google/gemini-test-helper"
+    helper_kwargs = llm_module.helper_llm.primary.kwargs
+    assert helper_kwargs["model"] == "openai/gpt-5.4-mini"
     assert helper_kwargs["api_key"] == "test-or-key"
+
+    judge_kwargs = llm_module.judge_llm.primary.kwargs
+    assert judge_kwargs["model"] == "openai/gpt-5.4-mini"
+    assert judge_kwargs["api_key"] == "test-or-key"
+
+    fallback_kwargs = FakeChatUpstage.instances[0].kwargs
+    assert fallback_kwargs["api_key"] == "test-upstage-key"
+    assert fallback_kwargs["model"] == "solar-pro2"
+    assert fallback_kwargs["temperature"] == 0.7
+    assert fallback_kwargs["timeout"] == 60
+
+
+def test_common_fallback_chat_model_uses_shared_fallback_after_primary_failure(monkeypatch):
+    _setup_fake_openai(monkeypatch)
+    _setup_fake_upstage(monkeypatch)
+    monkeypatch.setattr(settings, "OPENROUTER_API_KEY", "test-or-key")
+    monkeypatch.setattr(settings, "UPSTAGE_API_KEY", "test-upstage-key")
+    monkeypatch.setattr(settings, "LANGSMITH_API_KEY", "")
+    monkeypatch.setattr(settings, "UNGJI_DISABLE_LANGSMITH_TRACING", False)
+    sys.modules.pop("app.clients.llm", None)
+    llm_module = importlib.import_module("app.clients.llm")
+
+    class PrimaryFails:
+        def __init__(self):
+            self.calls = []
+
+        def invoke(self, messages, **kwargs):
+            self.calls.append({"messages": messages, "kwargs": kwargs})
+            raise RuntimeError("primary unavailable")
+
+    class FallbackSucceeds:
+        def __init__(self):
+            self.calls = []
+
+        def invoke(self, messages, **kwargs):
+            self.calls.append({"messages": messages, "kwargs": kwargs})
+            return FakeLLMResponse(content="fallback response")
+
+    primary = PrimaryFails()
+    fallback = FallbackSucceeds()
+    model = llm_module.CommonFallbackChatModel(
+        primary=primary,
+        fallback=fallback,
+        primary_route=llm_module.MOTIVATOR_ROUTE,
+        fallback_route=llm_module.COMMON_FALLBACK_ROUTE,
+    )
+
+    response = model.invoke(["hello"], temperature=0)
+
+    assert response.content == "fallback response"
+    assert primary.calls == [{"messages": ["hello"], "kwargs": {"temperature": 0}}]
+    assert fallback.calls == [{"messages": ["hello"], "kwargs": {"temperature": 0}}]
 
 
 def test_llm_client_enables_langsmith_tracing_when_key_exists(monkeypatch):
     _setup_fake_openai(monkeypatch)
+    _setup_fake_upstage(monkeypatch)
     monkeypatch.setattr(settings, "OPENROUTER_API_KEY", "test-or-key")
+    monkeypatch.setattr(settings, "UPSTAGE_API_KEY", "test-upstage-key")
     monkeypatch.setattr(settings, "LANGSMITH_API_KEY", "test-langsmith-key")
     monkeypatch.setattr(settings, "LANGSMITH_PROJECT", "test-project")
     monkeypatch.setattr(settings, "UNGJI_DISABLE_LANGSMITH_TRACING", False)
@@ -95,7 +171,9 @@ def test_llm_client_enables_langsmith_tracing_when_key_exists(monkeypatch):
 
 def test_llm_client_respects_langsmith_disable_flag(monkeypatch):
     _setup_fake_openai(monkeypatch)
+    _setup_fake_upstage(monkeypatch)
     monkeypatch.setattr(settings, "OPENROUTER_API_KEY", "test-or-key")
+    monkeypatch.setattr(settings, "UPSTAGE_API_KEY", "test-upstage-key")
     monkeypatch.setattr(settings, "LANGSMITH_API_KEY", "test-langsmith-key")
     monkeypatch.setattr(settings, "LANGSMITH_PROJECT", "test-project")
     monkeypatch.setattr(settings, "UNGJI_DISABLE_LANGSMITH_TRACING", True)

@@ -283,5 +283,8 @@ def mock_llm(monkeypatch) -> FakeLLM:
     fake_module = types.ModuleType("app.clients.llm")
     fake_module.motivator_llm = fake_llm
     fake_module.helper_llm = fake_llm
+    fake_module.judge_llm = fake_llm
+    fake_module.llm = fake_llm
+    fake_module.LLMCallError = RuntimeError
     monkeypatch.setitem(sys.modules, "app.clients.llm", fake_module)
     return fake_llm

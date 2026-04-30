@@ -1,288 +1,248 @@
-# Scenario Runner README / 시나리오 러너 README
+# Script Test Runners
 
-## 한국어
+This folder contains offline-ish test runners for checking how the study coach behaves across mock students, touchpoints, and LLM/model choices. The scripts call the LangGraph graph directly; they do not start FastAPI.
 
-`scripts/run_scenarios.py`는 FastAPI 엔드포인트를 거치지 않고 LangGraph를 직접 호출하는 회귀 테스트용 실행 스크립트입니다. 선택한 학생 프로필에 대해 TP1~TP5 시나리오를 실행하고, 결과를 CSV와 Markdown 대화 기록으로 저장합니다.
+Use these scripts when you want to answer questions like:
 
-기획 의도와 실제 출력의 차이를 보기 위해 `scripts/scenarios/expected_cases.json`이 있으면 기대 조건 평가 CSV도 함께 저장합니다.
+- What does the coach say in TP1-TP5 for a specific mock student?
+- Did a prompt change alter the tone, length, persona, or safety wording?
+- Which model or motivator/helper model combo gives better scenario outputs?
 
-### 무엇을 실행하나요?
+Important distinction: these scripts save generated coach responses and scenario transcripts. They do not save the full internal LLM prompt payload by default. If you need raw prompt/trace inspection, enable LangSmith tracing through the project environment.
 
-기본 실행은 아래 4개 학생 프로필만 사용합니다.
+## Prerequisites
 
-- `lower-low-diligent`
-- `lower-low-lazy`
-- `upper-low-diligent`
-- `upper-low-lazy`
-
-각 학생에 대해 기본적으로 다음 6개 시나리오를 실행합니다.
-
-1. TP1 홈 화면 진입
-2. TP2 단원 학습 완료
-3. TP3 이탈 방지
-4. TP4 문제 도움 1턴: 문제 ID 전달 및 막힌 이유/코칭 응답
-5. TP4 문제 도움 2턴: 학생의 응답 전달 및 코칭
-6. TP5 학습 종료
-
-TP4에서는 선택된 curriculum unit의 첫 번째 `problem_ids` 값을 사용합니다. 문제 내용은 `app/data/mock_problems.json`에서 로드됩니다.
-
-### 실행 방법
-
-기본 4개 프로필 실행:
+From the repository root:
 
 ```powershell
-uv --cache-dir .uv-cache run python scripts/run_scenarios.py
+uv --cache-dir .uv-cache sync
+cp .env.example .env
 ```
 
-전체 12개 프로필 실행:
+Fill the relevant API keys in `.env`.
 
-```powershell
-uv --cache-dir .uv-cache run python scripts/run_scenarios.py --all
-```
+- `run_scenarios.py` uses the app's normal graph and LLM routing from `app/clients/llm.py`.
+- `run_model_comparison.py` needs `OPENROUTER_API_KEY` for OpenRouter models and `UPSTAGE_API_KEY` for `solar-pro2`.
+- `run_combo_comparison.py` has the same model/API-key requirements as `run_model_comparison.py`.
+- `summarize_length_violations.py` only parses existing report files and does not call an LLM.
 
-특정 학생만 실행:
+Use `uv --cache-dir .uv-cache ...` on Windows to avoid uv user-cache permission issues.
 
-```powershell
-uv --cache-dir .uv-cache run python scripts/run_scenarios.py --students lower-low-lazy upper-high-diligent
-```
+Current app model routing and fallback routing are code-visible in `app/clients/llm.py`:
 
-조건으로 필터링:
+| Agent | Touchpoints | Model |
+|---|---|---|
+| motivator | TP1, TP2, TP3, TP5, non-TP4 chat | `google/gemini-2.5-flash` |
+| helper | TP4 stuck/help coaching | `openai/gpt-5.4-mini` |
+| guardrail judge | input/output guardrail LLM judge | `openai/gpt-5.4-mini` |
+| common fallback | used when any primary LLM call fails | Upstage `solar-pro2` |
 
-```powershell
-uv --cache-dir .uv-cache run python scripts/run_scenarios.py --grade-group middle --ability high
-uv --cache-dir .uv-cache run python scripts/run_scenarios.py --grade-group lower upper --ability low --diligence lazy diligent
-```
+Do not set model names in `.env`; change `app/clients/llm.py` when the runtime model routing changes.
 
-사용 가능한 학생 목록 보기:
+## Quick Path: Check Scenario Outputs
+
+For the most direct "how do the prompts/responses come out for each scenario?" check, run `run_scenarios.py`.
+
+List available mock students:
 
 ```powershell
 uv --cache-dir .uv-cache run python scripts/run_scenarios.py --list-students
 ```
 
-학생 응답을 시뮬레이션해서 대화를 더 이어가기:
+Run the default smoke set:
 
 ```powershell
-uv --cache-dir .uv-cache run python scripts/run_scenarios.py --simulate-conversation
+uv --cache-dir .uv-cache run python scripts/run_scenarios.py
 ```
 
-`--simulate-conversation`은 추가 LangGraph 호출을 만들기 때문에 LLM API 호출 수가 늘어납니다.
-
-기대 조건 평가를 끄기:
+Run one or two specific students:
 
 ```powershell
-uv --cache-dir .uv-cache run python scripts/run_scenarios.py --skip-expectations
+uv --cache-dir .uv-cache run python scripts/run_scenarios.py --students lower-low-lazy upper-low-diligent
 ```
 
-다른 기대 조건 파일 사용:
+Run all 12 mock student profiles:
 
 ```powershell
-uv --cache-dir .uv-cache run python scripts/run_scenarios.py --expectations scripts/scenarios/expected_cases.json
+uv --cache-dir .uv-cache run python scripts/run_scenarios.py --all
 ```
 
-### CLI 옵션
+Run a richer conversational pass where the script simulates student follow-up replies:
 
-| 옵션 | 설명 |
-|---|---|
-| `--all` | 12개 전체 학생 프로필 실행 |
-| `--students ...` | 지정한 student ID만 실행 |
-| `--grade-group lower middle upper` | 학년 그룹 필터 |
-| `--ability low high` | 학습 능력 필터 |
-| `--diligence lazy diligent` | 성실도 필터 |
-| `--list-students` | 사용 가능한 프로필 출력 후 종료 |
-| `--simulate-conversation` | 코치 응답 뒤에 학생 응답을 시뮬레이션하고 그래프를 이어서 호출 |
-| `--expectations PATH` | 기대 출력 평가 기준 JSON 경로 |
-| `--skip-expectations` | 기대 출력 평가를 건너뜀 |
+```powershell
+uv --cache-dir .uv-cache run python scripts/run_scenarios.py --students lower-low-lazy --simulate-conversation
+```
 
-`--all`은 `--students` 또는 조건 필터와 함께 사용할 수 없습니다. `--students`도 조건 필터와 함께 사용할 수 없습니다.
-
-### 출력 파일
-
-실행하면 `scripts/results/` 아래에 두 파일이 생성됩니다.
+Every run writes:
 
 ```text
 scripts/results/scenario_results_YYYYMMDD_HHMMSS.csv
 scripts/results/scenario_transcript_YYYYMMDD_HHMMSS.md
 ```
 
-`scripts/scenarios/expected_cases.json`이 있으면 아래 평가 파일도 생성됩니다.
+Open the Markdown transcript first when reviewing wording. Open the CSV when comparing fields, touchpoints, choices, message types, errors, or expectation checks.
+
+If `scripts/scenarios/expected_cases.json` exists, the runner also writes:
 
 ```text
 scripts/results/scenario_eval_YYYYMMDD_HHMMSS.csv
 ```
 
-CSV에는 회귀 비교에 필요한 구조화된 결과가 들어갑니다.
-
-주요 컬럼:
-
-- `student_id`
-- `grade_group`
-- `segment`
-- `expected_grade_group`
-- `expected_ability`
-- `expected_diligence`
-- `classification_ok`
-- `task_index`
-- `task_count`
-- `available_units`
-- `problem_id`
-- `touchpoint`
-- `use_case`
-- `turn`
-- `response_text`
-- `choices`
-- `message_types`
-- `error`
-
-Markdown transcript에는 학생과 코치의 대화가 사람이 읽기 쉬운 형태로 기록됩니다. TP4 선택지는 choice id와 label이 함께 표시됩니다.
-
-평가 CSV는 문장 완전 일치가 아니라 아래 기준을 검사합니다.
-
-- `must_include_any`: 기대 의도를 드러내는 표현 중 하나 이상 포함
-- `must_include_all`: 필수 표현 모두 포함
-- `must_not_include`: 내부 지시, 메타 표현, TP 오용 표현 미노출
-- `max_choices`: 선택지 개수 상한
-- `expected_problem_id`: 기대 문제 ID 사용 여부
-
-### 주의사항
-
-- 이 스크립트는 실제 LangGraph와 LLM 클라이언트를 호출합니다.
-- `.env`에 필요한 API 키가 없으면 실제 실행이 실패할 수 있습니다.
-- `--list-students`는 LLM을 호출하지 않는 가벼운 확인 명령입니다.
-- 생성된 CSV/Markdown 결과 파일은 회귀 확인용 산출물입니다. 커밋 전에 필요한 파일인지 확인하세요.
-- 기대 조건은 하드코딩 답변이 아니라 기획 의도 검수 기준입니다. 프롬프트나 모델을 바꾼 뒤 `scenario_eval_*.csv`의 실패 항목을 보고 프롬프트·가드레일·내부 구조를 보강합니다.
-
-## English
-
-`scripts/run_scenarios.py` is a regression runner that calls LangGraph directly instead of going through the FastAPI endpoint. It runs TP1-TP5 scenarios for selected mock student profiles and saves both structured CSV results and a Markdown conversation transcript.
-
-When `scripts/scenarios/expected_cases.json` exists, the runner also writes an expectation evaluation CSV to compare actual LLM output with the planning intent.
-
-### What Does It Run?
-
-By default, it runs only these 4 profiles:
-
-- `lower-low-diligent`
-- `lower-low-lazy`
-- `upper-low-diligent`
-- `upper-low-lazy`
-
-For each student, it runs these 6 base scenarios:
-
-1. TP1 home-screen entry
-2. TP2 unit completed
-3. TP3 exit prevention
-4. TP4 help turn 1: send problem ID and receive stuck-reason/coaching response
-5. TP4 help turn 2: send simulated student response and receive coaching
-6. TP5 learning wrap-up
-
-For TP4, the runner uses the first `problem_ids` entry from the selected curriculum unit. The problem content is loaded from `app/data/mock_problems.json`.
-
-### How To Run
-
-Run the default 4 profiles:
-
-```powershell
-uv --cache-dir .uv-cache run python scripts/run_scenarios.py
-```
-
-Run all 12 profiles:
-
-```powershell
-uv --cache-dir .uv-cache run python scripts/run_scenarios.py --all
-```
-
-Run exact student IDs:
-
-```powershell
-uv --cache-dir .uv-cache run python scripts/run_scenarios.py --students lower-low-lazy upper-high-diligent
-```
-
-Filter by criteria:
-
-```powershell
-uv --cache-dir .uv-cache run python scripts/run_scenarios.py --grade-group middle --ability high
-uv --cache-dir .uv-cache run python scripts/run_scenarios.py --grade-group lower upper --ability low --diligence lazy diligent
-```
-
-List available students:
-
-```powershell
-uv --cache-dir .uv-cache run python scripts/run_scenarios.py --list-students
-```
-
-Simulate student replies and continue the conversation:
-
-```powershell
-uv --cache-dir .uv-cache run python scripts/run_scenarios.py --simulate-conversation
-```
-
-`--simulate-conversation` increases the number of LangGraph and LLM calls.
-
-Skip expectation evaluation:
+Skip expectation checks when you only want raw outputs:
 
 ```powershell
 uv --cache-dir .uv-cache run python scripts/run_scenarios.py --skip-expectations
 ```
 
-### CLI Options
+## Script Map
 
-| Option | Description |
+### `run_scenarios.py`
+
+Primary scenario regression runner.
+
+- Calls `app.services.graph.graph` directly.
+- Uses the 12 mock student profiles in `app/data/mock_students.json`.
+- Defaults to 4 smoke profiles: `lower-low-diligent`, `lower-low-lazy`, `upper-low-diligent`, `upper-low-lazy`.
+- Runs 6 base touchpoint scenarios per selected student: TP1, TP2, TP3, TP4 turn 1, TP4 turn 2, TP5.
+- Writes a structured CSV, a human-readable Markdown transcript, and optional expectation-evaluation CSV.
+- `--simulate-conversation` adds extra graph turns after coach responses.
+
+Useful commands:
+
+```powershell
+uv --cache-dir .uv-cache run python scripts/run_scenarios.py --grade-group middle --ability high
+uv --cache-dir .uv-cache run python scripts/run_scenarios.py --grade-group lower upper --ability low --diligence lazy diligent
+uv --cache-dir .uv-cache run python scripts/run_scenarios.py --expectations scripts/scenarios/expected_cases.json
+```
+
+Main CLI options:
+
+| Option | Purpose |
 |---|---|
-| `--all` | Run all 12 student profiles |
+| `--all` | Run all 12 mock student profiles |
 | `--students ...` | Run exact student IDs |
 | `--grade-group lower middle upper` | Filter by grade group |
 | `--ability low high` | Filter by ability |
 | `--diligence lazy diligent` | Filter by diligence |
 | `--list-students` | Print available profiles and exit |
-| `--simulate-conversation` | Simulate student replies after coach responses and continue the graph |
-| `--expectations PATH` | JSON file with expectation checks |
-| `--skip-expectations` | Skip expectation evaluation |
+| `--simulate-conversation` | Simulate student replies and continue the graph |
+| `--expectations PATH` | Use a specific expectation JSON file |
+| `--skip-expectations` | Skip expectation CSV generation |
 
-`--all` cannot be combined with `--students` or criteria filters. `--students` cannot be combined with criteria filters.
+`--all` cannot be combined with `--students` or filters. `--students` cannot be combined with filters.
 
-### Output Files
+### `run_model_comparison.py`
 
-Each run creates two files under `scripts/results/`:
+Model sweep runner for comparing single-model behavior.
 
-```text
-scripts/results/scenario_results_YYYYMMDD_HHMMSS.csv
-scripts/results/scenario_transcript_YYYYMMDD_HHMMSS.md
+- Defines a fixed 7-scenario comparison set in `SCENARIOS`.
+- Replaces both `motivator_llm` and `helper_llm` with the selected model during each run.
+- Repeats each scenario with `--iterations`.
+- Collects graph latency, LLM latency, token usage, character counts, persona/signature checks, forbidden internal-name leaks, and English-word leaks.
+- Writes a main report and one raw Markdown file per model.
+
+Smoke test one or two models:
+
+```powershell
+uv --cache-dir .uv-cache run python scripts/run_model_comparison.py --iterations 1 --models gpt-5.4-mini,solar-pro2
 ```
 
-If expectation checks are enabled, it also writes:
+Run the full configured model list:
 
-```text
-scripts/results/scenario_eval_YYYYMMDD_HHMMSS.csv
+```powershell
+uv --cache-dir .uv-cache run python scripts/run_model_comparison.py --iterations 10
 ```
 
-The CSV contains structured data for regression comparison.
+Available model labels are currently:
 
-Important columns:
+```text
+gpt-5.4-mini
+gpt-5.4-nano
+gemini-2.5-flash
+gemini-2.5-flash-lite
+solar-pro3
+solar-pro2
+```
 
-- `student_id`
-- `grade_group`
-- `segment`
-- `expected_grade_group`
-- `expected_ability`
-- `expected_diligence`
-- `classification_ok`
-- `task_index`
-- `task_count`
-- `available_units`
-- `problem_id`
-- `touchpoint`
-- `use_case`
-- `turn`
-- `response_text`
-- `choices`
-- `message_types`
-- `error`
+Outputs:
 
-The Markdown transcript records the student/coach conversation in a human-readable form. TP4 choices include both choice IDs and labels.
+```text
+scripts/results/model_comparison/YYYY-MM-DD/YYYY-MM-DD_model_test.md
+scripts/results/model_comparison/YYYY-MM-DD/raw/<model-label>.md
+```
 
-### Notes
+Read the `raw/<model-label>.md` files when you want the actual generated responses scenario by scenario.
 
-- The script calls the real LangGraph and LLM client.
-- A valid `.env` with the required API keys may be needed for live runs.
-- `--list-students` is a lightweight command and does not call the LLM.
-- Generated CSV/Markdown files are regression artifacts. Check whether you want to keep them before committing.
+### `run_combo_comparison.py`
+
+Hybrid model-combo runner.
+
+- Imports the same comparison scenarios and `run_iteration()` logic from `run_model_comparison.py`.
+- Routes TP1, TP2, TP3, and TP5 through the combo's `motivator` model.
+- Routes TP4 through the combo's `helper` model.
+- Aggregates success, persona/signature, internal-name leaks, English leaks, latency, and token usage.
+- Leaves length-limit review to the separate length-summary script.
+
+Smoke test combo A:
+
+```powershell
+uv --cache-dir .uv-cache run python scripts/run_combo_comparison.py --iterations 1 --combos A --out-suffix combos_smoke
+```
+
+Run all configured combos:
+
+```powershell
+uv --cache-dir .uv-cache run python scripts/run_combo_comparison.py --iterations 10
+```
+
+`--combos` accepts comma-separated label prefixes, so `A`, `B`, and `C` are usually enough.
+
+Outputs:
+
+```text
+scripts/results/model_comparison/YYYY-MM-DD/<out-suffix>/YYYY-MM-DD_combo_test.md
+scripts/results/model_comparison/YYYY-MM-DD/<out-suffix>/raw/<combo-label>.md
+```
+
+### `summarize_length_violations.py`
+
+Post-processor for model-comparison raw files.
+
+- Reads `scripts/results/model_comparison/<date>/raw/*.md`.
+- Extracts per-scenario character counts and responses.
+- Writes a Markdown summary with shortest examples, longest examples, and per-model averages.
+- Intended for `run_model_comparison.py` output, not combo output.
+
+Run it after a model comparison:
+
+```powershell
+uv --cache-dir .uv-cache run python scripts/summarize_length_violations.py --date 2026-04-30
+```
+
+Output:
+
+```text
+scripts/results/model_comparison/YYYY-MM-DD/length_violations.md
+```
+
+## Result Review Order
+
+For prompt/wording review:
+
+1. Run `run_scenarios.py` for the student set you care about.
+2. Read `scenario_transcript_*.md`.
+3. Check `scenario_eval_*.csv` for expectation failures if enabled.
+4. Use `run_model_comparison.py --iterations 1 --models ...` for a quick model smoke comparison.
+5. Increase `--iterations` only after the smoke run looks sane.
+6. Use `run_combo_comparison.py` when deciding whether motivator and helper should use different models.
+7. Run `summarize_length_violations.py` after a model sweep when response length is the main concern.
+
+## Current Scenario Sources
+
+- Student profiles: `app/data/mock_students.json`
+- Problem content: `app/data/mock_problems.json`
+- Scenario expectations: `scripts/scenarios/expected_cases.json`
+- App graph under test: `app/services/graph.py`
+- LLM client globals patched by comparison scripts: `app/clients/llm.py`
+
+Generated files under `scripts/results/` are review artifacts. Check whether they are intentionally needed before committing them.
