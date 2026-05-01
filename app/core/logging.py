@@ -25,7 +25,7 @@ def setup_logging() -> None:
         logtail_handler.setFormatter(formatter)
         root.addHandler(logtail_handler)
 
-    if settings.DISCORD_WEBHOOK_URL:
+    if settings.DISCORD_WEBHOOK_URL and settings.APP_ENV.lower() != "test":
         discord_handler = DiscordWebhookHandler(settings.DISCORD_WEBHOOK_URL)
         discord_handler.setLevel(logging.ERROR)
         discord_handler.setFormatter(formatter)

@@ -20,6 +20,7 @@ from app.guardrails.models import GuardrailContext, Severity
 from app.guardrails.pipeline import GuardrailPipeline
 from app.guardrails.guards.safety_check import SafetyCheck
 from app.guardrails.guards.response_evaluator import ResponseEvaluator, _SYSTEM_PROMPT_TEMPLATE
+from app.guardrails.strategies.llm_judge import LLMJudgeError
 
 
 # ---------------------------------------------------------------------------
@@ -233,6 +234,17 @@ class TestResponseEvaluatorWithMock:
         assert not result.passed
         assert "age_appropriateness" in result.metadata.get("failed_dimensions", [])
         assert "tone" in result.metadata.get("failed_dimensions", [])
+
+    def test_llm_judge_failure_fails_closed_sync(self):
+        judge = mock_judge(ALL_PASS_OUTPUT)
+        judge.evaluate_sync.side_effect = LLMJudgeError("offline")
+        guard = ResponseEvaluator(judge=judge)
+
+        result = guard.check_sync("분모를 같게 만들어볼까?", make_context())
+
+        assert not result.passed
+        assert result.severity == Severity.WARN
+        assert result.metadata.get("failed_dimensions") == ["evaluator_unavailable"]
 
 
 # ---------------------------------------------------------------------------

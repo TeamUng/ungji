@@ -13,6 +13,10 @@ from app.schemas.chat import ChatState
 
 logger = get_logger(__name__)
 
+OUTPUT_GUARDRAIL_FALLBACK_MESSAGE = (
+    "뽀롱이가 지금 잠깐 쉬어야 하나 봐. 조금 있다가 다시 불러줘!"
+)
+
 _TOUCHPOINT_MAP = {
     Touchpoint.TP1: "home_screen",
     Touchpoint.TP2: "after_task",
@@ -20,6 +24,15 @@ _TOUCHPOINT_MAP = {
     Touchpoint.TP4: "during_study",
     Touchpoint.TP5: "after_all_tasks",
 }
+
+
+class AgentOutputBlockedError(RuntimeError):
+    """Raised when a coach response cannot be safely delivered."""
+
+    def __init__(self, *, reasons: list[str], output_excerpt: str) -> None:
+        super().__init__("agent output failed guardrails after repair")
+        self.reasons = reasons
+        self.output_excerpt = output_excerpt
 
 
 def guarded_invoke(
@@ -31,7 +44,7 @@ def guarded_invoke(
     render_output: Callable[[Any], str],
     max_repairs: int = 1,
 ) -> Any:
-    """Invoke an agent LLM and centrally retry once when output guardrails warn."""
+    """Invoke an agent LLM and fail closed when repaired output still fails."""
     started = perf_counter()
     response = runnable.invoke(list(messages))
     logger.info(
@@ -56,18 +69,24 @@ def guarded_invoke(
         if guard_result.passed:
             return response
         if attempt >= max_repairs:
-            logger.warning(
-                "Agent output guardrail still failed after repairs",
+            reasons = guard_result.reasons or ["Output quality guard failed."]
+            logger.error(
+                "Agent output guardrail failed after repairs; blocking delivery",
                 extra={
                     "student_id": state["student_id"],
                     "thread_id": state["thread_id"],
                     "agent_name": agent_name,
                     "touchpoint": state["current_touchpoint"].value,
                     "attempts": attempt,
-                    "reasons": guard_result.reasons,
+                    "reasons": reasons,
+                    "failed_dimensions": _failed_dimensions(guard_result),
+                    "response_excerpt": output_text[:200],
                 },
             )
-            return response
+            raise AgentOutputBlockedError(
+                reasons=reasons,
+                output_excerpt=output_text[:200],
+            )
 
         reasons = guard_result.reasons or ["Output quality guard failed."]
         logger.warning(
@@ -98,7 +117,19 @@ def guarded_invoke(
             },
         )
 
-    return response
+    raise AgentOutputBlockedError(
+        reasons=["Output quality guard failed."],
+        output_excerpt="",
+    )
+
+
+def _failed_dimensions(result: OutputCheckResult) -> list[str]:
+    dimensions: list[str] = []
+    for guard_result in result.guard_results:
+        for dimension in guard_result.metadata.get("failed_dimensions", []):
+            if dimension not in dimensions:
+                dimensions.append(str(dimension))
+    return dimensions
 
 
 def check_agent_output(

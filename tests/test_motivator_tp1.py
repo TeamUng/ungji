@@ -3,6 +3,10 @@ from __future__ import annotations
 from langchain_core.messages import AIMessage, HumanMessage, SystemMessage
 
 from app.core.enums import GradeGroup, Segment, Touchpoint, UseCase
+from app.guardrails.agent_output import (
+    AgentOutputBlockedError,
+    OUTPUT_GUARDRAIL_FALLBACK_MESSAGE,
+)
 from app.services.nodes.motivator import motivator
 from app.services.prompts.personas import get_persona
 
@@ -162,3 +166,30 @@ def test_empty_tp1_entry_skips_input_guard_and_calls_llm(
     motivator(state)
 
     assert mock_llm.calls
+
+
+def test_output_guard_failure_returns_resting_fallback(
+    case1_student,
+    make_chat_state,
+    mock_llm,
+    monkeypatch,
+):
+    import app.services.nodes.motivator as motivator_module
+
+    def block_output(*args, **kwargs):
+        raise AgentOutputBlockedError(
+            reasons=["quality: unsafe for child"],
+            output_excerpt="unsafe output",
+        )
+
+    monkeypatch.setattr(motivator_module, "guarded_invoke", block_output)
+    state = make_chat_state(
+        case1_student,
+        segment=Segment.LOW_LAZY,
+        grade_group=GradeGroup.LOWER,
+        touchpoint=Touchpoint.TP1,
+    )
+
+    response = motivator(state)
+
+    assert response.messages[0].content == OUTPUT_GUARDRAIL_FALLBACK_MESSAGE

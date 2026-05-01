@@ -4,6 +4,10 @@ import pytest
 from langchain_core.messages import HumanMessage, SystemMessage
 
 from app.core.enums import GradeGroup, Segment, Touchpoint, UseCase
+from app.guardrails.agent_output import (
+    AgentOutputBlockedError,
+    OUTPUT_GUARDRAIL_FALLBACK_MESSAGE,
+)
 from app.schemas.chat import (
     ChoicesMessage,
     HintCardMessage,
@@ -390,6 +394,37 @@ def test_wrong_helper_tool_triggers_one_repair_attempt(
     assert len(mock_llm.calls) == 2
     repair_message = mock_llm.calls[1]["messages"][-1].content
     assert "send_text" in repair_message
+
+
+def test_output_guard_failure_returns_text_fallback(
+    make_chat_state,
+    case1_student,
+    mock_llm,
+    monkeypatch,
+):
+    import app.services.nodes.helper as helper_module
+
+    def block_output(*args, **kwargs):
+        raise AgentOutputBlockedError(
+            reasons=["quality: unsafe for child"],
+            output_excerpt="unsafe output",
+        )
+
+    monkeypatch.setattr(helper_module, "guarded_invoke", block_output)
+    state = _make_tp4_state(
+        make_chat_state,
+        case1_student,
+        Segment.LOW_LAZY,
+        GradeGroup.LOWER,
+    )
+    state["current_problem"] = _DUMMY_PROBLEM
+
+    result = helper(state)
+
+    assert len(result["helper_response"]) == 1
+    assert isinstance(result["helper_response"][0], TextMessage)
+    assert result["helper_response"][0].content == OUTPUT_GUARDRAIL_FALLBACK_MESSAGE
+    assert "tp4_turn_count" not in result
 
 
 class TestHelperSegmentNotExposed:

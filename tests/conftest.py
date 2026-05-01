@@ -13,6 +13,9 @@ from fastapi.testclient import TestClient
 os.environ.setdefault("LANGCHAIN_TRACING_V2", "false")
 os.environ.setdefault("LANGSMITH_TRACING", "false")
 os.environ.setdefault("UNGJI_DISABLE_LANGSMITH_TRACING", "true")
+os.environ["APP_ENV"] = "test"
+os.environ["DISCORD_WEBHOOK_URL"] = ""
+os.environ["LOGTAIL_SOURCE_TOKEN"] = ""
 
 from app.core.enums import (
     Difficulty,
@@ -273,6 +276,16 @@ class FakeLLM:
 
     def invoke(self, messages, **kwargs) -> FakeLLMResponse:
         self.calls.append({"messages": messages, "kwargs": kwargs})
+        if kwargs.get("temperature") == 0:
+            return FakeLLMResponse(
+                content=(
+                    '{"age_appropriateness":{"passed":true,"reason":null},'
+                    '"tone":{"passed":true,"reason":null},'
+                    '"quality":{"passed":true,"reason":null},'
+                    '"content_safety":{"passed":true,"reason":null},'
+                    '"prompt_injection":{"passed":true,"reason":null}}'
+                )
+            )
         tool_calls = (
             self.queued_tool_calls.pop(0)
             if self.queued_tool_calls

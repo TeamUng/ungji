@@ -8,7 +8,8 @@ Error handling
 --------------
 - If all configured LLM providers are unreachable, `evaluate()` raises
   `LLMJudgeError`.  Guards catch this and apply their configured fallback
-  policy (fail-open for input pre-screen, fail-safe for output evaluation).
+  policy. Output evaluation fails closed so unverified coach text is not sent
+  to a child.
 - Temperature is requested as 0 for deterministic verdicts.
 """
 

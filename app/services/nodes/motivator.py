@@ -4,7 +4,12 @@ from langchain_core.messages import HumanMessage, SystemMessage
 
 from app.core.enums import Touchpoint, UseCase
 from app.core.logging import get_logger
-from app.guardrails.agent_output import check_agent_input_sync, guarded_invoke
+from app.guardrails.agent_output import (
+    AgentOutputBlockedError,
+    OUTPUT_GUARDRAIL_FALLBACK_MESSAGE,
+    check_agent_input_sync,
+    guarded_invoke,
+)
 from app.schemas.chat import ChatResponse, ChatState, Task
 from app.services.decision_policy import (
     make_motivator_decision as _make_motivator_decision,
@@ -154,13 +159,27 @@ def motivator(state: ChatState) -> ChatResponse:
         },
     )
 
-    response = guarded_invoke(
-        llm,
-        messages,
-        state,
-        agent_name="motivator",
-        render_output=lambda raw: str(getattr(raw, "content", "")),
-    )
+    try:
+        response = guarded_invoke(
+            llm,
+            messages,
+            state,
+            agent_name="motivator",
+            render_output=lambda raw: str(getattr(raw, "content", "")),
+        )
+    except AgentOutputBlockedError:
+        logger.info(
+            "motivator output guard returned fallback response",
+            extra={
+                "student_id": state["student_id"],
+                "thread_id": state["thread_id"],
+                "touchpoint": touchpoint.value if touchpoint else "chat",
+            },
+        )
+        return make_chat_response(
+            state["thread_id"],
+            [make_text(OUTPUT_GUARDRAIL_FALLBACK_MESSAGE)],
+        )
     content = str(getattr(response, "content", ""))
 
     logger.info("motivator node completed", extra={"student_id": state["student_id"]})

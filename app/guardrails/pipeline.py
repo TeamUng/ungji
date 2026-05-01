@@ -15,6 +15,8 @@ Usage (inside a route handler)
     llm_response = await solar_pro.chat(...)
 
     output_result = await pipeline.check_output(llm_response, context)
+    if not output_result.passed:
+        return ChatResponse(message="safe fallback")
     return ChatResponse(message=llm_response)
 """
 
@@ -42,7 +44,8 @@ class GuardrailPipeline:
     Holds a list of input guards and output guards and runs them in order.
 
     - Input guards: fail-fast — the first BLOCK stops the chain immediately.
-    - Output guards: run all and aggregate — WARN-only at pipeline level.
+    - Output guards: run all and aggregate. The pipeline reports WARN results;
+      the agent output wrapper decides repair/fail-closed delivery.
     - The pipeline is stateless; instantiate once and reuse across requests.
     """
 

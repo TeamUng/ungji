@@ -11,9 +11,9 @@ Severity is WARN. The pipeline reports the warning, and the central agent
 output wrapper may use the same warning reasons to request one regeneration.
 Content safety is handled by SafetyCheck, which is the input guard.
 
-Fail-safe policy: if the LLM judge call fails, the guard logs a warning and
-marks the result as passed=True. We do not withhold a response from a child
-because an evaluator is unavailable.
+Fail-closed policy: if the LLM judge call fails, the guard marks the result as
+failed. The central agent output wrapper blocks delivery after repair attempts
+and returns a safe fallback message instead of exposing unverified model text.
 """
 
 from __future__ import annotations
@@ -102,11 +102,11 @@ class ResponseEvaluator:
                 context.session_id, exc,
             )
             return GuardResult(
-                passed=True,
+                passed=False,
                 guard_name=self.name,
                 severity=Severity.WARN,
-                reason=f"LLM judge unavailable - skipped evaluation: {exc}",
-                metadata={"error": str(exc)},
+                reason=f"LLM judge unavailable - output not verified: {exc}",
+                metadata={"error": str(exc), "failed_dimensions": ["evaluator_unavailable"]},
             )
         logger.info(
             "response evaluator judge completed",
@@ -162,11 +162,11 @@ class ResponseEvaluator:
                 context.session_id, exc,
             )
             return GuardResult(
-                passed=True,
+                passed=False,
                 guard_name=self.name,
                 severity=Severity.WARN,
-                reason=f"LLM judge unavailable - skipped evaluation: {exc}",
-                metadata={"error": str(exc)},
+                reason=f"LLM judge unavailable - output not verified: {exc}",
+                metadata={"error": str(exc), "failed_dimensions": ["evaluator_unavailable"]},
             )
         logger.info(
             "response evaluator judge completed",

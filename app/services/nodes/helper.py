@@ -5,7 +5,12 @@ from langchain_core.tools import tool
 
 from app.core.logging import get_logger
 from app.data.loader import load_problem
-from app.guardrails.agent_output import check_agent_input_sync, guarded_invoke
+from app.guardrails.agent_output import (
+    AgentOutputBlockedError,
+    OUTPUT_GUARDRAIL_FALLBACK_MESSAGE,
+    check_agent_input_sync,
+    guarded_invoke,
+)
 from app.schemas.chat import ChatState, ResponseMessage
 from app.services.nodes.common import (
     make_choices,
@@ -104,9 +109,28 @@ def helper(state: ChatState) -> dict:
             )
             return {"helper_response": [make_text(blocked_message)]}
 
+    try:
+        result["helper_response"] = _coach_tp4(
+            state,
+            current_problem,
+            last_content,
+            turn_count,
+            llm,
+        )
+    except AgentOutputBlockedError:
+        logger.info(
+            "helper output guard returned fallback response",
+            extra={
+                "student_id": state["student_id"],
+                "thread_id": state["thread_id"],
+                "tp4_turn_count": turn_count,
+            },
+        )
+        result["helper_response"] = [make_text(OUTPUT_GUARDRAIL_FALLBACK_MESSAGE)]
+        return result
+
     result["tp4_phase"] = TP4_PHASE_COACHING
     result["tp4_turn_count"] = turn_count + 1
-    result["helper_response"] = _coach_tp4(state, current_problem, last_content, turn_count, llm)
 
     logger.info(
         "helper node completed",
